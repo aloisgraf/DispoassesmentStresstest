@@ -692,7 +692,7 @@ function toastAnnehmen(szenarioId) {
 
 // ---- KI FUNK-ANTWORT (Anthropic API) ----
 async function generiereKIFunkAntwort(disponenText) {
-  const apiKey = localStorage.getItem('anthropic-api-key');
+  const apiKey = localStorage.getItem('els_api_key');
 
   if (!apiKey) {
     // Fallback ohne API
