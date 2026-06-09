@@ -765,12 +765,17 @@ function zeigeAlarmToast(szenario) {
 }
 
 function toastAnnehmen(szenarioId) {
+  console.log('📞 toastAnnehmen aufgerufen mit ID:', szenarioId);
   document.querySelectorAll('.alarm-toast').forEach(t => t.remove());
   const sz = STATE.szenarien.find(s => s.id === szenarioId);
-  if (sz) {
-    const einsatz = neuerEinsatz(sz);
-    prueferLog('good', `Notruf ${szenarioId} angenommen, Einsatz ${einsatz.rnkr} erstellt`);
+  if (!sz) {
+    console.warn('❌ Szenario nicht gefunden:', szenarioId);
+    return;
   }
+
+  console.log('✅ Szenario gefunden:', sz.titel);
+  const einsatz = neuerEinsatz(sz);
+  prueferLog('good', `Einsatz ${einsatz.rnkr} erstellt: ${sz.stichwort}`);
 }
 
 // ---- KI FUNK-ANTWORT (Anthropic API) ----
@@ -1102,8 +1107,7 @@ function manuellSzenarioEinspielen(id) {
   const sz = STATE.szenarien.find(s => s.id === id);
   if (!sz) return;
   zeigeAlarmToast(sz);
-  addFunkMsg('alert', '⚡ NOTRUF', `Eingehend (manuell): ${sz.stichwort} – ${sz.einsatzort}`);
-  prueferLog('info', `Manuell eingespielt: ${sz.id}`);
+  prueferLog('info', `Szenario eingespielt: ${sz.id} – ${sz.stichwort}`);
   document.getElementById('pruefer-overlay').style.display = 'none';
 }
 
