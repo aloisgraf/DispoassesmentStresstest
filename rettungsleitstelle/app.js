@@ -742,11 +742,18 @@ function zeigeAlarmToast(szenario) {
       <span style="color:var(--text-secondary);font-size:11px">${szenario.beschreibung?.slice(0,100)}...</span>
     </div>
     <div class="alarm-toast-actions">
-      <button class="btn-alarm-accept" onclick="toastAnnehmen(${JSON.stringify(szenario.id).replace(/"/g,'&quot;')})">✓ Einsatz anlegen</button>
+      <button class="btn-alarm-accept" data-scenario-id="${szenario.id}">✓ Einsatz anlegen</button>
       <button class="btn-alarm-later" onclick="this.closest('.alarm-toast').remove()">Später</button>
     </div>
   `;
   document.body.appendChild(toast);
+
+  // Button listener hinzufügen
+  const acceptBtn = toast.querySelector('.btn-alarm-accept');
+  acceptBtn.addEventListener('click', () => {
+    const id = acceptBtn.dataset.scenarioId;
+    toastAnnehmen(id);
+  });
 
   // Nach 45 Sek automatisch weg – aber dann KI bewertet
   setTimeout(() => {
