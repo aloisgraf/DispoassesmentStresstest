@@ -1,0 +1,24 @@
+{
+  "name": "els-simulator",
+  "version": "1.0.0",
+  "description": "RK Salzburg – Leitstellen Simulator für Disponenten-Assessment",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js --dev",
+    "test": "node test-app.js"
+  },
+  "keywords": [
+    "rettungsdienst",
+    "leitstelle",
+    "simulator",
+    "training",
+    "assessment"
+  ],
+  "author": "RK Salzburg",
+  "license": "MIT",
+  "engines": {
+    "node": "18.x"
+  },
+  "dependencies": {}
+}

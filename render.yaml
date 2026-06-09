@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: els-simulator
+    env: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    staticPublishPath: ./rettungsleitstelle
+    routes:
+      - path: /
+        staticPath: ./rettungsleitstelle/index.html
+      - path: /*
+        staticPath: ./rettungsleitstelle
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+    autoDeploy: true

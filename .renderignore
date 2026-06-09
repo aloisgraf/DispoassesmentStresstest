@@ -1,0 +1,20 @@
+# Test files
+test-app.js
+*.test.js
+
+# Development files
+.vscode/
+.idea/
+*.swp
+
+# Docs (nicht unbedingt nötig im Deployment)
+README.md
+DEPLOYMENT.md
+
+# Git
+.git/
+.gitignore
+
+# OS
+.DS_Store
+Thumbs.db
