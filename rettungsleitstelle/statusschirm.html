@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Statusschirm – RK Salzburg</title>
+  <style>
+    :root {
+      --bg-app:       #0d1117;
+      --bg-panel:     #161b22;
+      --bg-header:    #21262d;
+      --bg-subpanel:  #1c2128;
+      --border:       #30363d;
+      --border-light: #21262d;
+      --text-primary: #e6edf3;
+      --text-secondary:#8b949e;
+      --text-dim:     #484f58;
+      --red:          #e3000b;
+      --cyan:         #00bcd4;
+      --green:        #00c853;
+      --font-mono:    'Consolas','Courier New',monospace;
+      --font-ui:      'Segoe UI',system-ui,-apple-system,sans-serif;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      background: var(--bg-app);
+      color: var(--text-primary);
+      font-family: var(--font-ui);
+      font-size: 12px;
+      height: 100%;
+      overflow: auto;
+    }
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: #010409;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 12px;
+      height: 36px;
+    }
+    .topbar-logo { color: var(--red); font-weight: 700; font-size: 13px; }
+    .topbar-right { display: flex; align-items: center; gap: 16px; }
+    .clock {
+      font-family: var(--font-mono);
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--cyan);
+      letter-spacing: 1px;
+    }
+    .last-update { font-size: 10px; color: var(--text-dim); }
+
+    .screen { padding: 6px; }
+    .status-group { margin-bottom: 6px; }
+    .status-group-header {
+      background: var(--bg-header);
+      border: 1px solid var(--border);
+      padding: 4px 8px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-secondary);
+      margin-bottom: 2px;
+    }
+    table { width: 100%; border-collapse: collapse; font-size: 11px; }
+    th {
+      background: var(--bg-subpanel);
+      border: 1px solid var(--border);
+      padding: 3px 5px;
+      text-align: left;
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      white-space: nowrap;
+    }
+    td { border: 1px solid var(--border-light); padding: 3px 5px; white-space: nowrap; }
+
+    .s-00 td { background: rgba(0,200,83,0.12); }
+    .s-01 td { background: rgba(118,255,3,0.12); }
+    .s-02 td { background: rgba(255,109,0,0.20); }
+    .s-03 td { background: rgba(227,0,11,0.25); }
+    .s-04 td { background: rgba(255,145,0,0.20); }
+    .s-05 td { background: rgba(41,182,246,0.18); }
+    .s-06 td { background: rgba(0,200,83,0.12); }
+    .s-07 td { background: rgba(102,187,106,0.15); }
+    .s-08 td, .s-09 td, .s-10 td { background: rgba(92,107,192,0.20); }
+    .s-19 td { background: rgba(158,158,158,0.12); }
+    .s-80 td { background: rgba(120,144,156,0.15); }
+    .s-82 td { background: rgba(55,71,79,0.40); }
+    .s-83 td { background: rgba(38,50,56,0.60); }
+    .s-88 td { background: rgba(255,214,0,0.18); }
+
+    .badge {
+      display: inline-block; padding: 1px 5px; border-radius: 2px;
+      font-family: var(--font-mono); font-size: 10px; font-weight: 700; color: #000;
+    }
+    .b00,.b06 { background:#00c853; }
+    .b01      { background:#76ff03; }
+    .b02      { background:#ff6d00; color:#fff; }
+    .b03      { background:#e3000b; color:#fff; }
+    .b04      { background:#ff9100; color:#fff; }
+    .b05      { background:#29b6f6; }
+    .b07      { background:#66bb6a; }
+    .b08,.b09,.b10 { background:#5c6bc0; color:#fff; }
+    .b19      { background:#9e9e9e; }
+    .b80      { background:#78909c; color:#fff; }
+    .b82      { background:#37474f; color:#8b949e; }
+    .b83      { background:#263238; color:#484f58; }
+    .b88      { background:#ffd600; }
+
+    .kennung { font-family: var(--font-mono); font-weight: 700; color: var(--text-primary); }
+    .typ     { color: var(--text-secondary); font-size: 10px; }
+    .zeit    { font-family: var(--font-mono); font-size: 10px; color: var(--text-dim); }
+    .adresse { font-size: 10px; color: var(--text-secondary); max-width: 220px; overflow:hidden; text-overflow:ellipsis; }
+
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+    .legend {
+      display: flex; flex-wrap: wrap; gap: 6px;
+      padding: 8px 6px;
+      border-top: 1px solid var(--border);
+      margin-top: 4px;
+    }
+    .legend-item {
+      display: flex; align-items: center; gap: 4px;
+      font-size: 10px; color: var(--text-dim);
+    }
+    .legend-dot {
+      width: 10px; height: 10px; border-radius: 2px;
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="topbar-logo">✚ RK Salzburg – Statusschirm</div>
+    <div class="topbar-right">
+      <div class="last-update" id="last-update">Warte auf Verbindung...</div>
+      <div class="clock" id="clock">--:--:--</div>
+    </div>
+  </div>
+
+  <div class="screen" id="screen">
+    <div style="text-align:center; padding: 40px; color: var(--text-dim); font-size:13px">
+      Verbinde mit Hauptfenster...<br>
+      <span style="font-size:11px">Dieses Fenster wird vom Hauptfenster automatisch aktualisiert.</span>
+    </div>
+  </div>
+
+  <div class="legend" id="legend"></div>
+
+  <script>
+    // Uhr
+    function tick() {
+      const n = new Date();
+      document.getElementById('clock').textContent = n.toTimeString().slice(0,8);
+    }
+    tick();
+    setInterval(tick, 1000);
+
+    // Status-Definitionen für Legende
+    const STATUS_DEF = {
+      "00": { text: "In Dienststelle",        farbe: "#00c853" },
+      "01": { text: "Auftrag angenommen",     farbe: "#76ff03" },
+      "02": { text: "Anfahrt EO",             farbe: "#ff6d00" },
+      "03": { text: "Am Einsatzort",          farbe: "#e3000b" },
+      "04": { text: "Abfahrt EO",             farbe: "#ff9100" },
+      "05": { text: "Am Zielort",             farbe: "#29b6f6" },
+      "06": { text: "Einsatzbereit",          farbe: "#00c853" },
+      "07": { text: "Unterwegs DSt",          farbe: "#66bb6a" },
+      "08": { text: "Position LKH",           farbe: "#5c6bc0" },
+      "19": { text: "Pause",                  farbe: "#9e9e9e" },
+      "80": { text: "Dienstfahrt",            farbe: "#78909c" },
+      "82": { text: "Außer Betrieb",          farbe: "#37474f" },
+      "83": { text: "Unbesetzt",              farbe: "#263238" },
+      "88": { text: "Anfahrt Position",       farbe: "#ffd600" }
+    };
+
+    // Legende rendern
+    const legend = document.getElementById('legend');
+    Object.entries(STATUS_DEF).forEach(([code, def]) => {
+      legend.innerHTML += `<div class="legend-item">
+        <div class="legend-dot" style="background:${def.farbe}"></div>
+        <span><strong>${code}</strong> ${def.text}</span>
+      </div>`;
+    });
+
+    // Empfange Updates vom Hauptfenster über postMessage oder BroadcastChannel
+    const bc = new BroadcastChannel('els_status');
+    bc.onmessage = (event) => {
+      if (event.data.type === 'status_update') {
+        renderStatus(event.data.einsatzmittel);
+        document.getElementById('last-update').textContent =
+          'Aktualisiert: ' + new Date().toTimeString().slice(0,8);
+      }
+    };
+
+    function renderStatus(einsatzmittel) {
+      const gruppen = {};
+      einsatzmittel.forEach(em => {
+        if (!gruppen[em.gruppe]) gruppen[em.gruppe] = [];
+        gruppen[em.gruppe].push(em);
+      });
+
+      let html = '';
+      for (const [name, einheiten] of Object.entries(gruppen)) {
+        html += `<div class="status-group">
+          <div class="status-group-header">${name}</div>
+          <table><thead><tr>
+            <th>Kennung</th><th>Typ</th><th>Status</th><th>Kompetenzen</th>
+            <th>Aus</th><th>E:EO</th><th>A:EO</th><th>E:ZO</th><th>Adresse</th>
+          </tr></thead><tbody>`;
+
+        einheiten.forEach(em => {
+          const s = em.status.padStart(2,'0');
+          html += `<tr class="s-${s}">
+            <td><span class="kennung">${em.kennung}</span></td>
+            <td><span class="typ">${em.typ}</span></td>
+            <td><span class="badge b${s}">${s}</span> <span style="font-size:10px;color:var(--text-secondary)">${STATUS_DEF[s]?.text||''}</span></td>
+            <td style="font-size:10px;color:var(--text-dim)">${em.kompetenzen.join(' ')}</td>
+            <td class="zeit">${em.zeitAus||'–'}</td>
+            <td class="zeit">${em.zeitEEO||'–'}</td>
+            <td class="zeit">${em.zeitAEO||'–'}</td>
+            <td class="zeit">${em.zeitEZO||'–'}</td>
+            <td class="adresse">${em.aktuelleAdresse||'–'}</td>
+          </tr>`;
+        });
+        html += '</tbody></table></div>';
+      }
+      document.getElementById('screen').innerHTML = html;
+    }
+  </script>
+</body>
+</html>

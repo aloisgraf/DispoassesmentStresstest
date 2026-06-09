@@ -1,0 +1,1931 @@
+{
+  "version": "1.0",
+  "beschreibung": "Szenarienkatalog für Disponenten-Assessment – RK Salzburg",
+  "kategorien": ["Interne Notfälle", "Krankentransport", "Verkehrsunfall", "Bergeinsatz", "Wassereinsatz", "Sonderlage"],
+  "szenarien": [
+
+    {
+      "id": "S001",
+      "kategorie": "Interne Notfälle",
+      "titel": "Herzinfarkt – Bürogebäude",
+      "prioritaet": "E1",
+      "stichwort": "INT – Kardial",
+      "beschreibung": "55-jähriger Mann in einem Bürogebäude in der Salzburger Innenstadt, plötzlicher Brustschmerz, Ausstrahlung in den linken Arm, Schweißausbruch, Übelkeit. Kollegen haben Notruf gewählt.",
+      "einsatzort": "Salzburg, Mirabellplatz 4, 2. OG, Büro",
+      "patient": { "alter": 55, "geschlecht": "m", "bewusstsein": "wach", "atmung": "flach" },
+      "aao": {
+        "primaer": ["RTW", "NEF"],
+        "sekundaer": [],
+        "optional": ["EL"]
+      },
+      "eskalationen": [
+        { "trigger": "nach 8 Min kein NEF disponiert", "ereignis": "RTW meldet: Patient bewusstlos, CPR begonnen – NEF dringend anfordern" },
+        { "trigger": "nach 15 Min", "ereignis": "RTW meldet: Reanimation läuft, bitte Zielkrankenhaus vorankündigen" }
+      ],
+      "erwartete_aktionen": ["RTW und NEF alarmieren", "Einsatzadresse korrekt erfassen", "Zielkrankenhaus festlegen (UKH oder CDK)", "Eintrag in Einsatzdoku"],
+      "bewertungskriterien": ["Alarmierungszeit < 90 Sek", "Korrektes Stichwort", "NEF disponiert", "Zielkrankenhaus kommuniziert"]
+    },
+
+    {
+      "id": "S002",
+      "kategorie": "Interne Notfälle",
+      "titel": "Reanimation – Supermarkt",
+      "prioritaet": "E1",
+      "stichwort": "INT – Reanimation",
+      "beschreibung": "Weibliche Person, ca. 65 Jahre, in einem Supermarkt kollabiert. Zeugen berichten keine Reaktion, keine normale Atmung. Laienreanimation läuft bereits.",
+      "einsatzort": "Salzburg-Maxglan, Europastraße 1, SPAR",
+      "patient": { "alter": 65, "geschlecht": "w", "bewusstsein": "bewusstlos", "atmung": "keine" },
+      "aao": {
+        "primaer": ["RTW", "NEF", "First Responder"],
+        "sekundaer": [],
+        "optional": ["EL"]
+      },
+      "eskalationen": [
+        { "trigger": "sofort", "ereignis": "First Responder meldet: Bin in 3 Minuten vor Ort, AED dabei" },
+        { "trigger": "nach 10 Min", "ereignis": "NEF meldet: Rhythmus schockbar, Defibrillation erfolgt – RTW Ankunft?" },
+        { "trigger": "nach 20 Min", "ereignis": "NEF meldet: ROSC erreicht, bitte UKH Kath-Labor vorankündigen" }
+      ],
+      "erwartete_aktionen": ["RTW, NEF, First Responder alarmieren", "Adresse präzise erfassen", "UKH Kath-Labor vorankündigen", "Doku mit Zeitstempeln"],
+      "bewertungskriterien": ["First Responder alarmiert", "Alarmierungszeit < 60 Sek", "Kath-Labor Ankündigung", "Vollständige Doku"]
+    },
+
+    {
+      "id": "S003",
+      "kategorie": "Interne Notfälle",
+      "titel": "Sturz ältere Person – Wohnung",
+      "prioritaet": "E2",
+      "stichwort": "INT – Sturz",
+      "beschreibung": "82-jährige Frau gestürzt, liegt seit unbekannter Zeit am Boden, kann nicht aufstehen. Nachbarin hat durch die Türe gerufen, Patientin antwortet aber schwach. Tür versperrt.",
+      "einsatzort": "Salzburg-Lehen, Gneiser Straße 18, Top 12",
+      "patient": { "alter": 82, "geschlecht": "w", "bewusstsein": "eingeschränkt", "atmung": "vorhanden" },
+      "aao": {
+        "primaer": ["RTW"],
+        "sekundaer": ["Feuerwehr (Türöffnung)"],
+        "optional": ["NEF"]
+      },
+      "eskalationen": [
+        { "trigger": "nach 5 Min kein Feuerwehr-Info", "ereignis": "RTW meldet: Tür versperrt, kommen nicht rein – bitte FF alarmieren" },
+        { "trigger": "nach 15 Min", "ereignis": "RTW meldet: Patientin hat Oberschenkelfraktur, Schmerzmittel nötig – NEF anfordern?" }
+      ],
+      "erwartete_aktionen": ["RTW alarmieren", "Feuerwehr für Türöffnung informieren", "Bei Bedarf NEF nachfordern", "Doku"],
+      "bewertungskriterien": ["RTW disponiert", "Feuerwehr koordiniert", "NEF Nachforderung bei Eskalation", "Reaktionszeit auf Eskalation"]
+    },
+
+    {
+      "id": "S004",
+      "kategorie": "Interne Notfälle",
+      "titel": "Hypoglykämie – Straße",
+      "prioritaet": "E2",
+      "stichwort": "INT – Unterzucker",
+      "beschreibung": "30-jähriger Mann auf der Straße, verwirrt, schwitzt stark, reagiert kaum auf Ansprache. Passant ruft Notruf. Diabetiker laut Notfallausweis in der Geldbörse.",
+      "einsatzort": "Salzburg, Linzer Gasse 22",
+      "patient": { "alter": 30, "geschlecht": "m", "bewusstsein": "eingeschränkt", "atmung": "normal" },
+      "aao": {
+        "primaer": ["RTW"],
+        "sekundaer": [],
+        "optional": ["NEF"]
+      },
+      "eskalationen": [
+        { "trigger": "nach 10 Min", "ereignis": "RTW meldet: BZ 28, i.v. Zugang, Glucose gegeben – Patient erholt sich" },
+        { "trigger": "nach 20 Min", "ereignis": "RTW meldet: Patient verweigert Transport – bitte Protokoll für Verweigerung" }
+      ],
+      "erwartete_aktionen": ["RTW alarmieren", "Doku", "Bei Verweigerung: Protokoll veranlassen"],
+      "bewertungskriterien": ["Korrekte Priorisierung E2", "Reaktion auf Transportverweigerung"]
+    },
+
+    {
+      "id": "S005",
+      "kategorie": "Interne Notfälle",
+      "titel": "Hyperglykämie – Pflegeheim",
+      "prioritaet": "E2",
+      "stichwort": "INT – Überzucker",
+      "beschreibung": "78-jähriger Heimbewohner, Pflegepersonal meldet: Patient ist seit heute früh schläfrig, trinkt viel, Atemgeruch fruchtig-süßlich. BZ laut Pflegemessung >400.",
+      "einsatzort": "Salzburg-Liefering, Münchner Bundesstraße 44, Seniorenheim Sonnenhang",
+      "patient": { "alter": 78, "geschlecht": "m", "bewusstsein": "somnolent", "atmung": "Kussmaul" },
+      "aao": {
+        "primaer": ["RTW", "NEF"],
+        "sekundaer": [],
+        "optional": []
+      },
+      "eskalationen": [
+        { "trigger": "nach 12 Min", "ereignis": "NEF meldet: V.a. ketoazidotisches Koma, Ziel UKH Intensiv – bitte ankündigen" }
+      ],
+      "erwartete_aktionen": ["RTW und NEF alarmieren", "UKH Intensiv vorankündigen", "Doku"],
+      "bewertungskriterien": ["NEF disponiert", "Zielkrankenhaus korrekt", "Ankündigung erfolgt"]
+    },
+
+    {
+      "id": "S006",
+      "kategorie": "Interne Notfälle",
+      "titel": "Schlaganfall – Wohnung",
+      "prioritaet": "E1",
+      "stichwort": "INT – Neurologie",
+      "beschreibung": "67-jährige Frau, Ehemann ruft an: Frau kann plötzlich nicht mehr sprechen, hängendes Mundwinkel rechts, Arm rechts kraftlos. Symptombeginn vor 20 Minuten.",
+      "einsatzort": "Salzburg-Aigen, Aigner Straße 55",
+      "patient": { "alter": 67, "geschlecht": "w", "bewusstsein": "wach", "atmung": "normal" },
+      "aao": {
+        "primaer": ["RTW", "NEF"],
+        "sekundaer": [],
+        "optional": []
+      },
+      "eskalationen": [
+        { "trigger": "nach 8 Min", "ereignis": "NEF meldet: Stroke bestätigt, Symptombeginn < 4,5h – bitte CDK Stroke Unit dringend vorankündigen" }
+      ],
+      "erwartete_aktionen": ["RTW und NEF alarmieren", "CDK Stroke Unit vorankündigen", "Zeitstempel Symptombeginn dokumentieren"],
+      "bewertungskriterien": ["Alarmierungszeit < 90 Sek", "CDK Stroke Unit Ankündigung", "Symptombeginn dokumentiert"]
+    },
+
+    {
+      "id": "S007",
+      "kategorie": "Interne Notfälle",
+      "titel": "Atemnot – COPD",
+      "prioritaet": "E1",
+      "stichwort": "INT – Atemnot",
+      "beschreibung": "71-jähriger Mann, bekannte COPD, Ehefrau ruft: Mann kann kaum noch sprechen vor Atemnot, Lippen bläulich, sitzt aufrecht.",
+      "einsatzort": "Salzburg-Parsch, Ignaz-Rieder-Kai 11",
+      "patient": { "alter": 71, "geschlecht": "m", "bewusstsein": "wach", "atmung": "schwer beeinträchtigt" },
+      "aao": {
+        "primaer": ["RTW", "NEF"],
+        "sekundaer": [],
+        "optional": []
+      },
+      "eskalationen": [
+        { "trigger": "nach 10 Min", "ereignis": "RTW meldet: SpO2 72%, Intubation durch NEF – Ziel UKH, bitte ankündigen" }
+      ],
+      "erwartete_aktionen": ["RTW und NEF alarmieren", "UKH ankündigen", "Doku"],
+      "bewertungskriterien": ["NEF disponiert", "Ankündigung UKH", "Reaktionszeit"]
+    },
+
+    {
+      "id": "S008",
+      "kategorie": "Interne Notfälle",
+      "titel": "Blutung nach Sturz – öffentlicher Platz",
+      "prioritaet": "E2",
+      "stichwort": "INT – Trauma",
+      "beschreibung": "45-jähriger Mann gestürzt, große Platzwunde am Kopf, starke Blutung. Patient wach, aber schwindelig. Zeugen halten Wunde ab.",
+      "einsatzort": "Salzburg, Alter Markt 3",
+      "patient": { "alter": 45, "geschlecht": "m", "bewusstsein": "wach", "atmung": "normal" },
+      "aao": {
+        "primaer": ["RTW"],
+        "sekundaer": [],
+        "optional": ["NEF"]
+      },
+      "eskalationen": [
+        { "trigger": "nach 8 Min", "ereignis": "RTW meldet: Blutung gestillt, V.a. Schädel-Hirn-Trauma, Übelkeit und Erbrechen – NEF anfordern" }
+      ],
+      "erwartete_aktionen": ["RTW disponieren", "NEF bei Eskalation nachfordern", "Doku"],
+      "bewertungskriterien": ["Korrekte Priorisierung", "Reaktion auf NEF-Nachforderung"]
+    },
+
+    {
+      "id": "S009",
+      "kategorie": "Interne Notfälle",
+      "titel": "Allergische Reaktion – Restaurant",
+      "prioritaet": "E1",
+      "stichwort": "INT – Allergie/Anaphylaxie",
+      "beschreibung": "28-jährige Frau in einem Restaurant, nach dem Essen plötzlich Hautausschlag, Lippen und Zunge schwellen an, Atemnot.",
+      "einsatzort": "Salzburg, Getreidegasse 14, Restaurant",
+      "patient": { "alter": 28, "geschlecht": "w", "bewusstsein": "wach, ängstlich", "atmung": "erschwert" },
+      "aao": {
+        "primaer": ["RTW", "NEF"],
+        "sekundaer": [],
+        "optional": []
+      },
+      "eskalationen": [
+        { "trigger": "nach 5 Min", "ereignis": "RTW meldet: Anaphylaktischer Schock, Adrenalin gegeben, RR abfallend – NEF bereits disponiert?" }
+      ],
+      "erwartete_aktionen": ["RTW und NEF sofort alarmieren", "UKH ankündigen", "Doku"],
+      "bewertungskriterien": ["Alarmierungszeit < 60 Sek", "NEF disponiert", "Zielkrankenhaus"]
+    },
+
+    {
+      "id": "S010",
+      "kategorie": "Interne Notfälle",
+      "titel": "Bewusstlosigkeit unklarer Ursache – Zuhause",
+      "prioritaet": "E1",
+      "stichwort": "INT – Bewusstlosigkeit",
+      "beschreibung": "38-jähriger Mann, Lebensgefährtin ruft: Mann plötzlich kollabiert, atmet aber noch, reagiert nicht auf Ansprache. Kein Vorgeschichte bekannt.",
+      "einsatzort": "Salzburg-Schallmoos, Schumacherstraße 7",
+      "patient": { "alter": 38, "geschlecht": "m", "bewusstsein": "bewusstlos", "atmung": "vorhanden" },
+      "aao": {
+        "primaer": ["RTW", "NEF"],
+        "sekundaer": [],
+        "optional": []
+      },
+      "eskalationen": [
+        { "trigger": "nach 10 Min", "ereignis": "NEF meldet: V.a. Intoxikation, Drogen gefunden – bitte Polizei informieren" }
+      ],
+      "erwartete_aktionen": ["RTW und NEF alarmieren", "Polizei bei Eskalation informieren", "Doku"],
+      "bewertungskriterien": ["Alarmierungszeit", "Reaktion auf Polizei-Info", "Doku vollständig"]
+    },
+
+    {
+      "id": "S011",
+      "kategorie": "Interne Notfälle",
+      "titel": "Kindernotfall – Fieberkrampf",
+      "prioritaet": "E1",
+      "stichwort": "INT – Pädiatrie",
+      "beschreibung": "2-jähriges Kind, Mutter ruft panisch: Kind hat Krämpfe, zuckt am ganzen Körper, Augen verdreht, Fieber seit gestern.",
+      "einsatzort": "Salzburg-Elisabeth-Vorstadt, Elisabethstraße 23",
+      "patient": { "alter": 2, "geschlecht": "m", "bewusstsein": "Krampf", "atmung": "unregelmäßig" },
+      "aao": {
+        "primaer": ["RTW", "NEF"],
+        "sekundaer": [],
+        "optional": []
+      },
+      "eskalationen": [
+        { "trigger": "nach 8 Min", "ereignis": "NEF meldet: Krampf sistiert, Kind schläft ein – Ziel CDK Kinderklinik" }
+      ],
+      "erwartete_aktionen": ["RTW und NEF sofort alarmieren", "CDK Kinderklinik ankündigen", "Eltern beruhigen laut Protokoll", "Doku"],
+      "bewertungskriterien": ["Alarmierungszeit < 60 Sek", "Kinderklinik Ziel", "Ankündigung"]
+    },
+
+    {
+      "id": "S012",
+      "kategorie": "Interne Notfälle",
+      "titel": "Psychiatrischer Notfall – Suizidgefahr",
+      "prioritaet": "E1",
+      "stichwort": "INT – Psychiatrie/KIT",
+      "beschreibung": "25-jähriger Mann, Freundin ruft: Freund hat sich eingesperrt, droht sich etwas anzutun, hat Medikamente geschluckt, genaue Menge unbekannt.",
+      "einsatzort": "Salzburg-Nonntal, Nonnberggasse 8, Top 3",
+      "patient": { "alter": 25, "geschlecht": "m", "bewusstsein": "wach", "atmung": "normal" },
+      "aao": {
+        "primaer": ["RTW", "KIT"],
+        "sekundaer": ["Polizei"],
+        "optional": ["NEF"]
+      },
+      "eskalationen": [
+        { "trigger": "nach 5 Min kein KIT disponiert", "ereignis": "RTW meldet: Patient kooperiert nicht, brauchen KIT und Polizei dringend" },
+        { "trigger": "nach 15 Min", "ereignis": "Polizei meldet: Tür geöffnet, Patient bewusstseinsgetrübt – NEF anfordern" }
+      ],
+      "erwartete_aktionen": ["RTW, KIT und Polizei alarmieren", "NEF bei Eskalation", "Doku mit KIT-Alarmierungszeit"],
+      "bewertungskriterien": ["KIT disponiert", "Polizei informiert", "NEF Nachforderung bei Bewusstseinstrübung"]
+    },
+
+    {
+      "id": "S013",
+      "kategorie": "Interne Notfälle",
+      "titel": "Brustschmerz – unklar",
+      "prioritaet": "E2",
+      "stichwort": "INT – Kardial unklar",
+      "beschreibung": "42-jährige Frau, ruft selbst an: Stechende Brustschmerzen seit 2 Stunden, kein Schweißausbruch, kein Ausstrahlen. Leichte Atemnot. Kein bekanntes Herzleiden.",
+      "einsatzort": "Salzburg-Itzling, Itzlinger Hauptstraße 34",
+      "patient": { "alter": 42, "geschlecht": "w", "bewusstsein": "wach", "atmung": "leicht beeinträchtigt" },
+      "aao": {
+        "primaer": ["RTW"],
+        "sekundaer": [],
+        "optional": ["NEF"]
+      },
+      "eskalationen": [
+        { "trigger": "nach 10 Min", "ereignis": "RTW meldet: EKG unauffällig, aber Troponin-Schnelltest positiv – NEF anfordern, Ziel UKH Kath-Labor" }
+      ],
+      "erwartete_aktionen": ["RTW disponieren", "NEF bei Eskalation", "Kath-Labor vorankündigen"],
+      "bewertungskriterien": ["Reaktion auf Eskalation < 2 Min", "Kath-Labor Ankündigung"]
+    },
+
+    {
+      "id": "S014",
+      "kategorie": "Interne Notfälle",
+      "titel": "Vergiftung – Kind verschluckt Reinigungsmittel",
+      "prioritaet": "E1",
+      "stichwort": "INT – Intoxikation pädiatrisch",
+      "beschreibung": "3-jähriges Mädchen hat aus einer ungesicherten Flasche getrunken, Mutter vermutet Reinigungsmittel. Kind würgt, Mund gerötet.",
+      "einsatzort": "Salzburg-Taxham, Röcklbrunnstraße 51",
+      "patient": { "alter": 3, "geschlecht": "w", "bewusstsein": "wach, weinend", "atmung": "normal" },
+      "aao": {
+        "primaer": ["RTW", "NEF"],
+        "sekundaer": [],
+        "optional": []
+      },
+      "eskalationen": [
+        { "trigger": "sofort", "ereignis": "Disponent soll Giftnotrufzentrale Wien kontaktieren und Informationen weitergeben" },
+        { "trigger": "nach 8 Min", "ereignis": "NEF meldet: Substanz identifiziert, kein Erbrechen auslösen – Ziel CDK Kinderklinik" }
+      ],
+      "erwartete_aktionen": ["RTW und NEF alarmieren", "Giftnotruf kontaktieren", "Kinderklinik ankündigen", "Doku"],
+      "bewertungskriterien": ["Giftnotruf koordiniert", "Alarmierungszeit", "Ankündigung Kinderklinik"]
+    },
+
+    {
+      "id": "S015",
+      "kategorie": "Interne Notfälle",
+      "titel": "Epileptischer Anfall – Fußgängerzone",
+      "prioritaet": "E2",
+      "stichwort": "INT – Neurologie/Krampf",
+      "beschreibung": "35-jähriger Mann in der Fußgängerzone, generalisierter Krampfanfall, Zeugen berichten Dauer bereits > 3 Minuten.",
+      "einsatzort": "Salzburg, Judengasse 7",
+      "patient": { "alter": 35, "geschlecht": "m", "bewusstsein": "Krampf", "atmung": "schnarchend" },
+      "aao": {
+        "primaer": ["RTW"],
+        "sekundaer": [],
+        "optional": ["NEF"]
+      },
+      "eskalationen": [
+        { "trigger": "nach 7 Min", "ereignis": "RTW meldet: Status epilepticus, Anfall > 10 Min, Medikation nicht ausreichend – NEF dringend anfordern" }
+      ],
+      "erwartete_aktionen": ["RTW disponieren", "NEF bei Eskalation", "Doku"],
+      "bewertungskriterien": ["Reaktion auf Eskalation", "NEF Nachforderung"]
+    },
+
+    {
+      "id": "S016",
+      "kategorie": "Krankentransport",
+      "titel": "Dialysefahrt",
+      "prioritaet": "KT",
+      "stichwort": "KT – Dialyse",
+      "beschreibung": "Routinetransport: 68-jährige Patientin zur Dialyse ins LKH Salzburg. Rollstuhlfahrerin, benötigt Hebehilfe. Abholzeit 07:30.",
+      "einsatzort": "Salzburg-Parsch, Paracelsusstraße 3 → LKH Salzburg Dialyse",
+      "patient": { "alter": 68, "geschlecht": "w", "bewusstsein": "wach", "atmung": "normal" },
+      "aao": {
+        "primaer": ["KTW"],
+        "sekundaer": [],
+        "optional": []
+      },
+      "eskalationen": [
+        { "trigger": "nach 20 Min Fahrzeit", "ereignis": "KTW-Fahrer meldet: Patientin klagt über Brustschmerzen – wie soll ich vorgehen?" }
+      ],
+      "erwartete_aktionen": ["KTW disponieren", "Bei Eskalation RTW/NEF anweisen oder nachfordern", "Doku"],
+      "bewertungskriterien": ["Korrektes Fahrzeug KTW", "Reaktion auf Eskalation"]
+    },
+
+    {
+      "id": "S017",
+      "kategorie": "Krankentransport",
+      "titel": "Kontrolltermin Orthopädie",
+      "prioritaet": "KT",
+      "stichwort": "KT – Arzttermin",
+      "beschreibung": "74-jähriger Patient nach Hüft-OP, Kontrolltermin beim Orthopäden im Ambulanzzentrum. Gehfähig mit Rollator. Abholzeit 10:00, Rückfahrt ca. 12:00.",
+      "einsatzort": "Salzburg-Mülln, Müllner Hauptstraße 48 → Ambulanzzentrum Salzburg",
+      "patient": { "alter": 74, "geschlecht": "m", "bewusstsein": "wach", "atmung": "normal" },
+      "aao": {
+        "primaer": ["KTW"],
+        "sekundaer": [],
+        "optional": []
+      },
+      "eskalationen": [
+        { "trigger": "nach 30 Min", "ereignis": "KTW-Fahrer meldet: Rückfahrt verzögert sich um 1 Stunde, Termin dauert länger" }
+      ],
+      "erwartete_aktionen": ["KTW einplanen", "Rückfahrt koordinieren", "Doku"],
+      "bewertungskriterien": ["Ressourcenplanung", "Reaktion auf Verzögerung"]
+    },
+
+    {
+      "id": "S018",
+      "kategorie": "Krankentransport",
+      "titel": "Krankenhausverlegung – LKH zu Reha",
+      "prioritaet": "KT",
+      "stichwort": "KT – Verlegung",
+      "beschreibung": "58-jährige Patientin, Verlegung vom LKH Salzburg in die Reha-Klinik Salzburg nach Schlaganfall. Liegendtransport, stabil.",
+      "einsatzort": "LKH Salzburg → Reha-Klinik Salzburg",
+      "patient": { "alter": 58, "geschlecht": "w", "bewusstsein": "wach", "atmung": "normal" },
+      "aao": {
+        "primaer": ["KTW"],
+        "sekundaer": [],
+        "optional": []
+      },
+      "eskalationen": [],
+      "erwartete_aktionen": ["KTW mit Trage disponieren", "Übergabe an Reha koordinieren", "Doku"],
+      "bewertungskriterien": ["Korrektes Fahrzeug", "Zieldokumentation"]
+    },
+
+    {
+      "id": "S019",
+      "kategorie": "Krankentransport",
+      "titel": "Gipswechsel – Kind",
+      "prioritaet": "KT",
+      "stichwort": "KT – Arzttermin pädiatrisch",
+      "beschreibung": "9-jähriger Bub, Gipswechsel nach Unterarmfraktur im CDK. Mutter begleitet. Abholzeit 14:00.",
+      "einsatzort": "Salzburg-Riedenburg, Grillparzerstraße 12 → CDK",
+      "patient": { "alter": 9, "geschlecht": "m", "bewusstsein": "wach", "atmung": "normal" },
+      "aao": {
+        "primaer": ["KTW"],
+        "sekundaer": [],
+        "optional": []
+      },
+      "eskalationen": [],
+      "erwartete_aktionen": ["KTW disponieren", "Begleitperson dokumentieren", "Doku"],
+      "bewertungskriterien": ["Planung korrekt", "Doku vollständig"]
+    },
+
+    {
+      "id": "S020",
+      "kategorie": "Krankentransport",
+      "titel": "Entlassung aus Krankenhaus",
+      "prioritaet": "KT",
+      "stichwort": "KT – Entlassung",
+      "beschreibung": "83-jähriger Patient, Entlassung aus UKH nach Oberschenkelfraktur-OP, Heimtransport. Liegendtransport, benötigt Hilfe beim Einladen.",
+      "einsatzort": "UKH Salzburg → Altenheim Salzburg-Bergheim",
+      "patient": { "alter": 83, "geschlecht": "m", "bewusstsein": "wach", "atmung": "normal" },
+      "aao": {
+        "primaer": ["KTW"],
+        "sekundaer": [],
+        "optional": []
+      },
+      "eskalationen": [
+        { "trigger": "nach 15 Min Fahrzeit", "ereignis": "KTW-Fahrer meldet: Patient hat starke Schmerzen, bittet um Weiterfahrt ins LKH statt Altenheim" }
+      ],
+      "erwartete_aktionen": ["KTW disponieren", "Bei Eskalation: Rücksprache mit Arzt/LKH", "Doku"],
+      "bewertungskriterien": ["Koordination bei Eskalation", "Doku"]
+    },
+
+    {
+      "id": "S021",
+      "kategorie": "Krankentransport",
+      "titel": "Psychiatrische Einweisung – geplant",
+      "prioritaet": "KT",
+      "stichwort": "KT – Psychiatrie",
+      "beschreibung": "36-jährige Frau, geplante Einweisung in die Psychiatrie Christian-Doppler-Klinik durch Hausarzt. Patientin ist kooperativ.",
+      "einsatzort": "Salzburg-Schallmoos, Schallmooser Hauptstraße 19 → CDK Psychiatrie",
+      "patient": { "alter": 36, "geschlecht": "w", "bewusstsein": "wach", "atmung": "normal" },
+      "aao": {
+        "primaer": ["KTW"],
+        "sekundaer": [],
+        "optional": ["KIT"]
+      },
+      "eskalationen": [
+        { "trigger": "nach 10 Min", "ereignis": "KTW-Fahrer meldet: Patientin wird aggressiv, versucht Tür zu öffnen – Polizei und KIT anfordern" }
+      ],
+      "erwartete_aktionen": ["KTW disponieren", "Bei Eskalation Polizei und KIT", "Doku"],
+      "bewertungskriterien": ["Reaktion auf Eskalation", "KIT disponiert", "Polizei informiert"]
+    },
+
+    {
+      "id": "S022",
+      "kategorie": "Krankentransport",
+      "titel": "Chemotherapie-Transport",
+      "prioritaet": "KT",
+      "stichwort": "KT – Onkologie",
+      "beschreibung": "55-jährige Patientin, wöchentlicher Transport zur Chemotherapie ins LKH Salzburg, Onkologie. Gehfähig, aber schwach.",
+      "einsatzort": "Salzburg-Herrnau, Herrnaustraße 7 → LKH Onkologie",
+      "patient": { "alter": 55, "geschlecht": "w", "bewusstsein": "wach", "atmung": "normal" },
+      "aao": {
+        "primaer": ["KTW"],
+        "sekundaer": [],
+        "optional": []
+      },
+      "eskalationen": [],
+      "erwartete_aktionen": ["KTW disponieren", "Doku"],
+      "bewertungskriterien": ["Ressourcenplanung korrekt"]
+    },
+
+    {
+      "id": "S023",
+      "kategorie": "Krankentransport",
+      "titel": "Rücktransport aus Urlaub – liegend",
+      "prioritaet": "KT",
+      "stichwort": "KT – Rücktransport",
+      "beschreibung": "Übernahme eines liegenden Patienten vom Flughafen Salzburg, Rücktransport nach Herzinfarkt aus dem Urlaub. Stabil, Begleitung durch Notarzt aus Ausland bis Flughafen.",
+      "einsatzort": "Flughafen Salzburg → UKH Salzburg",
+      "patient": { "alter": 62, "geschlecht": "m", "bewusstsein": "wach", "atmung": "normal" },
+      "aao": {
+        "primaer": ["RTW"],
+        "sekundaer": [],
+        "optional": ["NEF"]
+      },
+      "eskalationen": [
+        { "trigger": "nach 5 Min", "ereignis": "RTW meldet: Patient verschlechtert sich bei Übernahme – NEF anfordern" }
+      ],
+      "erwartete_aktionen": ["RTW disponieren", "UKH koordinieren", "Flughafen-Koordination", "Doku"],
+      "bewertungskriterien": ["Koordination Flughafen", "Reaktion auf Eskalation"]
+    },
+
+    {
+      "id": "S024",
+      "kategorie": "Krankentransport",
+      "titel": "Mehrfachtransporte – Tagesplanung",
+      "prioritaet": "KT",
+      "stichwort": "KT – Disposition",
+      "beschreibung": "Gleichzeitig treffen 3 KTW-Aufträge ein: Dialyse 07:30, Arzttermin 08:00, Entlassung 08:30. Nur 2 KTW verfügbar.",
+      "einsatzort": "Verschiedene Adressen in Salzburg",
+      "patient": { "alter": 0, "geschlecht": "-", "bewusstsein": "-", "atmung": "-" },
+      "aao": {
+        "primaer": ["KTW", "KTW"],
+        "sekundaer": [],
+        "optional": ["KTW (extern anfordern)"]
+      },
+      "eskalationen": [
+        { "trigger": "sofort", "ereignis": "Ressourcenengpass – Disponent muss priorisieren oder externen KTW anfordern" }
+      ],
+      "erwartete_aktionen": ["Priorisieren", "Externen KTW anfordern oder Termin verschieben", "Doku", "Patienten informieren"],
+      "bewertungskriterien": ["Priorisierung sinnvoll", "Kommunikation bei Ressourcenengpass"]
+    },
+
+    {
+      "id": "S025",
+      "kategorie": "Krankentransport",
+      "titel": "Notfall während Krankentransport",
+      "prioritaet": "E1",
+      "stichwort": "KT wird E – Kardial",
+      "beschreibung": "KTW-Fahrer ruft über Funk: Patient auf dem Weg zur Dialyse plötzlich bewusstlos, keine normale Atmung – CPR begonnen.",
+      "einsatzort": "Salzburg, Plainstraße Höhe Hausnummer 30 (KTW in Fahrt)",
+      "patient": { "alter": 71, "geschlecht": "m", "bewusstsein": "bewusstlos", "atmung": "keine" },
+      "aao": {
+        "primaer": ["NEF", "RTW (Backup)"],
+        "sekundaer": [],
+        "optional": []
+      },
+      "eskalationen": [
+        { "trigger": "sofort", "ereignis": "KTW-Fahrer: Bin allein, brauche sofort Unterstützung – wo ist nächstes freies Fahrzeug?" }
+      ],
+      "erwartete_aktionen": ["NEF sofort alarmieren", "Nächsten RTW entsenden", "UKH Kath-Labor vorankündigen", "Doku"],
+      "bewertungskriterien": ["Reaktionszeit < 60 Sek", "NEF disponiert", "Backup-RTW entsandt"]
+    },
+
+    {
+      "id": "S026",
+      "kategorie": "Verkehrsunfall",
+      "titel": "PKW-Unfall – Einzelfahrzeug",
+      "prioritaet": "E1",
+      "stichwort": "VU – PKW",
+      "beschreibung": "PKW gegen Baum, Fahrer eingeklemmt, bewusstlos. Zeuge ruft Notruf. Sicherung der Unfallstelle durch Polizei noch nicht erfolgt.",
+      "einsatzort": "Salzburg-Gnigl, Gnigler Straße Höhe 45",
+      "patient": { "alter": 40, "geschlecht": "m", "bewusstsein": "bewusstlos", "atmung": "unklar" },
+      "aao": {
+        "primaer": ["RTW", "NEF"],
+        "sekundaer": ["Feuerwehr (Befreiung)", "Polizei"],
+        "optional": ["EL"]
+      },
+      "eskalationen": [
+        { "trigger": "nach 5 Min kein Feuerwehr", "ereignis": "NEF meldet: Person eingeklemmt, Feuerwehr bereits disponiert?" },
+        { "trigger": "nach 15 Min", "ereignis": "Feuerwehr meldet: Person befreit, schweres SHT – Hubschrauber C6 anfordern?" }
+      ],
+      "erwartete_aktionen": ["RTW, NEF, FF, Polizei alarmieren", "C6 bei Eskalation", "Doku"],
+      "bewertungskriterien": ["Alle 4 Organisationen alarmiert", "C6 Entscheidung", "Reaktionszeit"]
+    },
+
+    {
+      "id": "S027",
+      "kategorie": "Verkehrsunfall",
+      "titel": "PKW vs. Fußgänger",
+      "prioritaet": "E1",
+      "stichwort": "VU – Fußgänger",
+      "beschreibung": "Fußgänger auf Zebrastreifen von PKW erfasst, liegt auf der Straße, nicht ansprechbar. Unfallfahrer bleibt an Ort und Stelle.",
+      "einsatzort": "Salzburg, Neutor Kreuzung Sigmundsplatz",
+      "patient": { "alter": 55, "geschlecht": "w", "bewusstsein": "bewusstlos", "atmung": "vorhanden" },
+      "aao": {
+        "primaer": ["RTW", "NEF"],
+        "sekundaer": ["Polizei"],
+        "optional": []
+      },
+      "eskalationen": [
+        { "trigger": "nach 8 Min", "ereignis": "RTW meldet: Schweres Schädelhirntrauma, instabil – C6 anfordern?" }
+      ],
+      "erwartete_aktionen": ["RTW, NEF, Polizei alarmieren", "C6 Entscheidung bei Eskalation", "Doku"],
+      "bewertungskriterien": ["Polizei disponiert", "C6 Entscheidung sinnvoll"]
+    },
+
+    {
+      "id": "S028",
+      "kategorie": "Verkehrsunfall",
+      "titel": "Motorradunfall – Landstraße",
+      "prioritaet": "E1",
+      "stichwort": "VU – Motorrad",
+      "beschreibung": "Motorradfahrer in einer Kurve gestürzt, liegt im Straßengraben, Sturzhelm beschädigt. Mitfahrender Zeuge ruft Notruf, Patient stöhnt.",
+      "einsatzort": "Gemeindestraße Koppl Richtung Hof bei Salzburg, km 4,2",
+      "patient": { "alter": 28, "geschlecht": "m", "bewusstsein": "eingeschränkt", "atmung": "vorhanden" },
+      "aao": {
+        "primaer": ["RTW", "NEF"],
+        "sekundaer": ["Polizei"],
+        "optional": ["C6"]
+      },
+      "eskalationen": [
+        { "trigger": "nach 6 Min", "ereignis": "RTW meldet: Verdacht Wirbelsäulenverletzung und Milzruptur – C6 anfordern, Ziel UKH Schockraum" }
+      ],
+      "erwartete_aktionen": ["RTW, NEF, Polizei alarmieren", "C6 bei Eskalation", "UKH Schockraum ankündigen", "Doku"],
+      "bewertungskriterien": ["C6 Entscheidung", "Schockraum Ankündigung", "Reaktionszeit"]
+    },
+
+    {
+      "id": "S029",
+      "kategorie": "Verkehrsunfall",
+      "titel": "Massenanfall an Verletzten – Kleinbus",
+      "prioritaet": "E1",
+      "stichwort": "VU – MANV",
+      "beschreibung": "Kleinbus mit 8 Personen gegen LKW. Mindestens 3 Personen schwer verletzt, weitere leicht verletzt. Erster Zeuge am Telefon völlig aufgelöst.",
+      "einsatzort": "B1 Salzburg-Bergheim, Höhe Gewerbegebiet",
+      "patient": { "alter": 0, "geschlecht": "-", "bewusstsein": "verschieden", "atmung": "verschieden" },
+      "aao": {
+        "primaer": ["RTW", "RTW", "NEF", "EL"],
+        "sekundaer": ["Feuerwehr", "Polizei"],
+        "optional": ["C6", "Zweiter NEF", "KIT"]
+      },
+      "eskalationen": [
+        { "trigger": "nach 5 Min", "ereignis": "Ersteintreffender RTW meldet: MANV, 8 Patienten, bitte MANV-Protokoll aktivieren und EL alarmieren" },
+        { "trigger": "nach 10 Min", "ereignis": "EL meldet: 2 Rot, 4 Gelb, 2 Grün – zweiten NEF und C6 anfordern, Polizei Sperrung B1" }
+      ],
+      "erwartete_aktionen": ["MANV-Protokoll aktivieren", "Mehrere RTW + NEF + EL alarmieren", "FF und Polizei", "C6", "Führungskraft informieren", "Doku"],
+      "bewertungskriterien": ["MANV erkannt", "EL alarmiert", "Ausreichend Ressourcen", "Führungskraft informiert", "Polizei Sperrung koordiniert"]
+    },
+
+    {
+      "id": "S030",
+      "kategorie": "Verkehrsunfall",
+      "titel": "Gefahrgutunfall",
+      "prioritaet": "E1",
+      "stichwort": "VU – Gefahrgut",
+      "beschreibung": "LKW-Unfall auf der Autobahn, Fahrer verletzt, unbekannter Gefahrgut-Aufkleber am Tankwagen. Zeuge meldet stechenden Geruch.",
+      "einsatzort": "A1 Westautobahn, km 291, Fahrtrichtung Wien",
+      "patient": { "alter": 50, "geschlecht": "m", "bewusstsein": "wach", "atmung": "normal" },
+      "aao": {
+        "primaer": ["RTW", "NEF"],
+        "sekundaer": ["Feuerwehr (ABC-Zug)", "Polizei", "ASFINAG"],
+        "optional": ["EL", "Gefahrgut-Berater"]
+      },
+      "eskalationen": [
+        { "trigger": "nach 5 Min", "ereignis": "Polizei meldet: UN-Nummer 1203 (Benzin) – Feuerwehr ABC-Zug bereits disponiert?" },
+        { "trigger": "nach 15 Min", "ereignis": "Feuerwehr meldet: Leckage gestoppt, Fahrer kann geborgen werden" }
+      ],
+      "erwartete_aktionen": ["RTW, NEF, FF ABC-Zug, Polizei alarmieren", "ASFINAG informieren", "Sperrung koordinieren", "Doku"],
+      "bewertungskriterien": ["ABC-Zug disponiert", "ASFINAG informiert", "Sperrung koordiniert"]
+    },
+
+    {
+      "id": "S031",
+      "kategorie": "Verkehrsunfall",
+      "titel": "Fahrradunfall – Kind",
+      "prioritaet": "E1",
+      "stichwort": "VU – pädiatrisch",
+      "beschreibung": "8-jähriges Kind mit Fahrrad gestürzt, Kopf angeschlagen, Helm getragen, weint laut. Mutter ist dabei, sehr aufgeregt.",
+      "einsatzort": "Salzburg, Hellbrunner Allee Höhe Schloss",
+      "patient": { "alter": 8, "geschlecht": "m", "bewusstsein": "wach, weinend", "atmung": "normal" },
+      "aao": {
+        "primaer": ["RTW", "NEF"],
+        "sekundaer": [],
+        "optional": []
+      },
+      "eskalationen": [
+        { "trigger": "nach 8 Min", "ereignis": "RTW meldet: Kind schläfrig, Erbrechen – V.a. SHT, Ziel CDK Kinderklinik" }
+      ],
+      "erwartete_aktionen": ["RTW und NEF alarmieren", "CDK Kinderklinik bei Eskalation ankündigen", "Doku"],
+      "bewertungskriterien": ["NEF disponiert", "Ankündigung Kinderklinik"]
+    },
+
+    {
+      "id": "S032",
+      "kategorie": "Verkehrsunfall",
+      "titel": "PKW vs. PKW – Kreuzung",
+      "prioritaet": "E1",
+      "stichwort": "VU – Kollision",
+      "beschreibung": "Kreuzungskollision, 2 Fahrzeuge stark beschädigt, 3 Personen verletzt. Eine Person klagt über Nackenschmerzen und sitzt im Auto.",
+      "einsatzort": "Salzburg-Riedenburg, Kreuzung Neutorstraße / Fürstenallee",
+      "patient": { "alter": 0, "geschlecht": "-", "bewusstsein": "verschieden", "atmung": "normal" },
+      "aao": {
+        "primaer": ["RTW", "NEF"],
+        "sekundaer": ["Polizei"],
+        "optional": ["Zweiter RTW"]
+      },
+      "eskalationen": [
+        { "trigger": "nach 7 Min", "ereignis": "RTW meldet: 3 Patienten, benötige zweiten RTW – bitte disponieren" }
+      ],
+      "erwartete_aktionen": ["RTW, NEF, Polizei alarmieren", "Zweiten RTW bei Eskalation", "Doku"],
+      "bewertungskriterien": ["Reaktion auf Mehrbedarf", "Alle Patienten versorgt"]
+    },
+
+    {
+      "id": "S033",
+      "kategorie": "Verkehrsunfall",
+      "titel": "Straßenbahn-Unfall",
+      "prioritaet": "E1",
+      "stichwort": "VU – Schienenfahrzeug",
+      "beschreibung": "Person von Straßenbahn erfasst, Straßenbahn steht, Fahrer alarmiert. Person liegt neben den Gleisen, Bewusstseinszustand unklar.",
+      "einsatzort": "Salzburg, Mirabellplatz Tramhaltestelle",
+      "patient": { "alter": 35, "geschlecht": "w", "bewusstsein": "unklar", "atmung": "unklar" },
+      "aao": {
+        "primaer": ["RTW", "NEF"],
+        "sekundaer": ["Polizei", "Salzburg AG (Strombetreiber)"],
+        "optional": []
+      },
+      "eskalationen": [
+        { "trigger": "sofort", "ereignis": "Disponent muss Salzburg AG für Stromabschaltung Gleisbereich informieren" },
+        { "trigger": "nach 10 Min", "ereignis": "NEF meldet: Amputation linkes Bein, Reanimation läuft – zweiten NEF anfordern" }
+      ],
+      "erwartete_aktionen": ["RTW, NEF, Polizei alarmieren", "Salzburg AG informieren", "Zweiten NEF bei Eskalation", "Doku"],
+      "bewertungskriterien": ["Salzburg AG koordiniert", "Zweiter NEF Nachforderung"]
+    },
+
+    {
+      "id": "S034",
+      "kategorie": "Bergeinsatz",
+      "titel": "Wanderer gestürzt – Untersberg",
+      "prioritaet": "E1",
+      "stichwort": "Berg – Sturz",
+      "beschreibung": "Wanderer auf dem Untersberg abgestürzt, ca. 15 Meter in Felsen, liegt bewusstlos. Begleiter ruft Notruf, kein Handyempfang mehr danach.",
+      "einsatzort": "Untersberg, Nähe Toni-Lenz-Hütte",
+      "patient": { "alter": 45, "geschlecht": "m", "bewusstsein": "bewusstlos", "atmung": "unklar" },
+      "aao": {
+        "primaer": ["C6", "Bergrettung Grödig"],
+        "sekundaer": ["RTW (Talstation)"],
+        "optional": ["NEF (Talstation)"]
+      },
+      "eskalationen": [
+        { "trigger": "nach 10 Min", "ereignis": "C6 meldet: Wetter verschlechtert sich, Landung nicht möglich – Bergrettung zu Fuß muss ran, ETA 45 Min" },
+        { "trigger": "nach 20 Min", "ereignis": "Bergrettung meldet: Patient gefunden, lebt, schwere Verletzungen – brauchen Trage und NEF am Boden" }
+      ],
+      "erwartete_aktionen": ["C6 und Bergrettung alarmieren", "RTW und NEF an Talstation positionieren", "Bei C6-Ausfall Bergrettung eskalieren", "Doku"],
+      "bewertungskriterien": ["C6 disponiert", "Bergrettung alarmiert", "RTW Talstation", "Reaktion auf Wetterproblem"]
+    },
+
+    {
+      "id": "S035",
+      "kategorie": "Bergeinsatz",
+      "titel": "Vermisste Person – Tennengebirge",
+      "prioritaet": "E1",
+      "stichwort": "Berg – Vermisst",
+      "beschreibung": "Familie meldet: Vater (62) seit 18:00 Uhr nicht zurück von Wanderung auf das Tennengebirge. Geplante Route bekannt, Handy nicht erreichbar. Jetzt 22:00 Uhr, Einbruch der Dunkelheit.",
+      "einsatzort": "Tennengebirge, Ausgangspunkt Parkplatz Werfenweng",
+      "patient": { "alter": 62, "geschlecht": "m", "bewusstsein": "unbekannt", "atmung": "unbekannt" },
+      "aao": {
+        "primaer": ["Bergrettung Werfenweng", "Bergrettung Werfen"],
+        "sekundaer": ["Polizei (Suchaktion)"],
+        "optional": ["C6 (Wärmebildkamera)"]
+      },
+      "eskalationen": [
+        { "trigger": "nach 30 Min", "ereignis": "Bergrettung meldet: Suchaktion läuft, kein Fund – C6 mit Wärmebildkamera anfordern?" },
+        { "trigger": "nach 60 Min", "ereignis": "Person gefunden, Unterkühlung und Knöchelbruch – Evakuierung wie?" }
+      ],
+      "erwartete_aktionen": ["Bergrettung und Polizei alarmieren", "C6 bei Eskalation", "Koordination mehrerer Bergrettungsgruppen", "Doku"],
+      "bewertungskriterien": ["Mehrere Bergrettungsgruppen", "Polizei Suchaktion", "C6 Entscheidung", "Koordination"]
+    },
+
+    {
+      "id": "S036",
+      "kategorie": "Bergeinsatz",
+      "titel": "Kletterunfall – Osterhorngruppe",
+      "prioritaet": "E1",
+      "stichwort": "Berg – Klettern Sturz",
+      "beschreibung": "Kletterer am Fels gestürzt, Sicherung hat gehalten, aber hängt bewusstlos im Seil auf ca. 30 Meter Höhe. Seilpartner hält ihn gesichert, ruft Notruf.",
+      "einsatzort": "Osterhorngruppe, Klettergarten Hintersee",
+      "patient": { "alter": 32, "geschlecht": "m", "bewusstsein": "bewusstlos", "atmung": "vorhanden" },
+      "aao": {
+        "primaer": ["C6", "Bergrettung Hintersee"],
+        "sekundaer": ["RTW (Talbereich)"],
+        "optional": ["NEF"]
+      },
+      "eskalationen": [
+        { "trigger": "nach 8 Min", "ereignis": "Bergrettung meldet: Technische Rettung im Fels nötig, brauche Verstärkung – zweite Bergrettungsgruppe anfordern" }
+      ],
+      "erwartete_aktionen": ["C6 und Bergrettung alarmieren", "RTW Tal positionieren", "Zweite Gruppe bei Eskalation", "Doku"],
+      "bewertungskriterien": ["C6 disponiert", "Verstärkung bei Eskalation"]
+    },
+
+    {
+      "id": "S037",
+      "kategorie": "Bergeinsatz",
+      "titel": "Erschöpfter Wanderer – Hochkönig",
+      "prioritaet": "E2",
+      "stichwort": "Berg – Erschöpfung",
+      "beschreibung": "Wanderer auf Hochkönig, erschöpft und dehydriert, kann nicht mehr weitergehen. Wetter gut. Handy-Akku fast leer. Lage bekannt.",
+      "einsatzort": "Hochkönig, Nähe Matrashaus",
+      "patient": { "alter": 55, "geschlecht": "w", "bewusstsein": "wach", "atmung": "normal" },
+      "aao": {
+        "primaer": ["Bergrettung Mühlbach"],
+        "sekundaer": [],
+        "optional": ["C6"]
+      },
+      "eskalationen": [
+        { "trigger": "nach 15 Min", "ereignis": "Bergrettung meldet: Patientin hat auch Herzprobleme – C6 doch sinnvoll?" }
+      ],
+      "erwartete_aktionen": ["Bergrettung alarmieren", "C6 Entscheidung bei Eskalation", "Doku"],
+      "bewertungskriterien": ["Korrektes Erstmittel", "C6 Entscheidung begründet"]
+    },
+
+    {
+      "id": "S038",
+      "kategorie": "Bergeinsatz",
+      "titel": "Höhlenunfall – Eisriesenwelt",
+      "prioritaet": "E1",
+      "stichwort": "Berg – Höhle",
+      "beschreibung": "Touristengruppe in der Eisriesenwelt, eine Person (42, männlich) gestürzt und verletzt, kann nicht mehr gehen. Ca. 400 Meter vom Eingang entfernt.",
+      "einsatzort": "Eisriesenwelt Werfen, Eingang Höhlensystem",
+      "patient": { "alter": 42, "geschlecht": "m", "bewusstsein": "wach", "atmung": "normal" },
+      "aao": {
+        "primaer": ["Höhlenrettung", "Bergrettung Werfen"],
+        "sekundaer": ["RTW (Talstation)"],
+        "optional": []
+      },
+      "eskalationen": [
+        { "trigger": "nach 20 Min", "ereignis": "Höhlenrettung meldet: Fraktur Unterschenkel, Abtransport dauert 2 Stunden – RTW bereithalten" }
+      ],
+      "erwartete_aktionen": ["Höhlenrettung und Bergrettung alarmieren", "RTW Talstation", "Langer Einsatz einplanen", "Doku"],
+      "bewertungskriterien": ["Höhlenrettung disponiert", "Lange Einsatzdauer berücksichtigt"]
+    },
+
+    {
+      "id": "S039",
+      "kategorie": "Bergeinsatz",
+      "titel": "Skiunfall – Loipen- und Pistenunfall",
+      "prioritaet": "E1",
+      "stichwort": "Berg – Ski",
+      "beschreibung": "Skifahrer auf Piste kollidiert, liegt reglos. Pistendienst hat Notruf gewählt. Patient atmet, reagiert nicht.",
+      "einsatzort": "Skigebiet Saalbach-Hinterglemm, Piste Bernkogel",
+      "patient": { "alter": 38, "geschlecht": "m", "bewusstsein": "bewusstlos", "atmung": "vorhanden" },
+      "aao": {
+        "primaer": ["C6", "Bergrettung Saalbach"],
+        "sekundaer": ["RTW (Talstation Saalbach)"],
+        "optional": ["NEF"]
+      },
+      "eskalationen": [
+        { "trigger": "nach 5 Min", "ereignis": "Pistendienst meldet: Piste gesperrt, Patient noch nicht ansprechbar – C6 bereits angefordert?" }
+      ],
+      "erwartete_aktionen": ["C6, Bergrettung und RTW alarmieren", "Doku", "Pisteninfo koordinieren"],
+      "bewertungskriterien": ["C6 disponiert", "Bergrettung vor Ort", "RTW Talstation"]
+    },
+
+    {
+      "id": "S040",
+      "kategorie": "Bergeinsatz",
+      "titel": "Blitzschlag – Gipfel",
+      "prioritaet": "E1",
+      "stichwort": "Berg – Blitzschlag",
+      "beschreibung": "Wanderer am Gipfel des Schafberges vom Blitz getroffen, liegt bewusstlos. Begleiter ruft Notruf. Gewitter noch aktiv.",
+      "einsatzort": "Schafberg, Nähe Gipfelkreuz (Grenzbereich Salzburg/OÖ)",
+      "patient": { "alter": 48, "geschlecht": "m", "bewusstsein": "bewusstlos", "atmung": "keine" },
+      "aao": {
+        "primaer": ["C6", "Bergrettung St. Wolfgang"],
+        "sekundaer": ["RTW (Tal)"],
+        "optional": []
+      },
+      "eskalationen": [
+        { "trigger": "sofort", "ereignis": "C6 meldet: Aktives Gewitter, Flug nicht möglich – Bergrettung zu Fuß muss alleine ran" },
+        { "trigger": "nach 5 Min", "ereignis": "Bergrettung meldet: Anforderung OÖ Leitstelle für zuständige Bergrettung St. Wolfgang?" }
+      ],
+      "erwartete_aktionen": ["C6 und Bergrettung alarmieren", "Bei C6-Ausfall eskalieren", "OÖ Leitstelle kontaktieren", "Doku"],
+      "bewertungskriterien": ["C6 disponiert", "Nachbarleitstelle koordiniert", "Reaktion auf Wetterausfall"]
+    },
+
+    {
+      "id": "S041",
+      "kategorie": "Wassereinsatz",
+      "titel": "Badender in Not – Wolfgangsee",
+      "prioritaet": "E1",
+      "stichwort": "Wasser – Ertrinkender",
+      "beschreibung": "Badegast am Wolfgangsee geht unter, Schreie von Strandbesuchern. Person taucht nicht mehr auf. Zeugen springen ins Wasser.",
+      "einsatzort": "Wolfgangsee, Strandbad St. Gilgen",
+      "patient": { "alter": 22, "geschlecht": "m", "bewusstsein": "unbekannt", "atmung": "unbekannt" },
+      "aao": {
+        "primaer": ["Wasserrettung Wolfgangsee", "RTW"],
+        "sekundaer": ["NEF"],
+        "optional": ["C6"]
+      },
+      "eskalationen": [
+        { "trigger": "sofort", "ereignis": "Wasserrettung meldet: Taucher im Einsatz, Person noch nicht gefunden" },
+        { "trigger": "nach 8 Min", "ereignis": "Person geborgen, keine Atmung – RTW und NEF bereits unterwegs?" }
+      ],
+      "erwartete_aktionen": ["Wasserrettung, RTW und NEF alarmieren", "C6 Option prüfen", "Doku"],
+      "bewertungskriterien": ["Wasserrettung disponiert", "RTW und NEF bereit", "Reaktionszeit"]
+    },
+
+    {
+      "id": "S042",
+      "kategorie": "Wassereinsatz",
+      "titel": "Bootsunfall – Mondsee",
+      "prioritaet": "E1",
+      "stichwort": "Wasser – Bootsunfall",
+      "beschreibung": "Motorboot kollidiert mit Segelboot auf dem Mondsee. Zwei Personen im Wasser, eine Person auf dem gesunkenen Boot verletzt.",
+      "einsatzort": "Mondsee, Mitte des Sees (Grenzbereich OÖ/Salzburg)",
+      "patient": { "alter": 0, "geschlecht": "-", "bewusstsein": "verschieden", "atmung": "verschieden" },
+      "aao": {
+        "primaer": ["Wasserrettung Mondsee", "RTW"],
+        "sekundaer": ["NEF", "Polizei (Wasserschutzpolizei)"],
+        "optional": ["C6"]
+      },
+      "eskalationen": [
+        { "trigger": "sofort", "ereignis": "Einsatz liegt auf OÖ-Seite – OÖ Leitstelle informieren und koordinieren" },
+        { "trigger": "nach 10 Min", "ereignis": "Wasserrettung meldet: 3 Patienten, einer bewusstlos – C6 und zweiten RTW anfordern" }
+      ],
+      "erwartete_aktionen": ["Wasserrettung alarmieren", "OÖ Leitstelle koordinieren", "Mehrere Ressourcen", "Doku"],
+      "bewertungskriterien": ["Nachbarleitstelle koordiniert", "Mehrere Patienten berücksichtigt"]
+    },
+
+    {
+      "id": "S043",
+      "kategorie": "Wassereinsatz",
+      "titel": "Eiseinbruch – Mattsee",
+      "prioritaet": "E1",
+      "stichwort": "Wasser – Eiseinbruch",
+      "beschreibung": "Person durch Eis am Mattsee eingebrochen. Zeugen schreien um Hilfe. Person hält sich noch an Eisrand, Temperatur -5°C.",
+      "einsatzort": "Mattsee, Östliches Ufer",
+      "patient": { "alter": 35, "geschlecht": "w", "bewusstsein": "wach, erschöpft", "atmung": "normal" },
+      "aao": {
+        "primaer": ["Wasserrettung Mattsee", "RTW"],
+        "sekundaer": ["Feuerwehr (Eisrettung)"],
+        "optional": ["NEF"]
+      },
+      "eskalationen": [
+        { "trigger": "nach 5 Min", "ereignis": "Wasserrettung meldet: Person gerettet, schwere Unterkühlung – NEF anfordern" }
+      ],
+      "erwartete_aktionen": ["Wasserrettung, RTW, FF alarmieren", "NEF bei Unterkühlung", "Doku"],
+      "bewertungskriterien": ["Feuerwehr Eisrettung disponiert", "NEF Nachforderung"]
+    },
+
+    {
+      "id": "S044",
+      "kategorie": "Wassereinsatz",
+      "titel": "Tauchunfall – Fuschlsee",
+      "prioritaet": "E1",
+      "stichwort": "Wasser – Tauchunfall",
+      "beschreibung": "Sporttaucher taucht in den Fuschlsee, kommt nach 40 Minuten nicht auf. Tauchbegleiter alarmiert Notruf, eigener Tauchausrüstung nicht dabei.",
+      "einsatzort": "Fuschlsee, Tauchstelle Nordwestufer",
+      "patient": { "alter": 40, "geschlecht": "m", "bewusstsein": "unbekannt", "atmung": "unbekannt" },
+      "aao": {
+        "primaer": ["Wasserrettung Fuschlsee", "RTW"],
+        "sekundaer": ["NEF"],
+        "optional": ["C6"]
+      },
+      "eskalationen": [
+        { "trigger": "nach 15 Min", "ereignis": "Wasserrettung meldet: Taucher in 18m gefunden, Dekompressionsunfall möglich – Druckkammer LKH koordinieren" }
+      ],
+      "erwartete_aktionen": ["Wasserrettung und RTW alarmieren", "NEF disponieren", "Druckkammer LKH koordinieren", "Doku"],
+      "bewertungskriterien": ["Druckkammer koordiniert", "Wasserrettung disponiert"]
+    },
+
+    {
+      "id": "S045",
+      "kategorie": "Wassereinsatz",
+      "titel": "Überschwemmung – Hochwasser",
+      "prioritaet": "E1",
+      "stichwort": "Wasser – Hochwasser",
+      "beschreibung": "Salzach tritt über die Ufer, mehrere Personen in überschwemmten Gebäuden eingeschlossen. Feuerwehr bereits im Einsatz. Person meldet sich per Handy, Wasser steigt.",
+      "einsatzort": "Salzburg-Lehen, Sterneckstraße (Hochwasserlage)",
+      "patient": { "alter": 0, "geschlecht": "-", "bewusstsein": "wach", "atmung": "normal" },
+      "aao": {
+        "primaer": ["Wasserrettung", "Feuerwehr (Bootseinheit)"],
+        "sekundaer": ["RTW", "EL"],
+        "optional": ["C6", "Polizei"]
+      },
+      "eskalationen": [
+        { "trigger": "nach 10 Min", "ereignis": "Feuerwehr meldet: 5 Personen eingeschlossen, 2 davon gehbehindert – zweites Boot und C6 anfordern" },
+        { "trigger": "nach 20 Min", "ereignis": "EL meldet: Führungskraft Leitstelle informieren, Großlage wird ausgerufen" }
+      ],
+      "erwartete_aktionen": ["Wasserrettung, FF, RTW, EL alarmieren", "C6 Option", "Führungskraft informieren", "Polizei Sperrung", "Doku"],
+      "bewertungskriterien": ["EL alarmiert", "Führungskraft informiert", "Koordination mehrerer Organisationen"]
+    },
+
+    {
+      "id": "S046",
+      "kategorie": "Sonderlage",
+      "titel": "Großveranstaltung – Salzburger Festspiele",
+      "prioritaet": "E1",
+      "stichwort": "Sonst – Großveranstaltung",
+      "beschreibung": "Während eines Festspiel-Konzerts kollabiert eine Person im Saal. 2000 Zuschauer anwesend, medizinischer Dienst vor Ort meldet: Reanimation läuft.",
+      "einsatzort": "Salzburg, Großes Festspielhaus",
+      "patient": { "alter": 70, "geschlecht": "m", "bewusstsein": "bewusstlos", "atmung": "keine" },
+      "aao": {
+        "primaer": ["RTW", "NEF"],
+        "sekundaer": [],
+        "optional": ["EL", "Polizei (Personenabsicherung)"]
+      },
+      "eskalationen": [
+        { "trigger": "nach 5 Min", "ereignis": "Veranstaltungsdienst meldet: Publikum drängt vor, Zugang für RTW blockiert – Polizei anfordern" },
+        { "trigger": "nach 10 Min", "ereignis": "NEF meldet: ROSC, Patient stabil – UKH Kath-Labor vorankündigen" }
+      ],
+      "erwartete_aktionen": ["RTW und NEF alarmieren", "Polizei für Zugang", "UKH vorankündigen", "Doku"],
+      "bewertungskriterien": ["Polizei disponiert", "Zugang koordiniert", "Ankündigung UKH"]
+    },
+
+    {
+      "id": "S047",
+      "kategorie": "Sonderlage",
+      "titel": "Wohnhausbrand mit Verletzten",
+      "prioritaet": "E1",
+      "stichwort": "Sonst – Brand",
+      "beschreibung": "Mehrparteienhaus in Brand, Feuerwehr bereits alarmiert. Zwei Personen aus Fenster gesprungen, eine weitere vermisst. Bewohner in Panik.",
+      "einsatzort": "Salzburg-Schallmoos, Bayerhamerstraße 22",
+      "patient": { "alter": 0, "geschlecht": "-", "bewusstsein": "verschieden", "atmung": "verschieden" },
+      "aao": {
+        "primaer": ["RTW", "RTW", "NEF"],
+        "sekundaer": ["Polizei"],
+        "optional": ["EL", "KIT"]
+      },
+      "eskalationen": [
+        { "trigger": "nach 5 Min", "ereignis": "Feuerwehr meldet: 3 Verletzte, eine Person noch vermisst im 3.OG – KIT für Angehörige anfordern" },
+        { "trigger": "nach 15 Min", "ereignis": "Vermisste Person geborgen, Rauchvergiftung – dritter RTW benötigt" }
+      ],
+      "erwartete_aktionen": ["Mehrere RTW und NEF alarmieren", "KIT disponieren", "Polizei", "Dritter RTW bei Eskalation", "Doku"],
+      "bewertungskriterien": ["Ausreichend Ressourcen", "KIT disponiert", "Reaktion auf Eskalation"]
+    },
+
+    {
+      "id": "S048",
+      "kategorie": "Sonderlage",
+      "titel": "Suizidversuch – Brücke",
+      "prioritaet": "E1",
+      "stichwort": "Sonst – Suizid",
+      "beschreibung": "Person steht auf Geländer der Staatsbrücke, droht zu springen. Polizei bereits informiert. Angehöriger ruft Leitstelle.",
+      "einsatzort": "Salzburg, Staatsbrücke",
+      "patient": { "alter": 28, "geschlecht": "m", "bewusstsein": "wach", "atmung": "normal" },
+      "aao": {
+        "primaer": ["KIT", "RTW"],
+        "sekundaer": ["Polizei", "Wasserrettung (präventiv)"],
+        "optional": ["NEF"]
+      },
+      "eskalationen": [
+        { "trigger": "nach 5 Min kein KIT", "ereignis": "Polizei meldet: Brauchen dringend KIT – Person eskaliert" },
+        { "trigger": "nach 20 Min", "ereignis": "Person gesprungen – RTW, NEF und Wasserrettung sofort" }
+      ],
+      "erwartete_aktionen": ["KIT und RTW alarmieren", "Polizei koordinieren", "Wasserrettung präventiv", "NEF bei Sprung", "Doku"],
+      "bewertungskriterien": ["KIT disponiert", "Wasserrettung präventiv", "Reaktion auf Sprung"]
+    },
+
+    {
+      "id": "S049",
+      "kategorie": "Sonderlage",
+      "titel": "Arbeitsunfall – Baustelle",
+      "prioritaet": "E1",
+      "stichwort": "Sonst – Arbeitsunfall",
+      "beschreibung": "Bauarbeiter von Gerüst gefallen, ca. 6 Meter, liegt bewusstlos. Bauleiter ruft Notruf. Ort schwer zugänglich innerhalb der Baustelle.",
+      "einsatzort": "Salzburg-Liefering, Baustelle Lagerstraße 12",
+      "patient": { "alter": 35, "geschlecht": "m", "bewusstsein": "bewusstlos", "atmung": "vorhanden" },
+      "aao": {
+        "primaer": ["RTW", "NEF"],
+        "sekundaer": ["Feuerwehr (Zugang)", "Polizei"],
+        "optional": []
+      },
+      "eskalationen": [
+        { "trigger": "nach 5 Min", "ereignis": "RTW meldet: Zugang über Baustelle unmöglich – Feuerwehr für Absicherung und Zugang anfordern" }
+      ],
+      "erwartete_aktionen": ["RTW, NEF alarmieren", "FF für Zugang", "Polizei für Absperrung", "Doku"],
+      "bewertungskriterien": ["FF disponiert", "Polizei Absperrung", "Zugangsproblem gelöst"]
+    },
+
+    {
+      "id": "S050",
+      "kategorie": "Sonderlage",
+      "titel": "Massenanfall Veranstaltung – Hitze",
+      "prioritaet": "E1",
+      "stichwort": "Sonst – MANV Hitze",
+      "beschreibung": "Openair-Festival bei 35°C, innerhalb von 20 Minuten melden sich 6 Personen mit Hitzekollaps und 2 mit Bewusstlosigkeit beim Sanitätsdienst.",
+      "einsatzort": "Salzburg, Volksgarten Festgelände",
+      "patient": { "alter": 0, "geschlecht": "-", "bewusstsein": "verschieden", "atmung": "normal" },
+      "aao": {
+        "primaer": ["RTW", "RTW", "NEF"],
+        "sekundaer": ["EL"],
+        "optional": ["KIT", "zusätzliche KTW für Transporte"]
+      },
+      "eskalationen": [
+        { "trigger": "nach 10 Min", "ereignis": "Sanitätsdienst meldet: Jetzt 12 Patienten, 3 kritisch – Lage übersteigt unsere Kapazität, MANV?" },
+        { "trigger": "nach 20 Min", "ereignis": "EL meldet: Weitere Patienten zu erwarten, Veranstalter soll Gelände kühlen – Koordination?" }
+      ],
+      "erwartete_aktionen": ["Mehrere RTW/NEF alarmieren", "EL disponieren", "MANV prüfen", "Veranstalter koordinieren", "Doku"],
+      "bewertungskriterien": ["MANV Entscheidung", "EL alarmiert", "Ausreichend Ressourcen"]
+    },
+
+    {
+      "id": "S051",
+      "kategorie": "Interne Notfälle",
+      "titel": "Schlaganfall im Pflegeheim",
+      "prioritaet": "E1",
+      "stichwort": "INT – Neurologie",
+      "beschreibung": "Pflegepersonal meldet: 80-jährige Bewohnerin plötzlich einseitig gelähmt, Sprachstörung, Symptombeginn vor 10 Minuten laut Übergabeprotokoll.",
+      "einsatzort": "Salzburg-Bergheim, Senioren-Wohnpark Bergheim, Bergheimerstraße 44",
+      "patient": { "alter": 80, "geschlecht": "w", "bewusstsein": "wach", "atmung": "normal" },
+      "aao": { "primaer": ["RTW", "NEF"], "sekundaer": [], "optional": [] },
+      "eskalationen": [
+        { "trigger": "nach 8 Min", "ereignis": "NEF meldet: Stroke bestätigt, Lyse möglich – CDK Stroke Unit vorankündigen" }
+      ],
+      "erwartete_aktionen": ["RTW und NEF alarmieren", "Stroke Unit ankündigen", "Zeitstempel Symptombeginn"],
+      "bewertungskriterien": ["Alarmierungszeit", "Stroke Unit Ankündigung", "Zeitstempel dokumentiert"]
+    },
+
+    {
+      "id": "S052",
+      "kategorie": "Interne Notfälle",
+      "titel": "Bewusstlosigkeit – Apotheke",
+      "prioritaet": "E1",
+      "stichwort": "INT – Bewusstlosigkeit",
+      "beschreibung": "Kundin in Apotheke plötzlich kollabiert, Bewusstsein weg, atmet noch. Apothekerin leistet Erste Hilfe.",
+      "einsatzort": "Salzburg, Wolf-Dietrich-Straße 5, Apotheke",
+      "patient": { "alter": 55, "geschlecht": "w", "bewusstsein": "bewusstlos", "atmung": "vorhanden" },
+      "aao": { "primaer": ["RTW", "NEF"], "sekundaer": [], "optional": [] },
+      "eskalationen": [
+        { "trigger": "nach 10 Min", "ereignis": "NEF meldet: Hypoglykämie, Glucose gegeben, Patient erwacht – Ziel LKH" }
+      ],
+      "erwartete_aktionen": ["RTW und NEF alarmieren", "Doku", "Transport koordinieren"],
+      "bewertungskriterien": ["Alarmierungszeit", "Zielkrankenhaus"]
+    },
+
+    {
+      "id": "S053",
+      "kategorie": "Interne Notfälle",
+      "titel": "Herz-Rhythmusstörung – Fitnessstudio",
+      "prioritaet": "E1",
+      "stichwort": "INT – Kardial",
+      "beschreibung": "38-jähriger Mann im Fitnessstudio, Herzrasen, Schwindel, bricht zusammen. Trainer ruft Notruf, AED im Fitnessstudio vorhanden.",
+      "einsatzort": "Salzburg-Schallmoos, Schumacherstraße 4, Fitnessstudio",
+      "patient": { "alter": 38, "geschlecht": "m", "bewusstsein": "wach", "atmung": "normal" },
+      "aao": { "primaer": ["RTW", "NEF"], "sekundaer": [], "optional": [] },
+      "eskalationen": [
+        { "trigger": "nach 8 Min", "ereignis": "Trainer meldet: Patient jetzt bewusstlos, AED gibt Schockempfehlung – Schock erfolgt" }
+      ],
+      "erwartete_aktionen": ["RTW und NEF alarmieren", "AED-Nutzung bestätigen", "UKH Kath-Labor vorankündigen"],
+      "bewertungskriterien": ["Alarmierungszeit < 60 Sek", "Kath-Labor Ankündigung"]
+    },
+
+    {
+      "id": "S054",
+      "kategorie": "Interne Notfälle",
+      "titel": "Bauchschmerzen – akutes Abdomen",
+      "prioritaet": "E1",
+      "stichwort": "INT – Abdomen",
+      "beschreibung": "45-jähriger Mann, plötzlich einsetzende stärkste Bauchschmerzen, bretthart, Übelkeit und Erbrechen, blasses Aussehen.",
+      "einsatzort": "Salzburg, Hellbrunner Straße 11",
+      "patient": { "alter": 45, "geschlecht": "m", "bewusstsein": "wach", "atmung": "flach" },
+      "aao": { "primaer": ["RTW", "NEF"], "sekundaer": [], "optional": [] },
+      "eskalationen": [
+        { "trigger": "nach 10 Min", "ereignis": "NEF meldet: V.a. Aortendissektion, RR-Differenz – UKH Chirurgie dringend vorankündigen" }
+      ],
+      "erwartete_aktionen": ["RTW und NEF alarmieren", "UKH Chirurgie ankündigen", "Doku"],
+      "bewertungskriterien": ["Alarmierungszeit", "Chirurgie Ankündigung"]
+    },
+
+    {
+      "id": "S055",
+      "kategorie": "Interne Notfälle",
+      "titel": "Geburt – Hausgeburt ungeplant",
+      "prioritaet": "E1",
+      "stichwort": "INT – Geburt",
+      "beschreibung": "Schwangere Frau (38. SSW), starke Wehen seit 10 Minuten, Fruchtwasser bereits abgegangen, Kopf des Kindes bereits sichtbar.",
+      "einsatzort": "Salzburg-Gnigl, Münchner Bundesstraße 88",
+      "patient": { "alter": 29, "geschlecht": "w", "bewusstsein": "wach", "atmung": "normal" },
+      "aao": { "primaer": ["RTW", "NEF"], "sekundaer": [], "optional": [] },
+      "eskalationen": [
+        { "trigger": "nach 5 Min", "ereignis": "RTW meldet: Kind bereits geboren, atmet, aber Nabelschnur um Hals – NEF bereits unterwegs?" },
+        { "trigger": "nach 10 Min", "ereignis": "NEF meldet: Mutter und Kind stabil – Ziel LKH Geburtshilfe" }
+      ],
+      "erwartete_aktionen": ["RTW und NEF sofort alarmieren", "LKH Geburtshilfe ankündigen", "Doku"],
+      "bewertungskriterien": ["Alarmierungszeit < 60 Sek", "LKH Geburtshilfe koordiniert"]
+    },
+
+    {
+      "id": "S056",
+      "kategorie": "Interne Notfälle",
+      "titel": "Drogennotfall – öffentliche Toilette",
+      "prioritaet": "E1",
+      "stichwort": "INT – Intoxikation",
+      "beschreibung": "Person in öffentlicher Toilette am Hauptbahnhof leblos aufgefunden, Spritze neben der Person, blaue Lippen.",
+      "einsatzort": "Salzburg, Hauptbahnhof, öffentliche WC-Anlage",
+      "patient": { "alter": 25, "geschlecht": "m", "bewusstsein": "bewusstlos", "atmung": "Schnappatmung" },
+      "aao": { "primaer": ["RTW", "NEF"], "sekundaer": ["Polizei"], "optional": [] },
+      "eskalationen": [
+        { "trigger": "sofort", "ereignis": "Polizei muss verständigt werden – Fundort WC, Drogenbesteck" }
+      ],
+      "erwartete_aktionen": ["RTW und NEF alarmieren", "Polizei informieren", "Doku"],
+      "bewertungskriterien": ["Polizei disponiert", "Alarmierungszeit"]
+    },
+
+    {
+      "id": "S057",
+      "kategorie": "Interne Notfälle",
+      "titel": "Rückenschmerzen – Nierenkolik",
+      "prioritaet": "E2",
+      "stichwort": "INT – Abdomen",
+      "beschreibung": "35-jähriger Mann, starke kolikartige Schmerzen in der Flanke, kommt und geht, strahlt in die Leiste aus. Kein Fieber.",
+      "einsatzort": "Salzburg, Imbergstraße 22",
+      "patient": { "alter": 35, "geschlecht": "m", "bewusstsein": "wach", "atmung": "normal" },
+      "aao": { "primaer": ["RTW"], "sekundaer": [], "optional": ["NEF"] },
+      "eskalationen": [
+        { "trigger": "nach 10 Min", "ereignis": "RTW meldet: Patient schmerzfrei nach Buscopan, möchte nicht ins Krankenhaus" }
+      ],
+      "erwartete_aktionen": ["RTW disponieren", "Bei Verweigerung Protokoll", "Doku"],
+      "bewertungskriterien": ["Korrekte Priorisierung E2", "Reaktion auf Verweigerung"]
+    },
+
+    {
+      "id": "S058",
+      "kategorie": "Interne Notfälle",
+      "titel": "Stromunfall – Heimwerker",
+      "prioritaet": "E1",
+      "stichwort": "INT – Stromunfall",
+      "beschreibung": "Heimwerker beim Elektroarbeiten, Stromunfall, liegt bewusstlos am Boden. Ehefrau ruft Notruf. Strom noch eingeschaltet.",
+      "einsatzort": "Salzburg-Kasern, Kasernenstraße 33",
+      "patient": { "alter": 42, "geschlecht": "m", "bewusstsein": "bewusstlos", "atmung": "unklar" },
+      "aao": { "primaer": ["RTW", "NEF"], "sekundaer": ["Feuerwehr (Stromabschaltung)"], "optional": [] },
+      "eskalationen": [
+        { "trigger": "sofort", "ereignis": "Disponent muss Ehefrau anweisen: Strom abschalten und NICHT berühren" }
+      ],
+      "erwartete_aktionen": ["RTW und NEF alarmieren", "Ehefrau instruieren", "FF für Strom", "Doku"],
+      "bewertungskriterien": ["Sicherheitshinweis erteilt", "FF disponiert", "Alarmierungszeit"]
+    },
+
+    {
+      "id": "S059",
+      "kategorie": "Interne Notfälle",
+      "titel": "Asthmaanfall – Schule",
+      "prioritaet": "E1",
+      "stichwort": "INT – Atemnot pädiatrisch",
+      "beschreibung": "12-jähriger Schüler im Unterricht mit schwerem Asthmaanfall, Inhalator nicht dabei, pfeifende Atmung, blaue Lippen.",
+      "einsatzort": "Salzburg-Lehen, Volksschule Lehenstraße 14",
+      "patient": { "alter": 12, "geschlecht": "m", "bewusstsein": "wach, ängstlich", "atmung": "schwer beeinträchtigt" },
+      "aao": { "primaer": ["RTW", "NEF"], "sekundaer": [], "optional": [] },
+      "eskalationen": [
+        { "trigger": "nach 8 Min", "ereignis": "RTW meldet: Status asthmaticus, SpO2 82% – NEF disponiert?" }
+      ],
+      "erwartete_aktionen": ["RTW und NEF alarmieren", "CDK Kinderklinik ankündigen", "Doku"],
+      "bewertungskriterien": ["NEF disponiert", "Kinderklinik koordiniert"]
+    },
+
+    {
+      "id": "S060",
+      "kategorie": "Interne Notfälle",
+      "titel": "Ohnmacht – Kirche während Messe",
+      "prioritaet": "E2",
+      "stichwort": "INT – Kreislauf",
+      "beschreibung": "Ältere Dame ohnmächtig geworden während der Messe, liegt auf dem Boden, mehrere besorgte Gläubige drum herum. Pfarrer ruft Notruf.",
+      "einsatzort": "Salzburg, Dom zu Salzburg",
+      "patient": { "alter": 72, "geschlecht": "w", "bewusstsein": "eingeschränkt", "atmung": "vorhanden" },
+      "aao": { "primaer": ["RTW"], "sekundaer": [], "optional": ["NEF"] },
+      "eskalationen": [
+        { "trigger": "nach 8 Min", "ereignis": "RTW meldet: EKG zeigt Vorhofflimmern, Patient stabil aber transportpflichtig" }
+      ],
+      "erwartete_aktionen": ["RTW disponieren", "Doku", "Zielkrankenhaus"],
+      "bewertungskriterien": ["Korrekte Priorisierung", "Zielkrankenhaus"]
+    },
+
+    {
+      "id": "S061",
+      "kategorie": "Verkehrsunfall",
+      "titel": "LKW-Unfall – Überrollter Fußgänger",
+      "prioritaet": "E1",
+      "stichwort": "VU – schwer",
+      "beschreibung": "LKW beim Rückwärtsfahren Person überrollt, Person liegt unter LKW, Fahrer hat LKW gestoppt. Massives Trauma.",
+      "einsatzort": "Salzburg, Europastraße Kreuzung Innsbrucker Bundesstraße",
+      "patient": { "alter": 60, "geschlecht": "m", "bewusstsein": "bewusstlos", "atmung": "unklar" },
+      "aao": { "primaer": ["RTW", "NEF"], "sekundaer": ["Feuerwehr", "Polizei"], "optional": ["C6", "EL"] },
+      "eskalationen": [
+        { "trigger": "nach 5 Min", "ereignis": "Feuerwehr meldet: Person unter LKW, technische Rettung nötig – C6 anfordern?" }
+      ],
+      "erwartete_aktionen": ["RTW, NEF, FF, Polizei alarmieren", "C6 Entscheidung", "Doku"],
+      "bewertungskriterien": ["Alle Organisationen", "C6 Entscheidung"]
+    },
+
+    {
+      "id": "S062",
+      "kategorie": "Verkehrsunfall",
+      "titel": "Auffahrunfall – Autobahn, Stau",
+      "prioritaet": "E1",
+      "stichwort": "VU – Autobahn",
+      "beschreibung": "Auffahrunfall im Stau auf der A1, 3 Fahrzeuge beteiligt. Mehrere Verletzte, eines der Fahrzeuge mit Kindern besetzt.",
+      "einsatzort": "A1 Westautobahn, km 295 Richtung Salzburg",
+      "patient": { "alter": 0, "geschlecht": "-", "bewusstsein": "verschieden", "atmung": "verschieden" },
+      "aao": { "primaer": ["RTW", "NEF"], "sekundaer": ["Polizei", "ASFINAG"], "optional": ["Zweiter RTW", "C6"] },
+      "eskalationen": [
+        { "trigger": "nach 8 Min", "ereignis": "RTW meldet: 2 Erwachsene leicht, 1 Kind (6) schwer verletzt, Kopftrauma – zweiten RTW und C6 anfordern" }
+      ],
+      "erwartete_aktionen": ["RTW, NEF, Polizei, ASFINAG alarmieren", "C6 und zweiten RTW bei Eskalation", "Kinderklinik ankündigen"],
+      "bewertungskriterien": ["ASFINAG informiert", "C6 Entscheidung", "Kinderklinik"]
+    },
+
+    {
+      "id": "S063",
+      "kategorie": "Bergeinsatz",
+      "titel": "Lawine – Tourengeher",
+      "prioritaet": "E1",
+      "stichwort": "Berg – Lawine",
+      "beschreibung": "Lawinenabgang im Bereich Hochkönig. Bekannte Gruppe von 4 Tourengehern, 2 nicht mehr zu sehen. Überlebender ruft Notruf.",
+      "einsatzort": "Hochkönig, Südseite, Bereich Matrashaus",
+      "patient": { "alter": 0, "geschlecht": "-", "bewusstsein": "unbekannt", "atmung": "unbekannt" },
+      "aao": { "primaer": ["Bergrettung Mühlbach", "Bergrettung Bischofshofen", "C6"], "sekundaer": ["RTW (Tal)"], "optional": ["Heeresbergführer"] },
+      "eskalationen": [
+        { "trigger": "nach 10 Min", "ereignis": "Bergrettung meldet: Lawine groß, 2 Personen verschüttet – Heeresbergführer und zweiten C6 anfordern?" },
+        { "trigger": "nach 25 Min", "ereignis": "Erste Person gefunden, Reanimation läuft – NEF Tal und C6 koordinieren" }
+      ],
+      "erwartete_aktionen": ["Mehrere Bergrettungsgruppen + C6 alarmieren", "RTW Tal", "Heeresbergführer Option", "Doku"],
+      "bewertungskriterien": ["Ausreichend Ressourcen", "Koordination Gruppen", "Lawinenkompetenz"]
+    },
+
+    {
+      "id": "S064",
+      "kategorie": "Bergeinsatz",
+      "titel": "Paragleiter abgestürzt",
+      "prioritaet": "E1",
+      "stichwort": "Berg – Paragliding",
+      "beschreibung": "Paragleiter im Bereich Gaisberg abgestürzt, liegt im Wald, nicht zugänglich per Straße. Mitpilot hat Absturz beobachtet.",
+      "einsatzort": "Gaisberg, Waldgebiet Ostseite, Höhe ca. 900m",
+      "patient": { "alter": 35, "geschlecht": "m", "bewusstsein": "unklar", "atmung": "unklar" },
+      "aao": { "primaer": ["C6", "Bergrettung Gaisberg"], "sekundaer": ["RTW (Tal)"], "optional": [] },
+      "eskalationen": [
+        { "trigger": "nach 8 Min", "ereignis": "C6 meldet: Patient gefunden, ansprechbar, V.a. Wirbelsäulentrauma – Schonendtransport, Ziel UKH" }
+      ],
+      "erwartete_aktionen": ["C6 und Bergrettung alarmieren", "RTW Tal", "UKH koordinieren", "Doku"],
+      "bewertungskriterien": ["C6 disponiert", "UKH koordiniert"]
+    },
+
+    {
+      "id": "S065",
+      "kategorie": "Bergeinsatz",
+      "titel": "Mountainbiker gestürzt – Trails",
+      "prioritaet": "E1",
+      "stichwort": "Berg – Fahrrad",
+      "beschreibung": "Mountainbiker auf Singletrail gestürzt, liegt bewusstlos im Hang. Begleiter ruft Notruf, Ort schwer beschreibbar.",
+      "einsatzort": "Salzkammergut, Trailgebiet Zwölferhorn, Trail Nr. 7",
+      "patient": { "alter": 27, "geschlecht": "m", "bewusstsein": "bewusstlos", "atmung": "vorhanden" },
+      "aao": { "primaer": ["C6", "Bergrettung St. Gilgen"], "sekundaer": ["RTW (Tal)"], "optional": [] },
+      "eskalationen": [
+        { "trigger": "nach 5 Min", "ereignis": "Bergrettung meldet: Ort unbekannt, Begleiter soll Signal geben – Koordination über Handygeo?" }
+      ],
+      "erwartete_aktionen": ["C6 und Bergrettung alarmieren", "Ortsbestimmung koordinieren", "Doku"],
+      "bewertungskriterien": ["C6 disponiert", "Ortsbestimmung koordiniert"]
+    },
+
+    {
+      "id": "S066",
+      "kategorie": "Wassereinsatz",
+      "titel": "Kind ertrunken – Freibad",
+      "prioritaet": "E1",
+      "stichwort": "Wasser – pädiatrisch",
+      "beschreibung": "5-jähriges Kind im Freibad untergegangen, Bademeister zieht Kind aus dem Wasser, keine Reaktion, keine Atmung. Reanimation läuft.",
+      "einsatzort": "Salzburg, Freibad Leopoldskron",
+      "patient": { "alter": 5, "geschlecht": "w", "bewusstsein": "bewusstlos", "atmung": "keine" },
+      "aao": { "primaer": ["RTW", "NEF"], "sekundaer": [], "optional": ["C6"] },
+      "eskalationen": [
+        { "trigger": "nach 5 Min", "ereignis": "NEF meldet: ROSC nach 4 Minuten – Ziel CDK Kinderklinik Intensiv, bitte vorankündigen" }
+      ],
+      "erwartete_aktionen": ["RTW und NEF sofort alarmieren", "Kinderklinik Intensiv ankündigen", "Doku"],
+      "bewertungskriterien": ["Alarmierungszeit < 60 Sek", "Kinderklinik Intensiv"]
+    },
+
+    {
+      "id": "S067",
+      "kategorie": "Wassereinsatz",
+      "titel": "Surfer in Strömung – Salzach",
+      "prioritaet": "E1",
+      "stichwort": "Wasser – Strömung",
+      "beschreibung": "Schwimmer in der Salzach von Strömung mitgerissen, ruft um Hilfe. Zeugen am Ufer. Person treibt ab.",
+      "einsatzort": "Salzach, Höhe Müllner Steg",
+      "patient": { "alter": 28, "geschlecht": "m", "bewusstsein": "wach", "atmung": "normal" },
+      "aao": { "primaer": ["Wasserrettung Salzach", "RTW"], "sekundaer": ["Feuerwehr (Boot)"], "optional": ["C6"] },
+      "eskalationen": [
+        { "trigger": "nach 8 Min", "ereignis": "Wasserrettung meldet: Person aus dem Wasser, unterkühlt, keine Verletzungen sichtbar" }
+      ],
+      "erwartete_aktionen": ["Wasserrettung und RTW alarmieren", "FF Boot koordinieren", "Doku"],
+      "bewertungskriterien": ["Wasserrettung disponiert", "FF Boot"]
+    },
+
+    {
+      "id": "S068",
+      "kategorie": "Sonderlage",
+      "titel": "Chemieunfall – Schule",
+      "prioritaet": "E1",
+      "stichwort": "Sonst – Chemie",
+      "beschreibung": "Im Chemieunterricht einer Schule Mischung zweier Substanzen, starke Rauchentwicklung, 3 Schüler mit Reizhusten und tränenden Augen. Lehrer evakuiert Klasse.",
+      "einsatzort": "Salzburg, BRG Nonntal, Erzabt-Klotz-Straße 8",
+      "patient": { "alter": 0, "geschlecht": "-", "bewusstsein": "wach", "atmung": "gereizt" },
+      "aao": { "primaer": ["RTW"], "sekundaer": ["Feuerwehr (ABC)", "Polizei"], "optional": ["NEF"] },
+      "eskalationen": [
+        { "trigger": "nach 5 Min", "ereignis": "Feuerwehr meldet: Chlorgasreaktion, 3 Schüler mit stärkerem Husten – NEF anfordern, Gebäude evakuieren" }
+      ],
+      "erwartete_aktionen": ["RTW alarmieren", "FF ABC alarmieren", "NEF bei Eskalation", "Schulevakuierung koordinieren", "Doku"],
+      "bewertungskriterien": ["FF ABC disponiert", "Evakuierung koordiniert", "NEF Nachforderung"]
+    },
+
+    {
+      "id": "S069",
+      "kategorie": "Sonderlage",
+      "titel": "Bombendrohung – Bahnhof",
+      "prioritaet": "E1",
+      "stichwort": "Sonst – Bombendrohung",
+      "beschreibung": "Polizei alarmiert RD: Bombendrohung Hauptbahnhof, Evakuierung läuft. Bitte RD für eventuelle Verletzte bereitstellen.",
+      "einsatzort": "Salzburg Hauptbahnhof",
+      "patient": { "alter": 0, "geschlecht": "-", "bewusstsein": "-", "atmung": "-" },
+      "aao": { "primaer": ["RTW", "NEF"], "sekundaer": ["EL"], "optional": ["KIT"] },
+      "eskalationen": [
+        { "trigger": "nach 15 Min", "ereignis": "Polizei meldet: Entwarnung, aber 2 Personen bei Evakuierung verletzt (Sturz)" }
+      ],
+      "erwartete_aktionen": ["RTW und NEF bereitstellen", "EL disponieren", "KIT für psychische Betreuung", "Doku"],
+      "bewertungskriterien": ["Ressourcen bereitgestellt", "EL disponiert", "KIT koordiniert"]
+    },
+
+    {
+      "id": "S070",
+      "kategorie": "Sonderlage",
+      "titel": "Mehrfachlage – gleichzeitig 3 Einsätze",
+      "prioritaet": "E1",
+      "stichwort": "Disposition – Mehrfachlage",
+      "beschreibung": "Innerhalb von 4 Minuten gehen 3 Notrufe ein: 1) Reanimation Innenstadt, 2) VU mit Eingeklemmten Liefering, 3) Sturz ältere Person Schallmoos. Ressourcen begrenzt.",
+      "einsatzort": "Verschiedene Orte in Salzburg",
+      "patient": { "alter": 0, "geschlecht": "-", "bewusstsein": "verschieden", "atmung": "verschieden" },
+      "aao": { "primaer": ["Alle verfügbaren RTW", "NEF", "First Responder"], "sekundaer": ["Feuerwehr", "Polizei"], "optional": ["C6", "Nachbarreihe anfordern"] },
+      "eskalationen": [
+        { "trigger": "sofort", "ereignis": "Ressourcenengpass – Disponent muss priorisieren und ggf. Nachbarleitstelle anfordern" }
+      ],
+      "erwartete_aktionen": ["Priorisieren (Reanimation > VU > Sturz)", "Alle verfügbaren Mittel zuweisen", "Nachbarleitstelle anfordern", "Führungskraft informieren", "Doku"],
+      "bewertungskriterien": ["Priorisierung korrekt", "Nachbarleitstelle angefordert", "Führungskraft informiert", "Alle 3 Lagen abgedeckt"]
+    },
+
+    {
+      "id": "S071",
+      "kategorie": "Interne Notfälle",
+      "titel": "Alkoholintoxikation – Innenstadt",
+      "prioritaet": "E2",
+      "stichwort": "INT – Intoxikation",
+      "beschreibung": "Stark betrunkener Mann liegt auf der Straße, reagiert auf Ansprache, aber desorientiert. Passant ruft Notruf.",
+      "einsatzort": "Salzburg, Rudolfskai 18",
+      "patient": { "alter": 30, "geschlecht": "m", "bewusstsein": "eingeschränkt", "atmung": "vorhanden" },
+      "aao": { "primaer": ["RTW"], "sekundaer": ["Polizei"], "optional": [] },
+      "eskalationen": [
+        { "trigger": "nach 10 Min", "ereignis": "RTW meldet: Patient aggressiv, verletzt Besatzung – Polizei anfordern" }
+      ],
+      "erwartete_aktionen": ["RTW disponieren", "Polizei bei Aggression", "Doku"],
+      "bewertungskriterien": ["Polizei Reaktion", "Korrekte Priorisierung E2"]
+    },
+
+    {
+      "id": "S072",
+      "kategorie": "Interne Notfälle",
+      "titel": "Nasenbluten – Pflegeheim",
+      "prioritaet": "E3",
+      "stichwort": "KT – Blutung",
+      "beschreibung": "Pflegepersonal ruft: 85-jährige Bewohnerin mit starkem Nasenbluten seit 20 Minuten, blutverdünnende Medikamente. Kein Sistieren.",
+      "einsatzort": "Salzburg-Itzling, Seniorenheim Sonnblick",
+      "patient": { "alter": 85, "geschlecht": "w", "bewusstsein": "wach", "atmung": "normal" },
+      "aao": { "primaer": ["RTW"], "sekundaer": [], "optional": [] },
+      "eskalationen": [
+        { "trigger": "nach 15 Min", "ereignis": "RTW meldet: Blutung sistiert nicht, Patientin wird blass – NEF anfordern, Ziel LKH HNO" }
+      ],
+      "erwartete_aktionen": ["RTW disponieren", "NEF bei Eskalation", "HNO ankündigen", "Doku"],
+      "bewertungskriterien": ["Korrekte Priorisierung", "Reaktion auf Eskalation"]
+    },
+
+    {
+      "id": "S073",
+      "kategorie": "Interne Notfälle",
+      "titel": "Herzschrittmacher-Alarm",
+      "prioritaet": "E1",
+      "stichwort": "INT – Kardial Schrittmacher",
+      "beschreibung": "72-jährige Frau, Schwindel und kurze Ohnmacht, trägt Herzschrittmacher. Ehemann ruft Notruf.",
+      "einsatzort": "Salzburg, Nonntaler Hauptstraße 7",
+      "patient": { "alter": 72, "geschlecht": "w", "bewusstsein": "wach", "atmung": "normal" },
+      "aao": { "primaer": ["RTW", "NEF"], "sekundaer": [], "optional": [] },
+      "eskalationen": [
+        { "trigger": "nach 10 Min", "ereignis": "NEF meldet: Schrittmacher-Sensing-Problem, Pausen im EKG – UKH Kardiologie vorankündigen" }
+      ],
+      "erwartete_aktionen": ["RTW und NEF alarmieren", "UKH Kardiologie ankündigen", "Doku"],
+      "bewertungskriterien": ["NEF disponiert", "Kardiologie koordiniert"]
+    },
+
+    {
+      "id": "S074",
+      "kategorie": "Krankentransport",
+      "titel": "Transport in Palliativstation",
+      "prioritaet": "KT",
+      "stichwort": "KT – Palliativ",
+      "beschreibung": "78-jährige Krebspatientin, Verlegung vom LKH auf die Palliativstation. Liegendtransport, Schmerztherapie läuft, Familie begleitet.",
+      "einsatzort": "LKH Salzburg → Palliativstation CDK",
+      "patient": { "alter": 78, "geschlecht": "w", "bewusstsein": "wach", "atmung": "normal" },
+      "aao": { "primaer": ["KTW"], "sekundaer": [], "optional": [] },
+      "eskalationen": [],
+      "erwartete_aktionen": ["KTW disponieren", "Palliativstation Ankündigung", "Doku"],
+      "bewertungskriterien": ["Korrektes Fahrzeug", "Ankündigung erfolgt"]
+    },
+
+    {
+      "id": "S075",
+      "kategorie": "Sonderlage",
+      "titel": "Gasaustritt – Wohnhaus",
+      "prioritaet": "E1",
+      "stichwort": "Sonst – Gas",
+      "beschreibung": "Mieter riecht starken Gasgeruch im Stiegenhaus, Nachbarn evakuieren sich selbst. Jemand hustet stark.",
+      "einsatzort": "Salzburg-Maxglan, Hellbrunner Straße 44",
+      "patient": { "alter": 0, "geschlecht": "-", "bewusstsein": "wach", "atmung": "gereizt" },
+      "aao": { "primaer": ["Feuerwehr", "RTW"], "sekundaer": ["Polizei", "Salzburg AG (Gasversorgung)"], "optional": ["NEF"] },
+      "eskalationen": [
+        { "trigger": "sofort", "ereignis": "Disponent muss Salzburg AG für Gasabsperrung informieren" },
+        { "trigger": "nach 10 Min", "ereignis": "Feuerwehr meldet: Gaskonzentration hoch, 3 Personen mit Übelkeit – NEF anfordern" }
+      ],
+      "erwartete_aktionen": ["FF und RTW alarmieren", "Salzburg AG informieren", "Polizei Absperrung", "NEF bei Eskalation", "Doku"],
+      "bewertungskriterien": ["Salzburg AG informiert", "FF disponiert", "NEF Nachforderung"]
+    },
+
+    {
+      "id": "S076",
+      "kategorie": "Bergeinsatz",
+      "titel": "Orientierungsloser älterer Wanderer – Nacht",
+      "prioritaet": "E1",
+      "stichwort": "Berg – Vermisst Nacht",
+      "beschreibung": "80-jähriger Mann meldet sich selbst per Handy: Verirrt am Gaisberg, es wird dunkel, weiß nicht mehr wo er ist. Handy-Akku 10%.",
+      "einsatzort": "Gaisberg, genaue Position unbekannt",
+      "patient": { "alter": 80, "geschlecht": "m", "bewusstsein": "wach", "atmung": "normal" },
+      "aao": { "primaer": ["Bergrettung Gaisberg", "Polizei"], "sekundaer": [], "optional": ["C6 mit Wärmebildkamera"] },
+      "eskalationen": [
+        { "trigger": "nach 5 Min", "ereignis": "Polizei meldet: Handyortung läuft, Position in 10 Min – C6 bereithalten" },
+        { "trigger": "nach 20 Min", "ereignis": "Bergrettung meldet: Mann gefunden, Unterkühlung – RTW an Straße bereithalten" }
+      ],
+      "erwartete_aktionen": ["Bergrettung und Polizei alarmieren", "Handyortung koordinieren", "C6 Bereitschaft", "RTW Talstraße", "Doku"],
+      "bewertungskriterien": ["Bergrettung disponiert", "Polizei Ortung koordiniert", "RTW bereitgehalten"]
+    },
+
+    {
+      "id": "S077",
+      "kategorie": "Sonderlage",
+      "titel": "Zugunfall – Regionalzug",
+      "prioritaet": "E1",
+      "stichwort": "Sonst – Zugunfall",
+      "beschreibung": "Regionalzug entgleist, mehrere Verletzte. Zugführer meldet sich bei Leitstelle. 80 Fahrgäste an Bord, erste Meldung von 5 Verletzten.",
+      "einsatzort": "Salzburg, Bahnlinie Richtung Freilassing, km 8",
+      "patient": { "alter": 0, "geschlecht": "-", "bewusstsein": "verschieden", "atmung": "verschieden" },
+      "aao": { "primaer": ["RTW", "RTW", "NEF", "EL"], "sekundaer": ["Feuerwehr", "Polizei", "ÖBB Notfallmanager"], "optional": ["C6", "KIT", "zusätzliche RTW"] },
+      "eskalationen": [
+        { "trigger": "nach 5 Min", "ereignis": "EL meldet: MANV, 12 Verletzte, 3 schwer – alle Reserven aktivieren, Führungskraft informieren" },
+        { "trigger": "nach 15 Min", "ereignis": "Feuerwehr meldet: Wagons liegen quer, Bergung langwierig – C6 und zweiten NEF anfordern" }
+      ],
+      "erwartete_aktionen": ["MANV-Protokoll", "Alle Kräfte aktivieren", "ÖBB koordinieren", "Führungskraft informieren", "Doku"],
+      "bewertungskriterien": ["MANV erkannt", "ÖBB koordiniert", "Führungskraft informiert", "Ausreichend Ressourcen"]
+    },
+
+    {
+      "id": "S078",
+      "kategorie": "Interne Notfälle",
+      "titel": "Beinahe-Ertrinken – Gartenteich",
+      "prioritaet": "E1",
+      "stichwort": "INT – pädiatrisch Wasser",
+      "beschreibung": "2-jähriges Kind im Gartenteich gefunden, aus dem Wasser gezogen, atmet nicht. Eltern in Panik, haben 144 angerufen.",
+      "einsatzort": "Salzburg-Leopoldskron, Leopoldskroner Allee 5",
+      "patient": { "alter": 2, "geschlecht": "m", "bewusstsein": "bewusstlos", "atmung": "keine" },
+      "aao": { "primaer": ["RTW", "NEF"], "sekundaer": [], "optional": [] },
+      "eskalationen": [
+        { "trigger": "sofort", "ereignis": "Disponent muss telefonisch Reanimationsanleitung geben bis RTW eintrifft" },
+        { "trigger": "nach 8 Min", "ereignis": "NEF meldet: ROSC, Kind stabil – Intensivstation CDK vorankündigen" }
+      ],
+      "erwartete_aktionen": ["RTW und NEF sofort alarmieren", "Telefonische Reanimationsanleitung", "Kinderklinik Intensiv ankündigen", "Doku"],
+      "bewertungskriterien": ["Telefonische Anleitung gegeben", "Alarmierungszeit < 60 Sek", "Intensiv koordiniert"]
+    },
+
+    {
+      "id": "S079",
+      "kategorie": "Sonderlage",
+      "titel": "Gewalttat – Messerangriff",
+      "prioritaet": "E1",
+      "stichwort": "Sonst – Gewalt",
+      "beschreibung": "Passant meldet: Mann auf offener Straße mit Messer verletzt, Täter noch anwesend. Opfer blutet stark.",
+      "einsatzort": "Salzburg, Kaigasse 12",
+      "patient": { "alter": 35, "geschlecht": "m", "bewusstsein": "wach", "atmung": "normal" },
+      "aao": { "primaer": ["RTW", "NEF"], "sekundaer": ["Polizei"], "optional": [] },
+      "eskalationen": [
+        { "trigger": "sofort", "ereignis": "Disponent muss RTW anweisen: NICHT in Gefahrenbereich fahren, auf Freigabe durch Polizei warten" },
+        { "trigger": "nach 5 Min", "ereignis": "Polizei meldet: Täter gesichert, Bereich freigegeben – RTW kann einfahren" }
+      ],
+      "erwartete_aktionen": ["RTW und NEF alarmieren", "Polizei alarmieren", "RTW Sicherheitsanweisung", "Einfahrt nach Freigabe", "Doku"],
+      "bewertungskriterien": ["Polizei disponiert", "Sicherheitsanweisung erteilt", "Koordination Freigabe"]
+    },
+
+    {
+      "id": "S080",
+      "kategorie": "Sonderlage",
+      "titel": "Massenanfall – Schulausflug Busunfall",
+      "prioritaet": "E1",
+      "stichwort": "VU – MANV Kinder",
+      "beschreibung": "Schulbus von der Straße abgekommen, 25 Kinder und 2 Erwachsene an Bord. Erste Meldung: Bus auf der Seite, viele schreien, einzelne reglos.",
+      "einsatzort": "Landesstraße L105, Gemeindegebiet Fuschl am See",
+      "patient": { "alter": 0, "geschlecht": "-", "bewusstsein": "verschieden", "atmung": "verschieden" },
+      "aao": { "primaer": ["RTW", "RTW", "NEF", "EL"], "sekundaer": ["Feuerwehr", "Polizei"], "optional": ["C6", "zweiter NEF", "KIT", "CDK Kinderklinik vorankündigen"] },
+      "eskalationen": [
+        { "trigger": "nach 5 Min", "ereignis": "EL meldet: 25 Kinder, 5 kritisch – sofortige Voranmeldung CDK und alle verfügbaren Kräfte" },
+        { "trigger": "nach 15 Min", "ereignis": "Polizei meldet: Eltern sammeln sich am Unfallort – KIT und Polizei für Absperrung" }
+      ],
+      "erwartete_aktionen": ["MANV Kinder aktivieren", "CDK Kinderklinik vorankündigen", "KIT disponieren", "Elternkommunikation koordinieren", "Doku"],
+      "bewertungskriterien": ["MANV erkannt", "Kinderklinik vorankündigt", "KIT disponiert", "Führungskraft informiert"]
+    },
+
+    {
+      "id": "S081",
+      "kategorie": "Krankentransport",
+      "titel": "Begleiteter Transport – psychisch Kranker",
+      "prioritaet": "KT",
+      "stichwort": "KT – Psychiatrie",
+      "beschreibung": "Ambulante Rückfahrt von der Psychiatrie-Tagesklinik CDK, Patient 40 Jahre, kooperativ, bekannte Schizophrenie.",
+      "einsatzort": "CDK Tagesklinik → Wohnheim Salzburg-Lehen",
+      "patient": { "alter": 40, "geschlecht": "m", "bewusstsein": "wach", "atmung": "normal" },
+      "aao": { "primaer": ["KTW"], "sekundaer": [], "optional": [] },
+      "eskalationen": [
+        { "trigger": "nach 15 Min", "ereignis": "KTW-Fahrer meldet: Patient verhält sich zunehmend seltsam, spricht mit sich selbst, kein Einblick – soll ich weiterfahren?" }
+      ],
+      "erwartete_aktionen": ["KTW disponieren", "Bei Eskalation KIT anweisen oder abklären", "Doku"],
+      "bewertungskriterien": ["Reaktion auf Eskalation", "KIT koordiniert"]
+    },
+
+    {
+      "id": "S082",
+      "kategorie": "Interne Notfälle",
+      "titel": "Hitzschlag – Baustelle",
+      "prioritaet": "E1",
+      "stichwort": "INT – Hitzschlag",
+      "beschreibung": "Bauarbeiter bei 36°C auf Baustelle kollabiert, heiße trockene Haut, Temperatur laut Kollegen 'sehr hoch'. Kein Schwitzen.",
+      "einsatzort": "Salzburg-Taxham, Baustelle Europastraße 20",
+      "patient": { "alter": 45, "geschlecht": "m", "bewusstsein": "eingeschränkt", "atmung": "flach" },
+      "aao": { "primaer": ["RTW", "NEF"], "sekundaer": [], "optional": [] },
+      "eskalationen": [
+        { "trigger": "nach 8 Min", "ereignis": "NEF meldet: Körpertemperatur 41,5°C, aktive Kühlung läuft – Ziel UKH Intensiv" }
+      ],
+      "erwartete_aktionen": ["RTW und NEF alarmieren", "UKH Intensiv ankündigen", "Doku"],
+      "bewertungskriterien": ["NEF disponiert", "Intensiv koordiniert"]
+    },
+
+    {
+      "id": "S083",
+      "kategorie": "Bergeinsatz",
+      "titel": "Absturz Klettersteig – Hagengebirge",
+      "prioritaet": "E1",
+      "stichwort": "Berg – Klettersteig",
+      "beschreibung": "Klettersteiggänger am Hagengebirge ausgerutscht und 10 Meter gestürzt, hängt am Sicherungsseil bewusstlos.",
+      "einsatzort": "Hagengebirge, Klettersteig Watzmann-Ostwand-Aufstieg",
+      "patient": { "alter": 38, "geschlecht": "w", "bewusstsein": "bewusstlos", "atmung": "vorhanden" },
+      "aao": { "primaer": ["C6", "Bergrettung Berchtesgaden (DE) koordinieren", "Bergrettung Salzburg"], "sekundaer": ["RTW (Tal)"], "optional": [] },
+      "eskalationen": [
+        { "trigger": "sofort", "ereignis": "Einsatzort liegt auf deutschem Gebiet – Leitstelle Berchtesgaden informieren und koordinieren" }
+      ],
+      "erwartete_aktionen": ["C6 alarmieren", "Deutsche Leitstelle koordinieren", "RTW Tal", "Doku"],
+      "bewertungskriterien": ["Nachbarleitstelle Deutschland koordiniert", "C6 disponiert"]
+    },
+
+    {
+      "id": "S084",
+      "kategorie": "Sonderlage",
+      "titel": "Stromausfall – Krankenhaus",
+      "prioritaet": "E1",
+      "stichwort": "Sonst – Infrastruktur",
+      "beschreibung": "LKH Salzburg meldet: Kompletter Stromausfall, Notstromar läuft, aber 3 Patienten an Beatmungsgeräten, Generator zeigt Fehler.",
+      "einsatzort": "LKH Salzburg",
+      "patient": { "alter": 0, "geschlecht": "-", "bewusstsein": "-", "atmung": "beatmet" },
+      "aao": { "primaer": ["NEF", "RTW"], "sekundaer": ["Feuerwehr (Strom)", "Salzburg AG"], "optional": ["EL"] },
+      "eskalationen": [
+        { "trigger": "sofort", "ereignis": "Disponent muss Salzburg AG für sofortige Entstörung alarmieren und Feuerwehr für Absicherung" },
+        { "trigger": "nach 10 Min", "ereignis": "LKH meldet: Generator versagt, 3 Patienten müssen sofort verlegt werden – Zielkrankenhäuser koordinieren" }
+      ],
+      "erwartete_aktionen": ["NEF und RTW alarmieren", "Salzburg AG alarmieren", "Zielkrankenhäuser für Verlegung koordinieren", "Doku"],
+      "bewertungskriterien": ["Salzburg AG sofort alarmiert", "Verlegung koordiniert", "Reaktionszeit"]
+    },
+
+    {
+      "id": "S085",
+      "kategorie": "Sonderlage",
+      "titel": "Flugzeugabsturz – Salzburger Flughafen",
+      "prioritaet": "E1",
+      "stichwort": "Sonst – Luftfahrt",
+      "beschreibung": "Kleinflugzeug beim Landeanflug abgestürzt, 4 Personen an Bord. Flughafen-Feuerwehr bereits im Einsatz. RD-Anforderung durch Flughafen.",
+      "einsatzort": "Salzburg Flughafen, nördliches Rollfeld",
+      "patient": { "alter": 0, "geschlecht": "-", "bewusstsein": "verschieden", "atmung": "verschieden" },
+      "aao": { "primaer": ["RTW", "RTW", "NEF", "EL"], "sekundaer": ["Polizei", "Flughafen-Feuerwehr koordinieren"], "optional": ["C6", "KIT"] },
+      "eskalationen": [
+        { "trigger": "nach 5 Min", "ereignis": "EL meldet: 2 Tote, 2 Schwerstverletzte – Schockraum UKH und CDK vorankündigen" }
+      ],
+      "erwartete_aktionen": ["Mehrere RTW und NEF alarmieren", "Flughafen-FF koordinieren", "Schockraum ankündigen", "Doku"],
+      "bewertungskriterien": ["Koordination Flughafen-FF", "Schockraum koordiniert", "EL disponiert"]
+    },
+
+    {
+      "id": "S086",
+      "kategorie": "Interne Notfälle",
+      "titel": "Bewusstlosigkeit – Öffentliches WC Altstadt",
+      "prioritaet": "E1",
+      "stichwort": "INT – Bewusstlosigkeit",
+      "beschreibung": "Reinigungspersonal findet bewusstlose Person im abgesperrten WC-Raum, kein Schlüssel vorhanden. Unklare Ursache.",
+      "einsatzort": "Salzburg, Mozartplatz, öffentliche WC-Anlage",
+      "patient": { "alter": 50, "geschlecht": "-", "bewusstsein": "bewusstlos", "atmung": "unklar" },
+      "aao": { "primaer": ["RTW", "NEF"], "sekundaer": ["Feuerwehr (Türöffnung)"], "optional": ["Polizei"] },
+      "eskalationen": [
+        { "trigger": "nach 5 Min", "ereignis": "RTW meldet: Tür noch nicht offen – Feuerwehr disponiert?" }
+      ],
+      "erwartete_aktionen": ["RTW und NEF alarmieren", "FF Türöffnung", "Polizei Option", "Doku"],
+      "bewertungskriterien": ["FF disponiert", "Reaktion auf Zugang"]
+    },
+
+    {
+      "id": "S087",
+      "kategorie": "Krankentransport",
+      "titel": "Früh- und Neugeborenenverlegung",
+      "prioritaet": "KT",
+      "stichwort": "KT – Neonatologie",
+      "beschreibung": "LKH Salzburg meldet: Frühgeborenes (28. SSW), muss in Neonatologie CDK verlegt werden. Inkubatortransport, Begleitung durch Arzt.",
+      "einsatzort": "LKH Salzburg Geburtshilfe → CDK Neonatologie",
+      "patient": { "alter": 0, "geschlecht": "-", "bewusstsein": "wach", "atmung": "unterstützt" },
+      "aao": { "primaer": ["RTW (Neonatal-Ausrüstung)"], "sekundaer": [], "optional": [] },
+      "eskalationen": [],
+      "erwartete_aktionen": ["RTW mit Neonatal-Ausrüstung disponieren", "CDK Neonatologie ankündigen", "Arztbegleitung koordinieren", "Doku"],
+      "bewertungskriterien": ["Korrektes Fahrzeug", "Ankündigung CDK", "Arztbegleitung"]
+    },
+
+    {
+      "id": "S088",
+      "kategorie": "Interne Notfälle",
+      "titel": "Synkope – Supermarkt Kassa",
+      "prioritaet": "E2",
+      "stichwort": "INT – Kreislauf",
+      "beschreibung": "Kassiererin ohnmächtig geworden, kurz, jetzt wieder wach, blass und schwitzig. Kollegin ruft Notruf.",
+      "einsatzort": "Salzburg-Itzling, Europark, BILLA",
+      "patient": { "alter": 32, "geschlecht": "w", "bewusstsein": "wach", "atmung": "normal" },
+      "aao": { "primaer": ["RTW"], "sekundaer": [], "optional": [] },
+      "eskalationen": [
+        { "trigger": "nach 8 Min", "ereignis": "RTW meldet: Patient schwanger (12. SSW), Blutdruck niedrig – NEF anfordern?" }
+      ],
+      "erwartete_aktionen": ["RTW disponieren", "NEF bei Schwangerschaft erwägen", "Doku"],
+      "bewertungskriterien": ["Reaktion auf unerwartete Information", "NEF Entscheidung"]
+    },
+
+    {
+      "id": "S089",
+      "kategorie": "Sonderlage",
+      "titel": "Verkehrsunfall mit Polizeifahrzeug",
+      "prioritaet": "E1",
+      "stichwort": "VU – Einsatzfahrzeug",
+      "beschreibung": "Polizeifahrzeug im Einsatz kollidiert mit PKW. 2 Polizisten und PKW-Fahrer verletzt. Polizei meldet sich selbst bei Leitstelle.",
+      "einsatzort": "Salzburg, Alpenstraße Kreuzung Moosstraße",
+      "patient": { "alter": 0, "geschlecht": "-", "bewusstsein": "verschieden", "atmung": "verschieden" },
+      "aao": { "primaer": ["RTW", "NEF"], "sekundaer": ["Polizei (zweite Streife)"], "optional": [] },
+      "eskalationen": [
+        { "trigger": "nach 8 Min", "ereignis": "RTW meldet: Einer der Polizisten schwer verletzt, Brusttrauma – C6 anfordern?" }
+      ],
+      "erwartete_aktionen": ["RTW und NEF alarmieren", "Zweite Polizeistreife", "C6 Entscheidung", "Doku"],
+      "bewertungskriterien": ["Reaktion auf Einsatzkraft-Verletzung", "C6 Entscheidung"]
+    },
+
+    {
+      "id": "S090",
+      "kategorie": "Sonderlage",
+      "titel": "Lagebesprechung Großlage – Führungskraft anfordern",
+      "prioritaet": "E1",
+      "stichwort": "Disposition – Führung",
+      "beschreibung": "Mehrere gleichzeitige Großeinsätze: MANV Autobahn, Überschwemmung Lehen, Wohnhausbrand Schallmoos. Ressourcen erschöpft.",
+      "einsatzort": "Salzburg, Leitstelle",
+      "patient": { "alter": 0, "geschlecht": "-", "bewusstsein": "-", "atmung": "-" },
+      "aao": { "primaer": ["EL", "Führungskraft"], "sekundaer": ["Nachbarleitstellen", "Landesalarmzentrale"], "optional": [] },
+      "eskalationen": [
+        { "trigger": "sofort", "ereignis": "Disponent muss sofort Führungskraft informieren und Nachbarleitstellen um Ressourcen ansuchen" }
+      ],
+      "erwartete_aktionen": ["Führungskraft alarmieren", "Nachbarleitstellen kontaktieren", "Landesalarmzentrale informieren", "Überblick behalten", "Doku"],
+      "bewertungskriterien": ["Führungskraft informiert", "Nachbarleitstellen kontaktiert", "Landesalarmzentrale", "Doku vollständig"]
+    },
+
+    {
+      "id": "S091",
+      "kategorie": "Wassereinsatz",
+      "titel": "Kanusportler in Wildwasser – Salzach Schlucht",
+      "prioritaet": "E1",
+      "stichwort": "Wasser – Wildwasser",
+      "beschreibung": "Kanusportler in der Salzachschlucht gekentert, hängt im Wildwasser. Begleiter am Ufer kann nicht helfen.",
+      "einsatzort": "Salzachschlucht, Bereich Golling",
+      "patient": { "alter": 28, "geschlecht": "m", "bewusstsein": "wach", "atmung": "normal" },
+      "aao": { "primaer": ["Wasserrettung Golling", "Feuerwehr (Seilrettung)"], "sekundaer": ["RTW"], "optional": ["C6"] },
+      "eskalationen": [
+        { "trigger": "nach 10 Min", "ereignis": "Wasserrettung meldet: Strömung zu stark für Bootsrettung – Seilbahn-Rettung mit FF nötig" }
+      ],
+      "erwartete_aktionen": ["Wasserrettung und FF alarmieren", "RTW positionieren", "C6 Option", "Doku"],
+      "bewertungskriterien": ["Wasserrettung disponiert", "FF Seilrettung", "Koordination"]
+    },
+
+    {
+      "id": "S092",
+      "kategorie": "Bergeinsatz",
+      "titel": "Bergsteiger Herzinfarkt – Gipfel",
+      "prioritaet": "E1",
+      "stichwort": "Berg – INT kardial",
+      "beschreibung": "Bergsteiger auf dem Gipfel des Watzmann (Grenzbereich) mit akutem Brustschmerz und Atemnot. Begleiter ruft Notruf.",
+      "einsatzort": "Watzmann, Hauptgipfel (Grenzbereich Salzburg/Bayern)",
+      "patient": { "alter": 55, "geschlecht": "m", "bewusstsein": "wach", "atmung": "flach" },
+      "aao": { "primaer": ["C6", "Bergrettung Berchtesgaden koordinieren"], "sekundaer": ["RTW (Tal)"], "optional": [] },
+      "eskalationen": [
+        { "trigger": "sofort", "ereignis": "Gipfel liegt auf bayerischem Gebiet – sofort Leitstelle Berchtesgaden informieren" },
+        { "trigger": "nach 5 Min", "ereignis": "C6 meldet: Windverhältnisse ok, Landung möglich – NEF an Bord C6" }
+      ],
+      "erwartete_aktionen": ["C6 alarmieren", "Deutsche Leitstelle sofort kontaktieren", "RTW Tal", "Doku"],
+      "bewertungskriterien": ["Deutsche Leitstelle kontaktiert", "C6 disponiert", "Internationale Koordination"]
+    },
+
+    {
+      "id": "S093",
+      "kategorie": "Interne Notfälle",
+      "titel": "Magen-Darm-Massenerkrankung – Veranstaltung",
+      "prioritaet": "E2",
+      "stichwort": "INT – Massenerkrankung",
+      "beschreibung": "Hochzeitgesellschaft, 12 von 80 Gästen mit Erbrechen und Durchfall nach dem Buffet. Erste rufen Notruf, Veranstalter in Panik.",
+      "einsatzort": "Salzburg, Schloss Mirabell Orangerie",
+      "patient": { "alter": 0, "geschlecht": "-", "bewusstsein": "wach", "atmung": "normal" },
+      "aao": { "primaer": ["RTW", "KTW"], "sekundaer": [], "optional": ["Gesundheitsbehörde informieren"] },
+      "eskalationen": [
+        { "trigger": "nach 15 Min", "ereignis": "RTW meldet: 2 ältere Personen mit Kreislaufproblemen, Krankenhauseinweisung nötig" },
+        { "trigger": "nach 20 Min", "ereignis": "Verdacht Lebensmittelvergiftung – Gesundheitsbehörde informieren?" }
+      ],
+      "erwartete_aktionen": ["RTW und KTW disponieren", "Gesundheitsbehörde informieren", "Doku"],
+      "bewertungskriterien": ["Ausreichend Ressourcen", "Gesundheitsbehörde koordiniert"]
+    },
+
+    {
+      "id": "S094",
+      "kategorie": "Sonderlage",
+      "titel": "Entlaufener Patient – Psychiatrie",
+      "prioritaet": "E1",
+      "stichwort": "Sonst – Vermisster Patient",
+      "beschreibung": "CDK Psychiatrie meldet: Patient (32, männlich, selbstgefährdend) ist entwichen, wurde zuletzt auf der Rainerstraße gesehen.",
+      "einsatzort": "Salzburg, Rainerstraße / Umgebung CDK",
+      "patient": { "alter": 32, "geschlecht": "m", "bewusstsein": "wach", "atmung": "normal" },
+      "aao": { "primaer": ["Polizei", "KIT"], "sekundaer": ["RTW (Bereitschaft)"], "optional": [] },
+      "eskalationen": [
+        { "trigger": "nach 15 Min", "ereignis": "Polizei meldet: Patient auf Brücke Staatsbrücke gesichtet, suizidgefährlich – RTW und NEF positionieren" }
+      ],
+      "erwartete_aktionen": ["Polizei und KIT alarmieren", "RTW Bereitschaft", "Bei Eskalation NEF positionieren", "Doku"],
+      "bewertungskriterien": ["Polizei disponiert", "KIT alarmiert", "Reaktion auf Eskalation"]
+    },
+
+    {
+      "id": "S095",
+      "kategorie": "Krankentransport",
+      "titel": "Interhospitaltransfer – UKH zu LKH",
+      "prioritaet": "KT",
+      "stichwort": "KT – Verlegung stabil",
+      "beschreibung": "Patient nach Gallenblasenentfernung, stabil, Verlegung UKH zu LKH für Weiterbehandlung. Sitzendtransport möglich.",
+      "einsatzort": "UKH Salzburg → LKH Salzburg",
+      "patient": { "alter": 60, "geschlecht": "m", "bewusstsein": "wach", "atmung": "normal" },
+      "aao": { "primaer": ["KTW"], "sekundaer": [], "optional": [] },
+      "eskalationen": [],
+      "erwartete_aktionen": ["KTW disponieren", "LKH Ankündigung", "Doku"],
+      "bewertungskriterien": ["Korrektes Fahrzeug", "Ankündigung"]
+    },
+
+    {
+      "id": "S096",
+      "kategorie": "Interne Notfälle",
+      "titel": "CO-Vergiftung – Heizungskeller",
+      "prioritaet": "E1",
+      "stichwort": "INT – CO-Vergiftung",
+      "beschreibung": "Hausmeister kollabiert im Heizungskeller, CO-Melder ausgelöst. Nachbar ruft Notruf. Weitere Bewohner im Gebäude.",
+      "einsatzort": "Salzburg-Riedenburg, Neutorstraße 45",
+      "patient": { "alter": 58, "geschlecht": "m", "bewusstsein": "bewusstlos", "atmung": "vorhanden" },
+      "aao": { "primaer": ["RTW", "NEF"], "sekundaer": ["Feuerwehr (CO-Messung, Evakuierung)"], "optional": [] },
+      "eskalationen": [
+        { "trigger": "sofort", "ereignis": "Disponent muss Bewohner NICHT in Keller schicken und FF sofort alarmieren" },
+        { "trigger": "nach 8 Min", "ereignis": "FF meldet: CO-Wert 800ppm im Keller, Gebäude evakuieren – weitere Patienten möglich" }
+      ],
+      "erwartete_aktionen": ["RTW, NEF, FF alarmieren", "Sicherheitsanweisung erteilen", "Evakuierung koordinieren", "Doku"],
+      "bewertungskriterien": ["FF sofort disponiert", "Sicherheitsanweisung erteilt", "Evakuierung koordiniert"]
+    },
+
+    {
+      "id": "S097",
+      "kategorie": "Bergeinsatz",
+      "titel": "Steinschlag auf Wandergruppe",
+      "prioritaet": "E1",
+      "stichwort": "Berg – Steinschlag",
+      "beschreibung": "Steinschlag auf Wandergruppe am Hagengebirge, 3 Personen getroffen. Eine Person bewusstlos, zwei mit Verletzungen.",
+      "einsatzort": "Hagengebirge, Südwand Wanderweg",
+      "patient": { "alter": 0, "geschlecht": "-", "bewusstsein": "verschieden", "atmung": "verschieden" },
+      "aao": { "primaer": ["C6", "Bergrettung Bad Reichenhall (DE)"], "sekundaer": ["RTW (Tal)"], "optional": [] },
+      "eskalationen": [
+        { "trigger": "sofort", "ereignis": "Einsatzort auf deutschem Gebiet – Leitstelle Bayern sofort informieren" }
+      ],
+      "erwartete_aktionen": ["C6 alarmieren", "Bayerische Leitstelle informieren", "Koordination", "Doku"],
+      "bewertungskriterien": ["Internationale Koordination", "C6 disponiert"]
+    },
+
+    {
+      "id": "S098",
+      "kategorie": "Sonderlage",
+      "titel": "Vermisste Person – Demenz – Stadtgebiet",
+      "prioritaet": "E1",
+      "stichwort": "Sonst – Vermisst",
+      "beschreibung": "Pflegeheim meldet: 85-jährige Bewohnerin mit Demenz seit 2 Stunden verschwunden. Nicht ortskundig. Draußen 4°C.",
+      "einsatzort": "Salzburg, Umgebung Pflegeheim Liefering",
+      "patient": { "alter": 85, "geschlecht": "w", "bewusstsein": "wach (desorientiert)", "atmung": "normal" },
+      "aao": { "primaer": ["Polizei"], "sekundaer": ["RTW (Bereitschaft)"], "optional": ["C6 Wärmebildkamera"] },
+      "eskalationen": [
+        { "trigger": "nach 30 Min", "ereignis": "Polizei meldet: Keine Spur – C6 Wärmebildkamera anfordern und Großfahndung einleiten" }
+      ],
+      "erwartete_aktionen": ["Polizei alarmieren", "RTW Bereitschaft", "C6 Wärmebildkamera bei Eskalation", "Doku"],
+      "bewertungskriterien": ["Polizei disponiert", "C6 Entscheidung", "RTW bereitgehalten"]
+    },
+
+    {
+      "id": "S099",
+      "kategorie": "Interne Notfälle",
+      "titel": "Reanimation – Arztpraxis",
+      "prioritaet": "E1",
+      "stichwort": "INT – Reanimation",
+      "beschreibung": "Arztpraxis ruft Notruf: Patient während Konsultation kollabiert, Reanimation durch Praxisteam läuft bereits.",
+      "einsatzort": "Salzburg, Dr.-Franz-Rehrl-Platz 4, Allgemeinmedizin",
+      "patient": { "alter": 62, "geschlecht": "m", "bewusstsein": "bewusstlos", "atmung": "keine" },
+      "aao": { "primaer": ["RTW", "NEF"], "sekundaer": [], "optional": [] },
+      "eskalationen": [
+        { "trigger": "nach 10 Min", "ereignis": "NEF meldet: ROSC nach 8 Min CPR – Kath-Labor UKH vorankündigen" }
+      ],
+      "erwartete_aktionen": ["RTW und NEF sofort alarmieren", "Kath-Labor UKH ankündigen", "Doku"],
+      "bewertungskriterien": ["Alarmierungszeit < 60 Sek", "Kath-Labor koordiniert"]
+    },
+
+    {
+      "id": "S100",
+      "kategorie": "Sonderlage",
+      "titel": "Terroranschlag – Innenstadt (Übung)",
+      "prioritaet": "E1",
+      "stichwort": "Sonst – Terrorlage",
+      "beschreibung": "Meldung über Schüsse in der Salzburger Innenstadt, mehrere Verletzte. Polizei bestätigt: Lage noch nicht gesichert. 5 Verletzte bekannt.",
+      "einsatzort": "Salzburg Innenstadt, Getreidegasse",
+      "patient": { "alter": 0, "geschlecht": "-", "bewusstsein": "verschieden", "atmung": "verschieden" },
+      "aao": { "primaer": ["RTW", "NEF", "EL"], "sekundaer": ["Polizei (SEK)", "KIT"], "optional": ["C6", "Führungskraft sofort informieren"] },
+      "eskalationen": [
+        { "trigger": "sofort", "ereignis": "RTW NICHT einfahren bis Polizei Freigabe – Cold Zone etablieren" },
+        { "trigger": "nach 10 Min", "ereignis": "Polizei: Lage gesichert, 8 Verletzte, 2 kritisch – RTW können einfahren" },
+        { "trigger": "nach 15 Min", "ereignis": "EL meldet: Führungskraft und Landesalarmzentrale informieren, Nachbarleitstellen aktivieren" }
+      ],
+      "erwartete_aktionen": ["RTW bereitstellen", "Cold Zone koordinieren", "Polizei Freigabe abwarten", "Führungskraft sofort informieren", "Landesalarmzentrale", "Doku"],
+      "bewertungskriterien": ["Cold Zone eingehalten", "Polizei Koordination", "Führungskraft informiert", "Landesalarmzentrale", "Nachbarleitstellen aktiviert"]
+    }
+
+  ]
+}
