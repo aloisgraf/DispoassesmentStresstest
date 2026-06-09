@@ -759,8 +759,24 @@ function toastAnnehmen(szenarioId) {
 }
 
 // ---- KI FUNK-ANTWORT (Anthropic API) ----
+async function ladeApiKey() {
+  // Versuche zuerst den Key vom Server zu laden (Render env var)
+  try {
+    const response = await fetch('/api/config');
+    const config = await response.json();
+    if (config.apiKey) {
+      return config.apiKey;
+    }
+  } catch(e) {
+    console.warn('Server config nicht erreichbar, verwende localStorage');
+  }
+
+  // Fallback: localStorage
+  return localStorage.getItem('els_api_key');
+}
+
 async function generiereKIFunkAntwort(disponenText) {
-  const apiKey = localStorage.getItem('els_api_key');
+  const apiKey = await ladeApiKey();
 
   if (!apiKey) {
     // Fallback ohne API

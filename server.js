@@ -44,6 +44,17 @@ const server = http.createServer((req, res) => {
     pathname = pathname.slice(1);
   }
 
+  // API Endpoints
+  if (pathname === 'api/config') {
+    const apiKey = process.env.ANTHROPIC_API_KEY;
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({
+      hasApiKey: !!apiKey,
+      apiKey: apiKey || null
+    }));
+    return;
+  }
+
   // Default to index.html for root
   if (pathname === '' || pathname === '/') {
     pathname = 'index.html';
