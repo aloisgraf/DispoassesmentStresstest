@@ -909,6 +909,92 @@ input, select, textarea, button {
   font-size: 9px;
 }
 
+/* ---- ALARM TOAST ---- */
+.alarm-toast {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  border: 3px solid var(--red);
+  border-radius: 8px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  z-index: 10000;
+  min-width: 400px;
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translate(-50%, -60%);
+    opacity: 0;
+  }
+  to {
+    transform: translate(-50%, -50%);
+    opacity: 1;
+  }
+}
+
+.alarm-toast-header {
+  background: var(--red);
+  color: white;
+  padding: 12px 16px;
+  font-weight: 700;
+  font-size: 14px;
+  border-radius: 5px 5px 0 0;
+}
+
+.alarm-toast-body {
+  padding: 16px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text-primary);
+}
+
+.alarm-toast-body strong {
+  font-size: 14px;
+  display: block;
+  margin-bottom: 6px;
+}
+
+.alarm-toast-actions {
+  display: flex;
+  gap: 8px;
+  padding: 12px 16px;
+  border-top: 1px solid var(--border);
+}
+
+.btn-alarm-accept,
+.btn-alarm-later {
+  flex: 1;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-alarm-accept {
+  background: var(--green);
+  color: white;
+  border-color: var(--green);
+}
+
+.btn-alarm-accept:hover {
+  background: #0e7614;
+}
+
+.btn-alarm-later {
+  background: var(--bg-app);
+  color: var(--text-primary);
+}
+
+.btn-alarm-later:hover {
+  background: var(--bg-hover);
+}
+
 /* ---- SCROLLBARS ---- */
 ::-webkit-scrollbar {
   width: 8px;
