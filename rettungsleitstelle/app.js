@@ -229,23 +229,61 @@ function emStatusKlick(kennung) {
 
 // ---- EINSATZ HANDLERS ----
 function initEinsatzHandlers() {
+  console.log('initEinsatzHandlers called');
+
   const btnNewEinsatz = document.getElementById('btn-new-einsatz');
-  if (btnNewEinsatz) btnNewEinsatz.addEventListener('click', neuerEinsatz);
+  console.log('btn-new-einsatz found:', !!btnNewEinsatz);
+  if (btnNewEinsatz) {
+    btnNewEinsatz.addEventListener('click', (e) => {
+      console.log('btn-new-einsatz clicked');
+      neuerEinsatz();
+    });
+  }
 
   const btnAlarmieren = document.getElementById('btn-alarmieren');
-  if (btnAlarmieren) btnAlarmieren.addEventListener('click', alarmieren);
+  console.log('btn-alarmieren found:', !!btnAlarmieren);
+  if (btnAlarmieren) {
+    btnAlarmieren.addEventListener('click', (e) => {
+      console.log('btn-alarmieren clicked');
+      alarmieren();
+    });
+  }
 
   const btnSave = document.getElementById('btn-einsatz-save');
-  if (btnSave) btnSave.addEventListener('click', einsatzSpeichern);
+  console.log('btn-einsatz-save found:', !!btnSave);
+  if (btnSave) {
+    btnSave.addEventListener('click', (e) => {
+      console.log('btn-einsatz-save clicked');
+      einsatzSpeichern();
+    });
+  }
 
   const btnAbschliessen = document.getElementById('btn-einsatz-abschliessen');
-  if (btnAbschliessen) btnAbschliessen.addEventListener('click', einsatzAbschliessen);
+  console.log('btn-einsatz-abschliessen found:', !!btnAbschliessen);
+  if (btnAbschliessen) {
+    btnAbschliessen.addEventListener('click', (e) => {
+      console.log('btn-einsatz-abschliessen clicked');
+      einsatzAbschliessen();
+    });
+  }
 
   const btnAaoAdd = document.getElementById('btn-aao-add');
-  if (btnAaoAdd) btnAaoAdd.addEventListener('click', aaoHinzufuegen);
+  console.log('btn-aao-add found:', !!btnAaoAdd);
+  if (btnAaoAdd) {
+    btnAaoAdd.addEventListener('click', (e) => {
+      console.log('btn-aao-add clicked');
+      aaoHinzufuegen();
+    });
+  }
 
   const btnAaoVorschlag = document.getElementById('btn-aao-vorschlag');
-  if (btnAaoVorschlag) btnAaoVorschlag.addEventListener('click', aaoVorschlag);
+  console.log('btn-aao-vorschlag found:', !!btnAaoVorschlag);
+  if (btnAaoVorschlag) {
+    btnAaoVorschlag.addEventListener('click', (e) => {
+      console.log('btn-aao-vorschlag clicked');
+      aaoVorschlag();
+    });
+  }
 
   const dokuInput = document.getElementById('doku-input');
   if (dokuInput) {
