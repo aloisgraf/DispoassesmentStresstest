@@ -74,7 +74,7 @@ const server = http.createServer((req, res) => {
 
           res.writeHead(200, {
             'Content-Type': getMimeType('index.html'),
-            'Cache-Control': 'public, max-age=3600'
+            'Cache-Control': 'public, max-age=0, must-revalidate'
           });
           res.end(fallbackData);
           console.log(`[200] ${req.method} ${req.url} (served as index.html)`);
@@ -91,9 +91,10 @@ const server = http.createServer((req, res) => {
 
     // File found
     const mimeType = getMimeType(filePath);
-    const cacheControl = pathname.endsWith('.html')
-      ? 'public, max-age=0, must-revalidate'  // Don't cache HTML
-      : 'public, max-age=86400';               // Cache assets for 24h
+    // Never cache HTML, CSS, or JS in development mode
+    const cacheControl = (pathname.endsWith('.html') || pathname.endsWith('.css') || pathname.endsWith('.js'))
+      ? 'public, max-age=0, must-revalidate'  // Don't cache HTML/CSS/JS
+      : 'public, max-age=86400';               // Cache static assets (images, fonts) for 24h
 
     res.writeHead(200, {
       'Content-Type': mimeType,

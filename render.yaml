@@ -5,12 +5,6 @@ services:
     plan: free
     buildCommand: npm install
     startCommand: npm start
-    staticPublishPath: ./rettungsleitstelle
-    routes:
-      - path: /
-        staticPath: ./rettungsleitstelle/index.html
-      - path: /*
-        staticPath: ./rettungsleitstelle
     envVars:
       - key: NODE_ENV
         value: production
