@@ -229,18 +229,33 @@ function emStatusKlick(kennung) {
 
 // ---- EINSATZ HANDLERS ----
 function initEinsatzHandlers() {
-  document.getElementById('btn-new-einsatz').addEventListener('click', neuerEinsatz);
-  document.getElementById('btn-close-einsatz').addEventListener('click', einsatzSchliessen);
-  document.getElementById('btn-alarmieren').addEventListener('click', alarmieren);
-  document.getElementById('btn-einsatz-save').addEventListener('click', einsatzSpeichern);
-  document.getElementById('btn-einsatz-abschliessen').addEventListener('click', einsatzAbschliessen);
-  document.getElementById('btn-aao-add').addEventListener('click', aaoHinzufuegen);
-  document.getElementById('btn-aao-vorschlag').addEventListener('click', aaoVorschlag);
+  const btnNewEinsatz = document.getElementById('btn-new-einsatz');
+  if (btnNewEinsatz) btnNewEinsatz.addEventListener('click', neuerEinsatz);
 
-  document.getElementById('doku-input').addEventListener('keydown', e => {
-    if (e.key === 'Enter') dokuEintrag();
-  });
-  document.getElementById('btn-doku-add').addEventListener('click', dokuEintrag);
+  const btnAlarmieren = document.getElementById('btn-alarmieren');
+  if (btnAlarmieren) btnAlarmieren.addEventListener('click', alarmieren);
+
+  const btnSave = document.getElementById('btn-einsatz-save');
+  if (btnSave) btnSave.addEventListener('click', einsatzSpeichern);
+
+  const btnAbschliessen = document.getElementById('btn-einsatz-abschliessen');
+  if (btnAbschliessen) btnAbschliessen.addEventListener('click', einsatzAbschliessen);
+
+  const btnAaoAdd = document.getElementById('btn-aao-add');
+  if (btnAaoAdd) btnAaoAdd.addEventListener('click', aaoHinzufuegen);
+
+  const btnAaoVorschlag = document.getElementById('btn-aao-vorschlag');
+  if (btnAaoVorschlag) btnAaoVorschlag.addEventListener('click', aaoVorschlag);
+
+  const dokuInput = document.getElementById('doku-input');
+  if (dokuInput) {
+    dokuInput.addEventListener('keydown', e => {
+      if (e.key === 'Enter') dokuEintrag();
+    });
+  }
+
+  const btnDokuAdd = document.getElementById('btn-doku-add');
+  if (btnDokuAdd) btnDokuAdd.addEventListener('click', dokuEintrag);
 }
 
 function neuerEinsatz(szenario = null) {
@@ -303,21 +318,32 @@ function einsatzOeffnen(id) {
   document.getElementById('f-etage').value        = einsatz.etage || '';
   document.getElementById('f-zielort').value      = einsatz.zielort || '';
   document.getElementById('f-ziel-station').value = einsatz.zielStation || '';
-  document.getElementById('f-patient').value      = einsatz.patient || '';
-  document.getElementById('f-alter').value        = einsatz.alter || '';
-  document.getElementById('f-geschlecht').value   = einsatz.geschlecht || '-';
-  document.getElementById('f-bewusstsein').value  = einsatz.bewusstsein || '-';
-  document.getElementById('f-einsatz-status').value = einsatz.status || 'offen';
-  document.getElementById('em-rnkr').textContent  = einsatz.rnkr;
-  document.getElementById('doku-user').textContent = STATE.user ? `[${STATE.user.kuerzel}]` : '';
+  const patientField = document.getElementById('f-patient');
+  if (patientField) patientField.value = einsatz.patient || '';
+
+  const alterField = document.getElementById('f-alter');
+  if (alterField) alterField.value = einsatz.alter || '';
+
+  const geschlechtField = document.getElementById('f-geschlecht');
+  if (geschlechtField) geschlechtField.value = einsatz.geschlecht || '-';
+
+  const bewusstseinField = document.getElementById('f-bewusstsein');
+  if (bewusstseinField) bewusstseinField.value = einsatz.bewusstsein || '-';
+
+  const statusField = document.getElementById('f-einsatz-status');
+  if (statusField) statusField.value = einsatz.status || 'offen';
+
+  const rnkrEl = document.getElementById('em-rnkr');
+  if (rnkrEl) rnkrEl.textContent = einsatz.rnkr;
+
+  const dokuUserEl = document.getElementById('doku-user');
+  if (dokuUserEl) dokuUserEl.textContent = STATE.user ? `[${STATE.user.kuerzel}]` : '';
 
   // AAO Chips
   renderAaoChips(einsatz.aao);
 
   // Doku
   renderDoku(einsatz.doku);
-
-  document.getElementById('einsatzmaske-panel').style.display = 'flex';
 
   // Aktive Zeile in Liste markieren
   document.querySelectorAll('.einsatz-row').forEach(r => r.classList.remove('active'));
@@ -469,6 +495,7 @@ function dokuEintrag() {
 
 function renderDoku(doku) {
   const container = document.getElementById('doku-entries');
+  if (!container) return;
   container.innerHTML = '';
   (doku || []).forEach(e => {
     const div = document.createElement('div');
@@ -610,8 +637,8 @@ function initFunkHandlers() {
   const input  = document.getElementById('funk-input');
   const btnSend = document.getElementById('btn-funk-send');
 
-  input.addEventListener('keydown', e => { if (e.key === 'Enter') sendFunk(); });
-  btnSend.addEventListener('click', sendFunk);
+  if (input) input.addEventListener('keydown', e => { if (e.key === 'Enter') sendFunk(); });
+  if (btnSend) btnSend.addEventListener('click', sendFunk);
 }
 
 function sendFunk() {

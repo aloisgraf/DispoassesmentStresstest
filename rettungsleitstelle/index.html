@@ -61,97 +61,97 @@
         </div>
 
         <div class="einsatzmaske-scroll">
-          <div class="em-section">
-            <div class="em-2col">
-              <div class="em-col">
-                <div class="em-field"><label>Einsatzadresse</label><input type="text" id="f-adresse" placeholder="Straße, Hausnummer, Ort" /></div>
-                <div class="em-field"><label>Etage / Objekt</label><input type="text" id="f-etage" placeholder="z.B. 2. OG, Büro" /></div>
+          <!-- ROW 1: ADRESSE (LEFT) + AAO (RIGHT) -->
+          <div class="em-row-2col">
+            <div class="em-col">
+              <div class="em-field"><label>Einsatzadresse</label><input type="text" id="f-adresse" placeholder="Straße, Hausnummer, Ort" /></div>
+              <div class="em-field"><label>Etage / Objekt</label><input type="text" id="f-etage" placeholder="z.B. 2. OG, Büro" /></div>
+            </div>
+            <div class="em-col aao-col">
+              <div class="aao-header">AAO</div>
+              <div class="aao-chips" id="aao-chips"></div>
+              <div class="aao-controls">
+                <select id="aao-select-em">
+                  <option value="">– Einsatzmittel –</option>
+                  <optgroup label="Eigene">
+                    <option value="20-201">20-201 RTW</option><option value="20-202">20-202 RTW</option>
+                    <option value="20-203">20-203 RTW</option><option value="20-204">20-204 RTW</option>
+                    <option value="20-205">20-205 RTW</option><option value="20-206">20-206 RTW</option>
+                    <option value="20-207">20-207 RTW</option><option value="20-301">20-301 KTW</option>
+                    <option value="20-302">20-302 KTW</option><option value="20-303">20-303 KTW</option>
+                    <option value="20-304">20-304 KTW</option><option value="20-305">20-305 KTW</option>
+                    <option value="20-306">20-306 KTW</option><option value="20-307">20-307 KTW</option>
+                    <option value="20-308">20-308 KTW</option><option value="10-101">10-101 NEF</option>
+                    <option value="C6">C6 Christophorus</option><option value="20-701">20-701 Einsatzleiter</option>
+                    <option value="FR-Koppl">FR Koppl</option><option value="FR-Gnigl">FR Gnigl</option>
+                    <option value="FR-Maxglan">FR Maxglan</option><option value="FR-Liefering">FR Liefering</option>
+                    <option value="FR-Bergheim">FR Bergheim</option><option value="FR-Taxham">FR Taxham</option>
+                  </optgroup>
+                  <optgroup label="Partner">
+                    <option value="BRG-Grödig">Bergrettung Grödig</option><option value="WR-Wolfgangsee">Wasserrettung Wolfgangsee</option>
+                    <option value="KIT">KIT</option>
+                  </optgroup>
+                </select>
+                <button class="btn-small" id="btn-aao-add">+</button>
+                <button class="btn-small" id="btn-aao-vorschlag">Vorschlag</button>
               </div>
-              <div class="em-col">
-                <div class="em-field"><label>Einsatzgrund</label><input type="text" id="f-stichwort" placeholder="z.B. INT – Kardial" /></div>
-                <div class="em-field"><label>Priorität</label>
-                  <select id="f-prioritaet">
-                    <option value="E1">E1 – Notfall</option>
-                    <option value="E2">E2 – Dringend</option>
-                    <option value="E3">E3 – Normal</option>
-                    <option value="KT">KT – Transport</option>
-                  </select>
-                </div>
+              <div class="aao-hint" id="aao-hint"></div>
+            </div>
+          </div>
+
+          <!-- ROW 2: EINSATZGRUND + EINSATZART -->
+          <div class="em-row-2col">
+            <div class="em-col">
+              <div class="em-field"><label>Einsatzgrund</label><input type="text" id="f-stichwort" placeholder="z.B. INT – Kardial" /></div>
+            </div>
+            <div class="em-col">
+              <div class="em-field"><label>Einsatzart</label>
+                <select id="f-einsatzart">
+                  <option value="RD">Rettungsdienst</option><option value="KT">Krankentransport</option>
+                  <option value="BRG">Bergeinsatz</option><option value="WS">Wassereinsatz</option>
+                  <option value="SL">Sonderlage</option>
+                </select>
               </div>
             </div>
           </div>
 
-          <div class="aao-section">
-            <div class="aao-header">AAO – Alarm- & Ausrückeordnung</div>
-            <div class="aao-chips" id="aao-chips"></div>
-            <div class="aao-controls">
-              <select id="aao-select-em">
-                <option value="">– Einsatzmittel –</option>
-                <optgroup label="Eigene">
-                  <option value="20-201">20-201 RTW</option><option value="20-202">20-202 RTW</option>
-                  <option value="20-203">20-203 RTW</option><option value="20-204">20-204 RTW</option>
-                  <option value="20-205">20-205 RTW</option><option value="20-206">20-206 RTW</option>
-                  <option value="20-207">20-207 RTW</option><option value="20-301">20-301 KTW</option>
-                  <option value="20-302">20-302 KTW</option><option value="20-303">20-303 KTW</option>
-                  <option value="20-304">20-304 KTW</option><option value="20-305">20-305 KTW</option>
-                  <option value="20-306">20-306 KTW</option><option value="20-307">20-307 KTW</option>
-                  <option value="20-308">20-308 KTW</option><option value="10-101">10-101 NEF</option>
-                  <option value="C6">C6 Christophorus</option><option value="20-701">20-701 Einsatzleiter</option>
-                  <option value="FR-Koppl">FR Koppl</option><option value="FR-Gnigl">FR Gnigl</option>
-                  <option value="FR-Maxglan">FR Maxglan</option><option value="FR-Liefering">FR Liefering</option>
-                  <option value="FR-Bergheim">FR Bergheim</option><option value="FR-Taxham">FR Taxham</option>
-                </optgroup>
-                <optgroup label="Partner">
-                  <option value="BRG-Grödig">Bergrettung Grödig</option><option value="BRG-Gaisberg">Bergrettung Gaisberg</option>
-                  <option value="BRG-Saalbach">Bergrettung Saalbach</option><option value="WR-Wolfgangsee">Wasserrettung Wolfgangsee</option>
-                  <option value="WR-Mondsee">Wasserrettung Mondsee</option><option value="KIT">KIT</option>
-                </optgroup>
+          <!-- ROW 3: PRIORITÄT -->
+          <div class="em-row-1col">
+            <div class="em-field"><label>Priorität</label>
+              <select id="f-prioritaet">
+                <option value="E1">E1 – Notfall</option>
+                <option value="E2">E2 – Dringend</option>
+                <option value="E3">E3 – Normal</option>
+                <option value="KT">KT – Transport</option>
               </select>
-              <button class="btn-small" id="btn-aao-add">+</button>
-              <button class="btn-small" id="btn-aao-vorschlag">Vorschlag</button>
             </div>
-            <div class="aao-hint" id="aao-hint"></div>
           </div>
 
-          <div class="em-section">
-            <div class="em-2col">
-              <div class="em-col">
-                <div class="em-field"><label>Patientenname</label><input type="text" id="f-patient" placeholder="Name oder Unbekannt" /></div>
-                <div class="em-field"><label>Alter</label><input type="number" id="f-alter" placeholder="Jahre" min="0" max="120" /></div>
-                <div class="em-field"><label>Geschlecht</label>
-                  <select id="f-geschlecht">
-                    <option value="-">–</option><option value="m">Männlich</option>
-                    <option value="w">Weiblich</option><option value="d">Divers</option>
-                  </select>
-                </div>
-                <div class="em-field"><label>Bewusstsein</label>
-                  <select id="f-bewusstsein">
-                    <option value="-">–</option><option value="wach">Wach</option>
-                    <option value="eingeschränkt">Eingeschränkt</option><option value="bewusstlos">Bewusstlos</option>
-                    <option value="reanimation">Reanimation</option>
-                  </select>
-                </div>
+          <!-- ROW 4: PATIENTENDATEN (LEFT) + ZIELORT (RIGHT) -->
+          <div class="em-row-2col">
+            <div class="em-col">
+              <div class="em-field"><label>Patientenname</label><input type="text" id="f-patient" placeholder="Name oder Unbekannt" /></div>
+              <div class="em-field"><label>Alter</label><input type="number" id="f-alter" placeholder="Jahre" min="0" max="120" /></div>
+              <div class="em-field"><label>Geschlecht</label>
+                <select id="f-geschlecht">
+                  <option value="-">–</option><option value="m">Männlich</option>
+                  <option value="w">Weiblich</option><option value="d">Divers</option>
+                </select>
               </div>
-              <div class="em-col">
-                <div class="em-field"><label>Zielort</label><input type="text" id="f-zielort" placeholder="z.B. UKH, LKH, CDK" /></div>
-                <div class="em-field"><label>Station / Bereich</label><input type="text" id="f-ziel-station" placeholder="z.B. Kath-Labor" /></div>
-                <div class="em-field"><label>Einsatzart</label>
-                  <select id="f-einsatzart">
-                    <option value="RD">Rettungsdienst</option><option value="KT">Krankentransport</option>
-                    <option value="BRG">Bergeinsatz</option><option value="WS">Wassereinsatz</option>
-                    <option value="SL">Sonderlage</option>
-                  </select>
-                </div>
-                <div class="em-field"><label>Status</label>
-                  <select id="f-einsatz-status">
-                    <option value="offen">Offen</option><option value="laufend">Laufend</option>
-                    <option value="abgeschlossen">Abgeschlossen</option>
-                  </select>
-                </div>
+            </div>
+            <div class="em-col">
+              <div class="em-field"><label>Zielort</label><input type="text" id="f-zielort" placeholder="z.B. UKH, LKH, CDK" /></div>
+              <div class="em-field"><label>Station / Bereich</label><input type="text" id="f-ziel-station" placeholder="z.B. Kath-Labor" /></div>
+              <div class="em-field"><label>Status</label>
+                <select id="f-einsatz-status">
+                  <option value="offen">Offen</option><option value="laufend">Laufend</option>
+                  <option value="abgeschlossen">Abgeschlossen</option>
+                </select>
               </div>
             </div>
           </div>
 
+          <!-- BUTTONS -->
           <div class="em-buttons-row">
             <button class="btn-action btn-alarm" id="btn-alarmieren">🚨 ALARMIEREN</button>
             <button class="btn-action btn-save" id="btn-einsatz-save">💾 Speichern</button>
@@ -159,6 +159,7 @@
           </div>
         </div>
 
+        <!-- EINSATZLISTE -->
         <div class="einsatzliste-panel">
           <div class="panel-header"><span class="panel-title">Einsatzliste</span></div>
           <div class="einsatzliste-table-wrap">
@@ -169,6 +170,7 @@
           </div>
         </div>
 
+        <!-- FUNK -->
         <div class="funk-panel">
           <div class="panel-header"><span class="panel-title">🎙 Funk</span></div>
           <div class="funk-messages" id="funk-messages"></div>
@@ -179,6 +181,7 @@
         </div>
       </div>
 
+      <!-- STATUSSCHIRM -->
       <div class="panel panel-status" id="panel-status">
         <div class="panel-header"><span class="panel-title">Statusschirm – Einsatzmittel</span></div>
         <div class="status-screen" id="status-screen"></div>
@@ -186,6 +189,7 @@
     </div>
   </div>
 
+  <!-- PRÜFER -->
   <div class="pruefer-overlay" id="pruefer-overlay" style="display:none">
     <div class="pruefer-panel">
       <div class="pruefer-header"><span>🔐 Prüfer</span><button id="btn-pruefer-close">✕</button></div>
