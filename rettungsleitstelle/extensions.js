@@ -5,6 +5,7 @@
 
 // ---- BROADCAST CHANNEL (Statusschirm Sync) ----
 const statusBC = new BroadcastChannel('els_status');
+const einsatzBC = new BroadcastChannel('els_einsatz');
 
 function broadcastStatus() {
   if (!STATE?.einsatzmittel) return;
@@ -13,6 +14,31 @@ function broadcastStatus() {
     einsatzmittel: STATE.einsatzmittel
   });
 }
+
+function broadcastEinsatz(einsatz) {
+  if (!STATE?.einsaetze) return;
+  einsatzBC.postMessage({
+    type: 'einsatz_update',
+    einsaetze: STATE.einsaetze,
+    neuerEinsatz: einsatz
+  });
+}
+
+// Empfange Einsatz-Updates von anderen Tabs
+einsatzBC.onmessage = (event) => {
+  if (event.data.type === 'einsatz_update' && event.data.einsaetze) {
+    // Update STATE mit neuesten Einsätzen von anderem Tab
+    const neueIds = event.data.einsaetze.map(e => e.id);
+    const altIds = STATE.einsaetze.map(e => e.id);
+
+    // Nur hinzufügen wenn es neue sind
+    const neuEinsaetze = event.data.einsaetze.filter(e => !altIds.includes(e.id));
+    if (neuEinsaetze.length > 0) {
+      STATE.einsaetze.push(...neuEinsaetze);
+      renderEinsatzliste();
+    }
+  }
+};
 
 // Status-Updates broadcasten sobald sich was ändert
 // Überschreibe renderStatusScreen um Broadcast einzuhängen

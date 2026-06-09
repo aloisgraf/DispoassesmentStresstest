@@ -309,6 +309,12 @@ function neuerEinsatz(szenario = null) {
 
   STATE.einsaetze.push(einsatz);
   renderEinsatzliste();
+
+  // Synchronisiere über BroadcastChannel zu anderen Tabs
+  if (window.broadcastEinsatz) {
+    broadcastEinsatz(einsatz);
+  }
+
   einsatzOeffnen(einsatz.id);
 
   prueferLog('info', `Neuer Einsatz: ${rnkr} – ${einsatz.stichwort || 'ohne Stichwort'}`);
@@ -753,8 +759,6 @@ function toastAnnehmen(szenarioId) {
   if (sz) {
     const einsatz = neuerEinsatz(sz);
     prueferLog('good', `Notruf ${szenarioId} angenommen, Einsatz ${einsatz.rnkr} erstellt`);
-    // Funk: eingehender Notruf
-    addFunkMsg('incoming', 'NOTRUF', `Eingehender Notruf: ${sz.stichwort} – ${sz.einsatzort}`);
   }
 }
 
