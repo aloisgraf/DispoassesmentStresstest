@@ -308,11 +308,15 @@ function neuerEinsatz(szenario = null) {
   einsatzDokuInterneintrag(einsatz, `Einsatz erstellt. ${szenario ? 'Szenario: ' + szenario.titel : ''}`);
 
   STATE.einsaetze.push(einsatz);
+  console.log('📋 Neuer Einsatz erstellt:', einsatz.rnkr);
   renderEinsatzliste();
 
   // Synchronisiere über BroadcastChannel zu anderen Tabs
   if (window.broadcastEinsatz) {
+    console.log('📢 Broadcasting Einsatz:', einsatz.rnkr);
     broadcastEinsatz(einsatz);
+  } else {
+    console.warn('⚠️ broadcastEinsatz nicht verfügbar');
   }
 
   einsatzOeffnen(einsatz.id);

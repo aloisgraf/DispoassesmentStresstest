@@ -17,6 +17,7 @@ function broadcastStatus() {
 
 function broadcastEinsatz(einsatz) {
   if (!STATE?.einsaetze) return;
+  console.log('📤 Broadcasting einsatz_update für:', einsatz.rnkr);
   einsatzBC.postMessage({
     type: 'einsatz_update',
     einsaetze: STATE.einsaetze,
@@ -26,15 +27,19 @@ function broadcastEinsatz(einsatz) {
 
 // Empfange Einsatz-Updates von anderen Tabs
 einsatzBC.onmessage = (event) => {
+  console.log('📥 Empfangen BroadcastChannel Nachricht:', event.data.type);
   if (event.data.type === 'einsatz_update' && event.data.einsaetze) {
+    console.log('✅ Einsatz-Update empfangen, Anzahl Einsätze:', event.data.einsaetze.length);
     // Update STATE mit neuesten Einsätzen von anderem Tab
     const neueIds = event.data.einsaetze.map(e => e.id);
     const altIds = STATE.einsaetze.map(e => e.id);
 
     // Nur hinzufügen wenn es neue sind
     const neuEinsaetze = event.data.einsaetze.filter(e => !altIds.includes(e.id));
+    console.log('Neue Einsätze:', neuEinsaetze.length);
     if (neuEinsaetze.length > 0) {
       STATE.einsaetze.push(...neuEinsaetze);
+      console.log('📋 Einsatzliste aktualisiert, renderEinsatzliste() aufgerufen');
       renderEinsatzliste();
     }
   }
