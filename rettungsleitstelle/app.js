@@ -322,13 +322,27 @@ function einsatzOeffnen(id) {
   STATE.aktiverEinsatz = id;
 
   // Maske befüllen
-  document.getElementById('f-stichwort').value    = einsatz.stichwort || '';
-  document.getElementById('f-prioritaet').value   = einsatz.prioritaet || 'E1';
-  document.getElementById('f-einsatzart').value   = einsatz.einsatzart || 'RD';
-  document.getElementById('f-adresse').value      = einsatz.adresse || '';
-  document.getElementById('f-etage').value        = einsatz.etage || '';
-  document.getElementById('f-zielort').value      = einsatz.zielort || '';
-  document.getElementById('f-ziel-station').value = einsatz.zielStation || '';
+  const stichwortField = document.getElementById('f-stichwort');
+  if (stichwortField) stichwortField.value = einsatz.stichwort || '';
+
+  const prioritaetField = document.getElementById('f-prioritaet');
+  if (prioritaetField) prioritaetField.value = einsatz.prioritaet || 'E1';
+
+  const einsatzartField = document.getElementById('f-einsatzart');
+  if (einsatzartField) einsatzartField.value = einsatz.einsatzart || 'RD';
+
+  const adresseField = document.getElementById('f-adresse');
+  if (adresseField) adresseField.value = einsatz.adresse || '';
+
+  const etageField = document.getElementById('f-etage');
+  if (etageField) etageField.value = einsatz.etage || '';
+
+  const zielortField = document.getElementById('f-zielort');
+  if (zielortField) zielortField.value = einsatz.zielort || '';
+
+  const zielStationField = document.getElementById('f-ziel-station');
+  if (zielStationField) zielStationField.value = einsatz.zielStation || '';
+
   const patientField = document.getElementById('f-patient');
   if (patientField) patientField.value = einsatz.patient || '';
 
@@ -365,7 +379,8 @@ function einsatzOeffnen(id) {
 function einsatzSchliessen() {
   einsatzSpeichern();
   STATE.aktiverEinsatz = null;
-  document.getElementById('einsatzmaske-panel').style.display = 'none';
+  const panel = document.getElementById('einsatzmaske-panel');
+  if (panel) panel.style.display = 'none';
   document.querySelectorAll('.einsatz-row').forEach(r => r.classList.remove('active'));
 }
 
@@ -374,18 +389,23 @@ function einsatzSpeichern() {
   const einsatz = STATE.einsaetze.find(e => e.id === STATE.aktiverEinsatz);
   if (!einsatz) return;
 
-  einsatz.stichwort   = document.getElementById('f-stichwort').value;
-  einsatz.prioritaet  = document.getElementById('f-prioritaet').value;
-  einsatz.einsatzart  = document.getElementById('f-einsatzart').value;
-  einsatz.adresse     = document.getElementById('f-adresse').value;
-  einsatz.etage       = document.getElementById('f-etage').value;
-  einsatz.zielort     = document.getElementById('f-zielort').value;
-  einsatz.zielStation = document.getElementById('f-ziel-station').value;
-  einsatz.patient     = document.getElementById('f-patient').value;
-  einsatz.alter       = document.getElementById('f-alter').value;
-  einsatz.geschlecht  = document.getElementById('f-geschlecht').value;
-  einsatz.bewusstsein = document.getElementById('f-bewusstsein').value;
-  einsatz.status      = document.getElementById('f-einsatz-status').value;
+  const getSafeValue = (id) => {
+    const el = document.getElementById(id);
+    return el ? el.value : (einsatz[id.substring(2)] || '');
+  };
+
+  einsatz.stichwort   = getSafeValue('f-stichwort');
+  einsatz.prioritaet  = getSafeValue('f-prioritaet');
+  einsatz.einsatzart  = getSafeValue('f-einsatzart');
+  einsatz.adresse     = getSafeValue('f-adresse');
+  einsatz.etage       = getSafeValue('f-etage');
+  einsatz.zielort     = getSafeValue('f-zielort');
+  einsatz.zielStation = getSafeValue('f-ziel-station');
+  einsatz.patient     = getSafeValue('f-patient');
+  einsatz.alter       = getSafeValue('f-alter');
+  einsatz.geschlecht  = getSafeValue('f-geschlecht');
+  einsatz.bewusstsein = getSafeValue('f-bewusstsein');
+  einsatz.status      = getSafeValue('f-einsatz-status');
 
   renderEinsatzliste();
   STATE.simulation.letzteAktion = Date.now();
