@@ -692,6 +692,24 @@ function toastAnnehmen(szenarioId) {
 
 // ---- KI FUNK-ANTWORT (Anthropic API) ----
 async function generiereKIFunkAntwort(disponenText) {
+  const apiKey = localStorage.getItem('anthropic-api-key');
+
+  if (!apiKey) {
+    // Fallback ohne API
+    const sender = ermittleFunkSender();
+    setTimeout(() => {
+      const antworten = [
+        'Verstanden, führen aus.',
+        'Kopiert, wir sind unterwegs.',
+        'Bestätigt. Melden uns bei Eintreffen.',
+        'Roger, Leitstelle. Auf dem Weg.',
+        'Ja, erledigt. Danke.'
+      ];
+      addFunkMsg('incoming', sender, antworten[Math.floor(Math.random()*antworten.length)]);
+    }, zufallZahl(2, 5) * 1000);
+    return;
+  }
+
   const aktiveEinsaetze = STATE.einsaetze.filter(e => e.status !== 'abgeschlossen');
   const emStatus = STATE.einsatzmittel.slice(0,10).map(em =>
     `${em.kennung}(${em.status})`
@@ -703,18 +721,19 @@ Aktuelle Lage: ${aktiveEinsaetze.length} aktive Einsätze. Einsatzmittel-Status:
 Drucklevel: ${STATE.simulation.drucklevel}/5.
 Antworte KURZ und REALISTISCH wie ein echter Sanitäter/Rettungsfahrer im Funk.
 Österreichischer Funkkjargon. Max 2 Sätze. Kein "Guten Tag" etc.
-Wenn der Disponent etwas anweist: bestätige oder melde ein Problem.
-Reagiere auf was der Disponent sagt: "${disponenText}"`;
+Wenn der Disponent etwas anweist: bestätige oder melde ein Problem.`;
 
   try {
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey
+      },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 150,
-        messages: [{ role: 'user', content: disponenText }],
-        system: systemPrompt
+        model: 'claude-3-5-sonnet-20241022',
+        max_tokens: 100,
+        messages: [{ role: 'user', content: `${systemPrompt}\n\nDisponent sagt: "${disponenText}"` }]
       })
     });
 
@@ -722,15 +741,16 @@ Reagiere auf was der Disponent sagt: "${disponenText}"`;
       const data = await response.json();
       const antwort = data.content?.[0]?.text?.trim();
       if (antwort) {
-        // Welches Einsatzmittel antwortet?
         const sender = ermittleFunkSender();
         setTimeout(() => {
           addFunkMsg('incoming', sender, antwort);
         }, zufallZahl(2, 6) * 1000);
       }
+    } else {
+      throw new Error(`API Error: ${response.status}`);
     }
   } catch(e) {
-    // API nicht verfügbar – einfache Fallback-Antwort
+    console.warn('KI-Funk fehlgeschlagen:', e);
     const sender = ermittleFunkSender();
     setTimeout(() => {
       const antworten = [
@@ -774,8 +794,8 @@ function startSimulation() {
   // Erstes Szenario nach 5-10 Sek
   setTimeout(spieleSzenarioEin, zufallZahl(5, 10) * 1000);
 
-  // Drucksteuerungs-Loop alle 30 Sek
-  STATE.simulation.druckLoop = setInterval(aktualisiereDrucklevel, 30000);
+  // Drucksteuerungs-Loop alle 20 Sek
+  STATE.simulation.druckLoop = setInterval(aktualisiereDrucklevel, 20000);
 
   if (STATE.rolle === 'pruefer') {
     document.getElementById('btn-uebung-start').disabled = true;
@@ -786,6 +806,7 @@ function startSimulation() {
 function stoppSimulation() {
   STATE.simulation.aktiv = false;
   clearInterval(STATE.simulation.druckLoop);
+  clearInterval(STATE.simulation.szenarioLoop);
   STATE.simulation.eskalationsTimer.forEach(t => clearTimeout(t));
   STATE.simulation.eskalationsTimer = [];
 
@@ -809,22 +830,25 @@ function aktualisiereDrucklevel() {
   const alteLevel = STATE.simulation.drucklevel;
 
   // Drucklevel berechnen
-  if (offeneEinsaetze === 0 && sekSeitLetzterAktion > 20) {
-    // Disponent hat nichts zu tun – Druck erhöhen
+  if (offeneEinsaetze === 0 && sekSeitLetzterAktion > 25) {
     STATE.simulation.drucklevel = Math.min(5, STATE.simulation.drucklevel + 1);
-  } else if (offeneEinsaetze >= 4) {
+  } else if (offeneEinsaetze >= 5) {
+    STATE.simulation.drucklevel = 5;
+  } else if (offeneEinsaetze >= 3) {
     STATE.simulation.drucklevel = Math.min(5, STATE.simulation.drucklevel + 1);
   } else if (offeneEinsaetze <= 1 && sekSeitLetzterAktion < 30) {
     STATE.simulation.drucklevel = Math.max(1, STATE.simulation.drucklevel - 1);
   }
 
   if (STATE.simulation.drucklevel !== alteLevel) {
-    prueferLog('info', `Drucklevel: ${STATE.simulation.drucklevel}/5`);
+    prueferLog('info', `🔴 Drucklevel: ${STATE.simulation.drucklevel}/5 (${offeneEinsaetze} Einsätze offen)`);
   }
 
-  // Nächstes Szenario basierend auf Drucklevel
-  const pauseMs = berechnePause();
-  setTimeout(spieleSzenarioEin, pauseMs);
+  // Szenario einzuspielen wenn Kapazität da
+  if (offeneEinsaetze < 6) {
+    const pauseMs = berechnePause();
+    setTimeout(spieleSzenarioEin, pauseMs);
+  }
 }
 
 function berechnePause() {
@@ -982,57 +1006,174 @@ function prueferLog(typ, text) {
   container.scrollTop = container.scrollHeight;
 }
 
-// ---- AUSWERTUNG ----
+// ---- AUSWERTUNG (erweitert) ----
 function zeigeAuswertung() {
   const overlay = document.createElement('div');
   overlay.className = 'auswertung-overlay';
 
   const laufzeit = STATE.simulation.startzeit
-    ? Math.floor((Date.now() - STATE.simulation.startzeit) / 60000)
+    ? Math.floor((Date.now() - STATE.simulation.startzeit) / 1000)
     : 0;
+  const laufzeitMin = Math.floor(laufzeit / 60);
+  const laufzeitSek = laufzeit % 60;
 
   const gesamtEinsaetze = STATE.einsaetze.length;
   const abgeschlossen   = STATE.einsaetze.filter(e => e.status === 'abgeschlossen').length;
   const alarmiert       = STATE.einsaetze.filter(e => e.alarmiert).length;
+  const offen           = STATE.einsaetze.filter(e => e.status === 'offen' || e.status === 'laufend').length;
+
+  // Detaillierte Einsatz-Analyse
+  const einsatzAnalysen = STATE.einsaetze.map(e => {
+    const erstellt = new Date(e.zeitErstellt);
+    const alarmZeiten = e.doku.filter(d => d.text.includes('ALARM'));
+    const alarmZeit = alarmZeiten.length > 0 ? new Date(alarmZeiten[0].ts) : null;
+    const reactionTime = alarmZeit ? Math.floor((alarmZeit - erstellt) / 1000) : null;
+
+    return {
+      rnkr: e.rnkr,
+      stichwort: e.stichwort,
+      status: e.status,
+      aao: e.aao || [],
+      reactionTime,
+      dokuEintraege: e.doku.length,
+      prioVerfehlt: e.prioritaet === 'E1' && e.status === 'offen'
+    };
+  });
+
+  // Statistiken
+  const durmschnittReactionTime = einsatzAnalysen
+    .filter(ea => ea.reactionTime)
+    .reduce((sum, ea) => sum + ea.reactionTime, 0) / Math.max(1, einsatzAnalysen.filter(ea => ea.reactionTime).length);
+
+  const fehlerAnzahl = einsatzAnalysen.filter(ea => ea.prioVerfehlt || ea.aao.length === 0).length;
+  const bewertung = () => {
+    const punkte = (alarmiert / gesamtEinsaetze * 30) +
+                   (abgeschlossen / gesamtEinsaetze * 30) +
+                   (durmschnittReactionTime < 120 ? 20 : durmschnittReactionTime < 180 ? 10 : 0) +
+                   (fehlerAnzahl === 0 ? 20 : 10);
+    if (punkte >= 80) return { text: '⭐ Sehr gut', color: 'var(--green)' };
+    if (punkte >= 60) return { text: '👍 Gut', color: 'var(--cyan)' };
+    if (punkte >= 40) return { text: '🤔 Befriedigend', color: 'var(--yellow)' };
+    return { text: '⚠️ Fehlerberatung nötig', color: 'var(--red)' };
+  };
+  const notes = bewertung();
 
   overlay.innerHTML = `
-    <div class="auswertung-panel">
-      <h2>📊 Übungsauswertung</h2>
+    <div class="auswertung-panel" style="max-height:90vh;overflow-y:auto">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+        <h2 style="margin:0">📊 Übungsauswertung</h2>
+        <button onclick="this.closest('.auswertung-overlay').remove()" style="background:none;border:none;font-size:18px;cursor:pointer">✕</button>
+      </div>
+
+      <!-- Gesamtbewertung -->
+      <div class="auswertung-section" style="background:linear-gradient(135deg, rgba(0,200,255,0.1), rgba(100,150,255,0.1));border:2px solid ${notes.color};border-radius:8px;padding:16px">
+        <div style="text-align:center;font-size:24px;margin-bottom:8px">${notes.text}</div>
+        <div class="auswertung-kriterium" style="justify-content:space-between">
+          <span style="font-size:12px">Gesamtpunkte</span>
+          <span style="font-weight:bold;color:${notes.color};font-size:16px">${Math.round((alarmiert / gesamtEinsaetze * 30) + (abgeschlossen / gesamtEinsaetze * 30) + (durmschnittReactionTime < 120 ? 20 : 10) + (fehlerAnzahl === 0 ? 20 : 10))}/100</span>
+        </div>
+      </div>
+
+      <!-- Basis-Metriken -->
       <div class="auswertung-section">
-        <h3>Übersicht</h3>
+        <h3>⏱ Zeiten</h3>
         <div class="auswertung-kriterium">
           <span class="krit-icon">⏱</span>
           <span class="krit-text">Übungsdauer</span>
-          <span class="krit-zeit">${laufzeit} Minuten</span>
+          <span class="krit-zeit">${laufzeitMin}:${String(laufzeitSek).padStart(2,'0')} Min</span>
         </div>
         <div class="auswertung-kriterium">
-          <span class="krit-icon">📋</span>
-          <span class="krit-text">Einsätze gesamt angelegt</span>
+          <span class="krit-icon">${durmschnittReactionTime < 120 ? '✅' : '⚠️'}</span>
+          <span class="krit-text">Ø Reaktionszeit</span>
+          <span class="krit-zeit">${Math.round(durmschnittReactionTime)}s</span>
+        </div>
+        <div class="auswertung-kriterium">
+          <span class="krit-icon">📈</span>
+          <span class="krit-text">Max Drucklevel erreicht</span>
+          <span class="krit-zeit">${STATE.simulation.drucklevel}/5</span>
+        </div>
+      </div>
+
+      <!-- Einsatzbearbeitung -->
+      <div class="auswertung-section">
+        <h3>📋 Einsatzbearbeitung</h3>
+        <div class="auswertung-kriterium">
+          <span class="krit-icon">📊</span>
+          <span class="krit-text">Einsätze gesamt</span>
           <span class="krit-zeit">${gesamtEinsaetze}</span>
         </div>
         <div class="auswertung-kriterium">
           <span class="krit-icon">${alarmiert === gesamtEinsaetze ? '✅' : '⚠️'}</span>
-          <span class="krit-text">Einsätze alarmiert</span>
-          <span class="krit-zeit">${alarmiert} / ${gesamtEinsaetze}</span>
+          <span class="krit-text">Alarmiert</span>
+          <span class="krit-zeit">${alarmiert}/${gesamtEinsaetze}</span>
         </div>
         <div class="auswertung-kriterium">
-          <span class="krit-icon">${abgeschlossen > 0 ? '✅' : '⚠️'}</span>
-          <span class="krit-text">Einsätze abgeschlossen</span>
-          <span class="krit-zeit">${abgeschlossen} / ${gesamtEinsaetze}</span>
+          <span class="krit-icon">${abgeschlossen === gesamtEinsaetze ? '✅' : '⚠️'}</span>
+          <span class="krit-text">Abgeschlossen</span>
+          <span class="krit-zeit">${abgeschlossen}/${gesamtEinsaetze}</span>
+        </div>
+        <div class="auswertung-kriterium">
+          <span class="krit-icon">⏳</span>
+          <span class="krit-text">Noch offen</span>
+          <span class="krit-zeit" style="color:var(--yellow)">${offen}</span>
         </div>
       </div>
+
+      <!-- Fehleranalyse -->
       <div class="auswertung-section">
-        <h3>Aktivitäts-Protokoll (letzte 20 Einträge)</h3>
-        ${STATE.prueferLog.slice(-20).map(e =>
+        <h3>🔍 Fehleranalyse</h3>
+        ${fehlerAnzahl === 0 ?
+          `<div class="auswertung-kriterium" style="color:var(--green)">
+            <span class="krit-icon">✅</span>
+            <span class="krit-text">Keine Fehler erkannt</span>
+          </div>` :
           `<div class="auswertung-kriterium">
-            <span class="krit-icon" style="color:var(--${e.typ==='good'?'green':e.typ==='warn'?'yellow':'cyan'})">${e.typ==='good'?'✓':e.typ==='warn'?'⚠':e.typ==='bad'?'✗':'ℹ'}</span>
-            <span class="krit-text">${e.text}</span>
-            <span class="krit-zeit">${e.ts}</span>
+            <span class="krit-icon">⚠️</span>
+            <span class="krit-text">Fehler gefunden</span>
+            <span class="krit-zeit" style="color:var(--yellow)">${fehlerAnzahl}</span>
+          </div>
+          ${einsatzAnalysen.filter(ea => ea.prioVerfehlt || ea.aao.length === 0).map(ea =>
+            `<div style="font-size:11px;color:var(--text-secondary);padding:8px;background:var(--bg-dark);border-left:3px solid var(--yellow);margin:4px 0">
+              <strong>${ea.rnkr}</strong>: ${ea.prioVerfehlt ? 'E1 nicht bearbeitet' : 'Keine AAO zugewiesen'} – ${ea.stichwort}
+            </div>`
+          ).join('')}`
+        }
+      </div>
+
+      <!-- Top 5 Einsätze -->
+      <div class="auswertung-section">
+        <h3>🎯 Einsatzdetails (schnellste Reaktionen)</h3>
+        ${einsatzAnalysen
+          .filter(ea => ea.reactionTime)
+          .sort((a, b) => a.reactionTime - b.reactionTime)
+          .slice(0, 5)
+          .map((ea, idx) => `
+            <div class="auswertung-kriterium" style="padding:8px;background:var(--bg-dark);border-radius:4px;margin:4px 0">
+              <span style="font-weight:bold">#${idx+1}</span>
+              <span style="flex:1;margin-left:8px">
+                <strong>${ea.rnkr}</strong> – ${ea.stichwort} <br>
+                <span style="font-size:10px;color:var(--text-dim)">AAO: ${ea.aao.join(', ') || 'keine'}</span>
+              </span>
+              <span style="color:${ea.reactionTime < 120 ? 'var(--green)' : 'var(--yellow)'};font-weight:bold">${ea.reactionTime}s</span>
+            </div>
+          `).join('')}
+      </div>
+
+      <!-- Aktivitäts-Log -->
+      <div class="auswertung-section">
+        <h3>📜 Aktivitäts-Protokoll (letzten 30 Einträge)</h3>
+        ${STATE.prueferLog.slice(-30).map(e =>
+          `<div class="auswertung-kriterium" style="font-size:11px;padding:4px;border-bottom:1px solid var(--border)">
+            <span style="color:var(--${e.typ==='good'?'green':e.typ==='warn'?'yellow':e.typ==='bad'?'red':'cyan'})">${e.typ==='good'?'✓':e.typ==='warn'?'⚠':e.typ==='bad'?'✗':'ℹ'}</span>
+            <span style="margin:0 8px">${e.text}</span>
+            <span style="color:var(--text-dim)">${e.ts}</span>
           </div>`
         ).join('')}
       </div>
-      <div style="text-align:center;margin-top:16px">
-        <button class="btn-action btn-save" onclick="this.closest('.auswertung-overlay').remove()">Schließen</button>
+
+      <div style="text-align:center;margin-top:20px;display:flex;gap:8px;justify-content:center">
+        <button class="btn-action btn-save" onclick="downloadAuswertung()">💾 Export PDF</button>
+        <button class="btn-action btn-action" onclick="this.closest('.auswertung-overlay').remove()">Schließen</button>
       </div>
     </div>
   `;
@@ -1041,4 +1182,67 @@ function zeigeAuswertung() {
   overlay.addEventListener('click', e => {
     if (e.target === overlay) overlay.remove();
   });
+}
+
+function downloadAuswertung() {
+  const timestamp = new Date().toLocaleString('de-AT');
+  const report = `
+LEITSTELLEN-SIMULATOR AUSWERTUNG
+================================
+Disponent: ${STATE.user?.name || 'Unbekannt'}
+Datum/Zeit: ${timestamp}
+Dauer: ${Math.floor((Date.now() - STATE.simulation.startzeit) / 60000)} Minuten
+
+ERGEBNISSE:
+-----------
+Einsätze gesamt: ${STATE.einsaetze.length}
+Alarmiert: ${STATE.einsaetze.filter(e => e.alarmiert).length}
+Abgeschlossen: ${STATE.einsaetze.filter(e => e.status === 'abgeschlossen').length}
+Max Drucklevel: ${STATE.simulation.drucklevel}/5
+
+EINSATZ-DETAILS:
+${STATE.einsaetze.map(e => `${e.rnkr} – ${e.stichwort} (${e.status}) – AAO: ${e.aao.join(', ') || 'keine'}`).join('\n')}
+
+PROTOKOLL:
+${STATE.prueferLog.map(e => `${e.ts} [${e.typ}] ${e.text}`).join('\n')}
+  `;
+
+  const blob = new Blob([report], { type: 'text/plain;charset=utf-8' });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = `auswertung_${Date.now()}.txt`;
+  link.click();
+}
+
+// ---- HILFSFUNKTIONEN ----
+function zeitStempel() {
+  const now = new Date();
+  return now.toTimeString().slice(0, 8);
+}
+
+function neueRNKR() {
+  const now = new Date();
+  const dd = String(now.getDate()).padStart(2, '0');
+  const mm = String(now.getMonth() + 1).padStart(2, '0');
+  const hh = String(now.getHours()).padStart(2, '0');
+  const min = String(now.getMinutes()).padStart(2, '0');
+  const seq = String(STATE.einsatzCounter).padStart(4, '0');
+  return `${dd}${mm}${hh}${min}-${seq}`;
+}
+
+function zufallZahl(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function getFahrtzeit(typ) {
+  const zeiten = {
+    'RTW': [5, 12],
+    'KTW': [8, 15],
+    'NEF': [4, 10],
+    'Hubschrauber': [3, 8],
+    'Bergrettung': [10, 30],
+    'Wasserrettung': [5, 15]
+  };
+  const [min, max] = zeiten[typ] || [5, 10];
+  return zufallZahl(min, max);
 }
