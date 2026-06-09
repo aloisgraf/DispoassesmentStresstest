@@ -219,8 +219,12 @@ function renderStatusScreen() {
   }
 
   container.innerHTML = html;
-  document.getElementById('em-total').textContent =
-    `${STATE.einsatzmittel.filter(e => e.besetzt).length} Einsatzmittel`;
+
+  const totalEl = document.getElementById('em-total');
+  if (totalEl) {
+    totalEl.textContent =
+      `${STATE.einsatzmittel.filter(e => e.besetzt).length} Einsatzmittel`;
+  }
 }
 
 function emStatusKlick(kennung) {
