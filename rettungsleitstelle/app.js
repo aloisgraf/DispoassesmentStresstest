@@ -1034,33 +1034,50 @@ function planEskalationen(sz) {
 
 // ---- PRÜFER PANEL ----
 function initPrueferPanel() {
-  document.getElementById('pruefer-toggle-btn').addEventListener('click', () => {
-    const overlay = document.getElementById('pruefer-overlay');
-    overlay.style.display = overlay.style.display === 'none' ? 'flex' : 'none';
-  });
+  const toggleBtn = document.getElementById('pruefer-toggle-btn');
+  if (toggleBtn) {
+    toggleBtn.addEventListener('click', () => {
+      const overlay = document.getElementById('pruefer-overlay');
+      if (overlay) overlay.style.display = overlay.style.display === 'none' ? 'flex' : 'none';
+    });
+  }
 
-  document.getElementById('btn-pruefer-close').addEventListener('click', () => {
-    document.getElementById('pruefer-overlay').style.display = 'none';
-  });
+  const btnPrueferClose = document.getElementById('btn-pruefer-close');
+  if (btnPrueferClose) {
+    btnPrueferClose.addEventListener('click', () => {
+      document.getElementById('pruefer-overlay').style.display = 'none';
+    });
+  }
 
-  document.getElementById('btn-uebung-start').addEventListener('click', startSimulation);
-  document.getElementById('btn-uebung-stop').addEventListener('click', stoppSimulation);
-  document.getElementById('btn-uebung-auswertung').addEventListener('click', zeigeAuswertung);
+  const btnStart = document.getElementById('btn-uebung-start');
+  if (btnStart) btnStart.addEventListener('click', startSimulation);
+
+  const btnStop = document.getElementById('btn-uebung-stop');
+  if (btnStop) btnStop.addEventListener('click', stoppSimulation);
+
+  const btnAuswertung = document.getElementById('btn-uebung-auswertung');
+  if (btnAuswertung) btnAuswertung.addEventListener('click', zeigeAuswertung);
 
   renderPrueferSzenarioListe();
 
-  document.getElementById('pruefer-filter-kat').addEventListener('change', renderPrueferSzenarioListe);
-  document.getElementById('btn-manuell-szenario').addEventListener('click', manuellSzenario);
+  const filterKat = document.getElementById('pruefer-filter-kat');
+  if (filterKat) filterKat.addEventListener('change', renderPrueferSzenarioListe);
+
+  const btnManuell = document.getElementById('btn-manuell-szenario');
+  if (btnManuell) btnManuell.addEventListener('click', manuellSzenario);
 }
 
 function renderPrueferSzenarioListe() {
-  const filter = document.getElementById('pruefer-filter-kat').value;
-  const liste  = document.getElementById('pruefer-szenario-liste');
+  const filterEl = document.getElementById('pruefer-filter-kat');
+  const listeEl = document.getElementById('pruefer-szenario-liste');
+  if (!filterEl || !listeEl) return;
+
+  const filter = filterEl.value;
   const gefiltert = filter
     ? STATE.szenarien.filter(s => s.kategorie === filter)
     : STATE.szenarien;
 
-  liste.innerHTML = gefiltert.slice(0, 30).map(sz => `
+  listeEl.innerHTML = gefiltert.slice(0, 30).map(sz => `
     <div class="pruefer-sz-item" onclick="manuellSzenarioEinspielen('${sz.id}')">
       <span class="sz-id">${sz.id}</span>
       <span class="sz-title">${sz.titel}</span>
