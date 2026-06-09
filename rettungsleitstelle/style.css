@@ -553,11 +553,14 @@ input, select, textarea, button {
 
 /* ---- EINSATZLISTE PANEL (BOTTOM LEFT) ---- */
 .einsatzliste-panel {
-  flex: 0 0 140px;
+  flex: 0 0 200px;
   display: flex;
   flex-direction: column;
   border-top: 1px solid var(--border);
   overflow: hidden;
+  resize: vertical;
+  min-height: 100px;
+  max-height: 400px;
 }
 
 .einsatzliste-table-wrap {
@@ -569,7 +572,7 @@ input, select, textarea, button {
 .einsatzliste-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 10px;
+  font-size: 12px;
   font-family: var(--font-mono);
 }
 
@@ -609,11 +612,14 @@ input, select, textarea, button {
 
 /* ---- FUNK PANEL (BOTTOM) ---- */
 .funk-panel {
-  flex: 0 0 120px;
+  flex: 0 0 180px;
   display: flex;
   flex-direction: column;
   border-top: 1px solid var(--border);
   overflow: hidden;
+  resize: vertical;
+  min-height: 100px;
+  max-height: 400px;
 }
 
 .funk-messages {
@@ -716,7 +722,7 @@ input, select, textarea, button {
 .status-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 10px;
+  font-size: 12px;
   font-family: var(--font-mono);
 }
 

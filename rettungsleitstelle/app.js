@@ -202,7 +202,8 @@ function renderStatusScreen() {
       const statusDef = STATUS_DEFINITIONEN[em.status] || STATUS_DEFINITIONEN["00"];
       const rowClass = `status-row s-${em.status.replace('0','0')}`;
       const sNr = em.status.padStart(2,'0');
-      html += `<tr class="${rowClass}" data-kennung="${em.kennung}" onclick="emStatusKlick('${em.kennung}')">
+      const clickHandler = STATE.rolle === 'pruefer' ? `emStatusKlick('${em.kennung}')` : `emAaoZusammenfassen('${em.kennung}')`;
+      html += `<tr class="${rowClass}" data-kennung="${em.kennung}" onclick="${clickHandler}" style="cursor: pointer;">
         <td><span class="em-kennung">${em.kennung}</span></td>
         <td><span class="em-typ">${em.typ}</span></td>
         <td><span class="status-badge badge-${sNr}">${sNr}</span> <span style="font-size:10px;color:var(--text-secondary)">${statusDef.text}</span></td>
@@ -236,6 +237,15 @@ function emStatusKlick(kennung) {
   const aktIdx = statusKeys.indexOf(em.status);
   em.status = statusKeys[(aktIdx + 1) % statusKeys.length];
   renderStatusScreen();
+}
+
+function emAaoZusammenfassen(kennung) {
+  // Disponent: Kennung zur AAO hinzufügen
+  if (!STATE.aktiverEinsatz) return;
+  if (document.getElementById('aao-select-em')) {
+    document.getElementById('aao-select-em').value = kennung;
+  }
+  aaoHinzufuegen();
 }
 
 // ---- EINSATZ HANDLERS ----
