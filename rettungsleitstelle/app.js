@@ -664,6 +664,9 @@ function renderEinsatzliste() {
   const tbody = document.getElementById('einsatzliste-tbody');
   const aktive = STATE.einsaetze.filter(e => e.status !== 'abgeschlossen');
 
+  // Sortiere nach ID (neueste zuerst)
+  aktive.sort((a, b) => b.id - a.id);
+
   if (aktive.length === 0) {
     tbody.innerHTML = '<tr class="einsatz-empty-row"><td colspan="8">Keine aktiven Einsätze</td></tr>';
     return;
@@ -732,36 +735,23 @@ function zeigeAlarmToast(szenario) {
   // Alte Toasts entfernen
   document.querySelectorAll('.alarm-toast').forEach(t => t.remove());
 
+  // Automatisch anlegen (ohne Toast-Bestätigung)
+  const sz = STATE.szenarien.find(s => s.id === szenario.id);
+  if (sz) {
+    console.log('⚡ Auto-Einsatz:', sz.stichwort);
+    const einsatz = neuerEinsatz(sz);
+    prueferLog('good', `Auto-Einsatz erstellt: ${einsatz.rnkr} – ${sz.stichwort}`);
+  }
+
+  // Toast nicht mehr anzeigen
+  return;
+
+  // Alte Toast-Logik (deaktiviert):
+  /*
   const toast = document.createElement('div');
   toast.className = 'alarm-toast';
-  toast.innerHTML = `
-    <div class="alarm-toast-header">🚨 Neuer Notruf – ${szenario.prioritaet}</div>
-    <div class="alarm-toast-body">
-      <strong>${szenario.stichwort}</strong><br>
-      ${szenario.einsatzort}<br>
-      <span style="color:var(--text-secondary);font-size:11px">${szenario.beschreibung?.slice(0,100)}...</span>
-    </div>
-    <div class="alarm-toast-actions">
-      <button class="btn-alarm-accept" data-scenario-id="${szenario.id}">✓ Einsatz anlegen</button>
-      <button class="btn-alarm-later" onclick="this.closest('.alarm-toast').remove()">Später</button>
-    </div>
-  `;
-  document.body.appendChild(toast);
-
-  // Button listener hinzufügen
-  const acceptBtn = toast.querySelector('.btn-alarm-accept');
-  acceptBtn.addEventListener('click', () => {
-    const id = acceptBtn.dataset.scenarioId;
-    toastAnnehmen(id);
-  });
-
-  // Nach 45 Sek automatisch weg – aber dann KI bewertet
-  setTimeout(() => {
-    if (toast.parentNode) {
-      toast.remove();
-      prueferLog('warn', `Notruf ${szenario.id} nicht angenommen innerhalb 45 Sek`);
-    }
-  }, 45000);
+  ...
+  */
 }
 
 function toastAnnehmen(szenarioId) {

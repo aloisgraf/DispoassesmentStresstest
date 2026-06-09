@@ -150,7 +150,9 @@ async function sprichFunkText(text, sender) {
   await spieleFunkRauschen(true);
 
   return new Promise(resolve => {
-    const utterance = new SpeechSynthesisUtterance(text);
+    // Bindestriche nicht sprechen (ersetze mit Leerzeichen)
+    const cleanText = text.replace(/-/g, ' ');
+    const utterance = new SpeechSynthesisUtterance(cleanText);
 
     if (SPRACH_CONFIG.stimme) utterance.voice = SPRACH_CONFIG.stimme;
     utterance.lang   = 'de-AT';
