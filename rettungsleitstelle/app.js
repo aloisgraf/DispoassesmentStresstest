@@ -27,10 +27,12 @@ const STATE = {
 
 // ---- INIT ----
 document.addEventListener('DOMContentLoaded', () => {
+  console.log('🚀 ELS Simulator starting...');
   initEinsatzmittel();
   ladeSzenarien();
   initClock();
   initLoginHandlers();
+  console.log('✓ Login handlers initialized');
 });
 
 function initEinsatzmittel() {
@@ -102,10 +104,15 @@ function login(rolle) {
   document.getElementById('app').style.display = 'flex';
   document.getElementById('current-user').textContent = user.name || user.kuerzel;
 
+  console.log('✓ Login successful:', user.name);
+  console.log('✓ Initializing handlers...');
+
   renderStatusScreen();
   initMenuHandlers();
   initEinsatzHandlers();
+  console.log('✓ Einsatz handlers initialized');
   initFunkHandlers();
+  console.log('✓ Funk handlers initialized');
 
   if (user.rolle === 'pruefer') {
     document.getElementById('pruefer-toggle-btn').style.display = 'flex';
@@ -229,61 +236,23 @@ function emStatusKlick(kennung) {
 
 // ---- EINSATZ HANDLERS ----
 function initEinsatzHandlers() {
-  console.log('initEinsatzHandlers called');
-
   const btnNewEinsatz = document.getElementById('btn-new-einsatz');
-  console.log('btn-new-einsatz found:', !!btnNewEinsatz);
-  if (btnNewEinsatz) {
-    btnNewEinsatz.addEventListener('click', (e) => {
-      console.log('btn-new-einsatz clicked');
-      neuerEinsatz();
-    });
-  }
+  if (btnNewEinsatz) btnNewEinsatz.addEventListener('click', neuerEinsatz);
 
   const btnAlarmieren = document.getElementById('btn-alarmieren');
-  console.log('btn-alarmieren found:', !!btnAlarmieren);
-  if (btnAlarmieren) {
-    btnAlarmieren.addEventListener('click', (e) => {
-      console.log('btn-alarmieren clicked');
-      alarmieren();
-    });
-  }
+  if (btnAlarmieren) btnAlarmieren.addEventListener('click', alarmieren);
 
   const btnSave = document.getElementById('btn-einsatz-save');
-  console.log('btn-einsatz-save found:', !!btnSave);
-  if (btnSave) {
-    btnSave.addEventListener('click', (e) => {
-      console.log('btn-einsatz-save clicked');
-      einsatzSpeichern();
-    });
-  }
+  if (btnSave) btnSave.addEventListener('click', einsatzSpeichern);
 
   const btnAbschliessen = document.getElementById('btn-einsatz-abschliessen');
-  console.log('btn-einsatz-abschliessen found:', !!btnAbschliessen);
-  if (btnAbschliessen) {
-    btnAbschliessen.addEventListener('click', (e) => {
-      console.log('btn-einsatz-abschliessen clicked');
-      einsatzAbschliessen();
-    });
-  }
+  if (btnAbschliessen) btnAbschliessen.addEventListener('click', einsatzAbschliessen);
 
   const btnAaoAdd = document.getElementById('btn-aao-add');
-  console.log('btn-aao-add found:', !!btnAaoAdd);
-  if (btnAaoAdd) {
-    btnAaoAdd.addEventListener('click', (e) => {
-      console.log('btn-aao-add clicked');
-      aaoHinzufuegen();
-    });
-  }
+  if (btnAaoAdd) btnAaoAdd.addEventListener('click', aaoHinzufuegen);
 
   const btnAaoVorschlag = document.getElementById('btn-aao-vorschlag');
-  console.log('btn-aao-vorschlag found:', !!btnAaoVorschlag);
-  if (btnAaoVorschlag) {
-    btnAaoVorschlag.addEventListener('click', (e) => {
-      console.log('btn-aao-vorschlag clicked');
-      aaoVorschlag();
-    });
-  }
+  if (btnAaoVorschlag) btnAaoVorschlag.addEventListener('click', aaoVorschlag);
 
   const dokuInput = document.getElementById('doku-input');
   if (dokuInput) {
