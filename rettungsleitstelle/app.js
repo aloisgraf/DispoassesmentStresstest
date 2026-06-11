@@ -27,12 +27,10 @@ const STATE = {
 
 // ---- INIT ----
 document.addEventListener('DOMContentLoaded', () => {
-  console.log('🚀 ELS Simulator starting...');
   initEinsatzmittel();
   ladeSzenarien();
   initClock();
   initLoginHandlers();
-  console.log('✓ Login handlers initialized');
 });
 
 function initEinsatzmittel() {
@@ -104,23 +102,18 @@ function login(rolle) {
   document.getElementById('app').style.display = 'flex';
   document.getElementById('current-user').textContent = user.name || user.kuerzel;
 
-  console.log('✓ Login successful:', user.name);
-  console.log('✓ Initializing handlers...');
-
   renderStatusScreen();
   initMenuHandlers();
   initEinsatzHandlers();
-  console.log('✓ Einsatz handlers initialized');
   initFunkHandlers();
-  console.log('✓ Funk handlers initialized');
 
   if (user.rolle === 'pruefer') {
     document.getElementById('pruefer-toggle-btn').style.display = 'flex';
     initPrueferPanel();
   }
 
-  // Startmeldung im Funk
-  setTimeout(() => addFunkMsg('system', 'LEITSTELLE', 'Simulator bereit. Verbindung aufgebaut.'), 500);
+  // Zustand von bereits laufenden Tabs übernehmen (z.B. Prüfer hat schon Einsätze angelegt)
+  setTimeout(() => { if (window.syncHello) syncHello(); }, 300);
 }
 
 // ---- MENÜ ----
@@ -173,6 +166,7 @@ function initMenuHandlers() {
 // ---- STATUSSCHIRM RENDERN ----
 function renderStatusScreen() {
   const container = document.getElementById('status-screen');
+  if (!container) return;
   const gruppen = {};
 
   STATE.einsatzmittel.forEach(em => {
@@ -200,10 +194,9 @@ function renderStatusScreen() {
 
     einheiten.forEach(em => {
       const statusDef = STATUS_DEFINITIONEN[em.status] || STATUS_DEFINITIONEN["00"];
-      const rowClass = `status-row s-${em.status.replace('0','0')}`;
       const sNr = em.status.padStart(2,'0');
       const clickHandler = STATE.rolle === 'pruefer' ? `emStatusKlick('${em.kennung}')` : `emAaoZusammenfassen('${em.kennung}')`;
-      html += `<tr class="${rowClass}" data-kennung="${em.kennung}" onclick="${clickHandler}" style="cursor: pointer;">
+      html += `<tr class="status-row s-${sNr}" data-kennung="${em.kennung}" onclick="${clickHandler}" style="cursor: pointer;">
         <td><span class="em-kennung">${em.kennung}</span></td>
         <td><span class="em-typ">${em.typ}</span></td>
         <td><span class="status-badge badge-${sNr}">${sNr}</span> <span style="font-size:10px;color:var(--text-secondary)">${statusDef.text}</span></td>
@@ -226,32 +219,64 @@ function renderStatusScreen() {
     totalEl.textContent =
       `${STATE.einsatzmittel.filter(e => e.besetzt).length} Einsatzmittel`;
   }
+
+  aktualisiereAaoSelect();
 }
 
 function emStatusKlick(kennung) {
-  // Einsatzmittel-Status manuell ändern (nur Prüfer oder Admin)
+  // Einsatzmittel-Status manuell durchschalten (nur Prüfer)
   if (STATE.rolle !== 'pruefer') return;
   const em = STATE.einsatzmittel.find(e => e.kennung === kennung);
   if (!em) return;
   const statusKeys = Object.keys(STATUS_DEFINITIONEN);
   const aktIdx = statusKeys.indexOf(em.status);
-  em.status = statusKeys[(aktIdx + 1) % statusKeys.length];
-  renderStatusScreen();
+  setEmStatus(kennung, statusKeys[(aktIdx + 1) % statusKeys.length]);
+}
+
+// Verfügbar = einsatzbereit, besetzt und keinem Einsatz zugeteilt
+function emVerfuegbar(em) {
+  return !!em && em.besetzt && !em.einsatzId && (em.status === '00' || em.status === '06');
+}
+
+function aaoHint(text) {
+  const hint = document.getElementById('aao-hint');
+  if (hint) hint.textContent = text;
+}
+
+// Dropdown: bereits disponierte / nicht verfügbare Fahrzeuge ausgrauen
+function aktualisiereAaoSelect() {
+  const sel = document.getElementById('aao-select-em');
+  if (!sel) return;
+  Array.from(sel.options).forEach(opt => {
+    if (!opt.value) return;
+    const em = STATE.einsatzmittel.find(e => e.kennung === opt.value);
+    if (em) opt.disabled = !emVerfuegbar(em);
+  });
 }
 
 function emAaoZusammenfassen(kennung) {
-  // Disponent: Kennung zur AAO hinzufügen
-  if (!STATE.aktiverEinsatz) return;
-  if (document.getElementById('aao-select-em')) {
-    document.getElementById('aao-select-em').value = kennung;
+  // Disponent: Klick auf die Kennung im Statusschirm übernimmt das Fahrzeug in die AAO
+  if (!STATE.aktiverEinsatz) { aaoHint('Zuerst einen Einsatz öffnen'); return; }
+  const einsatz = STATE.einsaetze.find(e => e.id === STATE.aktiverEinsatz);
+  if (!einsatz) return;
+  const em = STATE.einsatzmittel.find(e => e.kennung === kennung);
+  if (!emVerfuegbar(em)) {
+    aaoHint(`${kennung} ist nicht verfügbar (Status ${em ? em.status : '?'})`);
+    return;
   }
-  aaoHinzufuegen();
+  if (!einsatz.aao.includes(kennung)) {
+    einsatz.aao.push(kennung);
+    renderAaoChips(einsatz.aao, einsatz.aaoNichtVerfuegbar);
+    aaoHint(`${kennung} zur AAO hinzugefügt`);
+    if (window.syncEinsaetze) syncEinsaetze();
+  }
+  STATE.simulation.letzteAktion = Date.now();
 }
 
 // ---- EINSATZ HANDLERS ----
 function initEinsatzHandlers() {
   const btnNewEinsatz = document.getElementById('btn-new-einsatz');
-  if (btnNewEinsatz) btnNewEinsatz.addEventListener('click', neuerEinsatz);
+  if (btnNewEinsatz) btnNewEinsatz.addEventListener('click', () => neuerEinsatz(null, true));
 
   const btnAlarmieren = document.getElementById('btn-alarmieren');
   if (btnAlarmieren) btnAlarmieren.addEventListener('click', alarmieren);
@@ -279,13 +304,15 @@ function initEinsatzHandlers() {
   if (btnDokuAdd) btnDokuAdd.addEventListener('click', dokuEintrag);
 }
 
-function neuerEinsatz(szenario = null) {
+function neuerEinsatz(szenario = null, autoOeffnen = true) {
   STATE.einsatzCounter++;
-  const rnkr = neueRNKR();
+  const jetzt = new Date();
+  const rnkr = `${String(jetzt.getDate()).padStart(2,'0')}${String(jetzt.getMonth()+1).padStart(2,'0')}-${1000 + STATE.einsatzCounter}`;
   const einsatz = {
     id:         STATE.einsatzCounter,
     rnkr,
     zeitErstellt: zeitStempel(),
+    erstelltTs: Date.now(),
     stichwort:  szenario ? szenario.stichwort : '',
     prioritaet: szenario ? szenario.prioritaet : 'E1',
     einsatzart: 'RD',
@@ -298,28 +325,22 @@ function neuerEinsatz(szenario = null) {
     geschlecht: szenario ? szenario.patient?.geschlecht : '-',
     bewusstsein:szenario ? szenario.patient?.bewusstsein : '-',
     aao:        [],
+    aaoNichtVerfuegbar: [],
     doku:       [],
     status:     'offen',
     szenarioId: szenario ? szenario.id : null,
-    alarmiert:  false
+    alarmiert:  false,
+    alarmiertTs: null
   };
 
-  // Erste Doku-Eintrag automatisch
+  // Erster Doku-Eintrag automatisch
   einsatzDokuInterneintrag(einsatz, `Einsatz erstellt. ${szenario ? 'Szenario: ' + szenario.titel : ''}`);
 
   STATE.einsaetze.push(einsatz);
-  console.log('📋 Neuer Einsatz erstellt:', einsatz.rnkr);
   renderEinsatzliste();
+  if (window.syncEinsaetze) syncEinsaetze();
 
-  // Synchronisiere über BroadcastChannel zu anderen Tabs
-  if (window.broadcastEinsatz) {
-    console.log('📢 Broadcasting Einsatz:', einsatz.rnkr);
-    broadcastEinsatz(einsatz);
-  } else {
-    console.warn('⚠️ broadcastEinsatz nicht verfügbar');
-  }
-
-  einsatzOeffnen(einsatz.id);
+  if (autoOeffnen) einsatzOeffnen(einsatz.id);
 
   prueferLog('info', `Neuer Einsatz: ${rnkr} – ${einsatz.stichwort || 'ohne Stichwort'}`);
   STATE.simulation.letzteAktion = Date.now();
@@ -385,7 +406,7 @@ function einsatzOeffnen(id) {
   if (dokuUserEl) dokuUserEl.textContent = STATE.user ? `[${STATE.user.kuerzel}]` : '';
 
   // AAO Chips
-  renderAaoChips(einsatz.aao);
+  renderAaoChips(einsatz.aao, einsatz.aaoNichtVerfuegbar || []);
 
   // Doku
   renderDoku(einsatz.doku);
@@ -429,6 +450,7 @@ function einsatzSpeichern() {
 
   renderEinsatzliste();
   STATE.simulation.letzteAktion = Date.now();
+  if (window.syncEinsaetze) syncEinsaetze();
   prueferLog('info', `Einsatz ${einsatz.rnkr} gespeichert`);
 }
 
@@ -443,11 +465,13 @@ function einsatzAbschliessen() {
   }
   renderEinsatzliste();
   STATE.simulation.letzteAktion = Date.now();
+  if (window.syncEinsaetze) syncEinsaetze();
 }
 
 // ---- AAO ----
-function renderAaoChips(aao) {
+function renderAaoChips(aao, nichtVerfuegbar = []) {
   const container = document.getElementById('aao-chips');
+  if (!container) return;
   container.innerHTML = '';
   (aao || []).forEach((em, idx) => {
     const chip = document.createElement('div');
@@ -455,19 +479,37 @@ function renderAaoChips(aao) {
     chip.innerHTML = `<span>${em}</span><button class="chip-remove" onclick="aaoEntfernen(${idx})">✕</button>`;
     container.appendChild(chip);
   });
+  // Vorgeschlagene, aber nicht verfügbare Mittel: ausgegraut, nicht disponierbar
+  (nichtVerfuegbar || []).forEach(label => {
+    const chip = document.createElement('div');
+    chip.className = 'aao-chip disabled';
+    chip.title = 'Nicht verfügbar – bereits disponiert oder außer Dienst';
+    chip.innerHTML = `<span>${label}</span>`;
+    container.appendChild(chip);
+  });
 }
 
 function aaoHinzufuegen() {
   const sel = document.getElementById('aao-select-em');
+  if (!sel) return;
   const val = sel.value;
   if (!val) return;
-  if (!STATE.aktiverEinsatz) return;
+  if (!STATE.aktiverEinsatz) { aaoHint('Zuerst einen Einsatz öffnen'); return; }
 
   const einsatz = STATE.einsaetze.find(e => e.id === STATE.aktiverEinsatz);
   if (!einsatz) return;
+
+  const em = STATE.einsatzmittel.find(e => e.kennung === val);
+  if (em && !emVerfuegbar(em)) {
+    aaoHint(`${val} ist nicht verfügbar (Status ${em.status})`);
+    sel.value = '';
+    return;
+  }
+
   if (!einsatz.aao.includes(val)) {
     einsatz.aao.push(val);
-    renderAaoChips(einsatz.aao);
+    renderAaoChips(einsatz.aao, einsatz.aaoNichtVerfuegbar);
+    if (window.syncEinsaetze) syncEinsaetze();
   }
   sel.value = '';
   STATE.simulation.letzteAktion = Date.now();
@@ -478,45 +520,68 @@ function aaoEntfernen(idx) {
   const einsatz = STATE.einsaetze.find(e => e.id === STATE.aktiverEinsatz);
   if (!einsatz) return;
   einsatz.aao.splice(idx, 1);
-  renderAaoChips(einsatz.aao);
+  renderAaoChips(einsatz.aao, einsatz.aaoNichtVerfuegbar);
+  if (window.syncEinsaetze) syncEinsaetze();
 }
 
 function aaoVorschlag() {
-  if (!STATE.aktiverEinsatz) return;
+  if (!STATE.aktiverEinsatz) { aaoHint('Zuerst einen Einsatz öffnen'); return; }
   const einsatz = STATE.einsaetze.find(e => e.id === STATE.aktiverEinsatz);
   if (!einsatz) return;
 
-  // Szenario-AAO Vorschlag wenn vorhanden
-  if (einsatz.szenarioId) {
-    const sz = STATE.szenarien.find(s => s.id === einsatz.szenarioId);
-    if (sz && sz.aao) {
-      const vorschlag = [...(sz.aao.primaer || [])];
-      const hint = document.getElementById('aao-hint');
-      hint.textContent = `Vorschlag: ${vorschlag.join(', ')}`;
+  if (!einsatz.szenarioId) { aaoHint('Kein Szenario aktiv'); return; }
+  const sz = STATE.szenarien.find(s => s.id === einsatz.szenarioId);
+  if (!sz || !sz.aao) { aaoHint('Kein AAO-Vorschlag hinterlegt'); return; }
 
-      einsatz.aao = vorschlag.map(v => {
-        // Typ zu Kennung mappen
-        if (v === 'RTW') return zufallVerfuegbaresEm('RTW');
-        if (v === 'NEF') return '10-101';
-        if (v === 'KTW') return zufallVerfuegbaresEm('KTW');
-        if (v === 'EL')  return '20-701';
-        if (v === 'C6')  return 'C6';
-        if (v === 'First Responder') return 'FR-Gnigl';
-        if (v === 'KIT') return 'KIT-SBG';
-        return v;
-      }).filter(Boolean);
+  const vorschlag = [...(sz.aao.primaer || [])];
+  const zugewiesen = [];
+  const nichtVerfuegbar = [];
 
-      renderAaoChips(einsatz.aao);
-      prueferLog('info', `AAO-Vorschlag angefordert für ${einsatz.rnkr}`);
-      return;
+  const FIXE_KENNUNGEN = { 'NEF': '10-101', 'EL': '20-701', 'C6': 'C6', 'KIT': 'KIT-SBG' };
+
+  vorschlag.forEach(v => {
+    let kennung = null;
+    if (v === 'RTW' || v === 'KTW') {
+      kennung = zufallVerfuegbaresEm(v, zugewiesen);
+    } else if (v === 'First Responder' || v === 'FR') {
+      kennung = zufallVerfuegbaresEm('FR', zugewiesen);
+    } else if (FIXE_KENNUNGEN[v]) {
+      const em = STATE.einsatzmittel.find(e => e.kennung === FIXE_KENNUNGEN[v]);
+      kennung = (emVerfuegbar(em) && !zugewiesen.includes(em.kennung)) ? em.kennung : null;
+    } else {
+      // Direkter Kennungs-, Typ- oder Namens-Treffer (z.B. Bergrettung, Wasserrettung)
+      const direkt = STATE.einsatzmittel.find(e => e.kennung === v);
+      if (direkt) {
+        kennung = (emVerfuegbar(direkt) && !zugewiesen.includes(direkt.kennung)) ? direkt.kennung : null;
+      } else {
+        const treffer = STATE.einsatzmittel.find(e =>
+          (e.typ === v || e.name.includes(v)) && emVerfuegbar(e) && !zugewiesen.includes(e.kennung)
+        );
+        kennung = treffer ? treffer.kennung : null;
+      }
     }
+
+    if (kennung) zugewiesen.push(kennung);
+    else nichtVerfuegbar.push(v);
+  });
+
+  einsatz.aao = zugewiesen;
+  einsatz.aaoNichtVerfuegbar = nichtVerfuegbar;
+
+  if (nichtVerfuegbar.length > 0) {
+    aaoHint(`Vorschlag: ${vorschlag.join(', ')} – nicht verfügbar: ${nichtVerfuegbar.join(', ')}`);
+  } else {
+    aaoHint(`Vorschlag: ${vorschlag.join(', ')}`);
   }
-  document.getElementById('aao-hint').textContent = 'Kein Szenario aktiv';
+
+  renderAaoChips(einsatz.aao, nichtVerfuegbar);
+  prueferLog('info', `AAO-Vorschlag für ${einsatz.rnkr}: ${zugewiesen.join(', ') || 'keine Mittel frei'}`);
+  if (window.syncEinsaetze) syncEinsaetze();
 }
 
-function zufallVerfuegbaresEm(typ) {
+function zufallVerfuegbaresEm(typ, ausschluss = []) {
   const verfuegbar = STATE.einsatzmittel.filter(em =>
-    em.typ === typ && (em.status === '00' || em.status === '06') && em.besetzt
+    em.typ === typ && emVerfuegbar(em) && !ausschluss.includes(em.kennung)
   );
   if (verfuegbar.length === 0) return null;
   return verfuegbar[Math.floor(Math.random() * verfuegbar.length)].kennung;
@@ -564,13 +629,16 @@ function alarmieren() {
   const einsatz = STATE.einsaetze.find(e => e.id === STATE.aktiverEinsatz);
   if (!einsatz) return;
   if (!einsatz.aao || einsatz.aao.length === 0) {
-    addFunkMsg('system', 'SYSTEM', 'Keine Einsatzmittel in der AAO – bitte zuerst Einsatzmittel zuweisen.');
+    aaoHint('Keine Einsatzmittel in der AAO – zuerst Einsatzmittel zuweisen.');
+    if (window.zeigeKurzToast) zeigeKurzToast('Keine Einsatzmittel in der AAO', 'red');
     return;
   }
 
   einsatz.alarmiert = true;
+  einsatz.alarmiertTs = Date.now();
   einsatz.status = 'laufend';
-  document.getElementById('f-einsatz-status').value = 'laufend';
+  const statusField = document.getElementById('f-einsatz-status');
+  if (statusField) statusField.value = 'laufend';
 
   const alarmzeit = zeitStempel();
   einsatzDokuInterneintrag(einsatz, `ALARM ausgelöst um ${alarmzeit} – AAO: ${einsatz.aao.join(', ')}`);
@@ -584,13 +652,14 @@ function alarmieren() {
   renderEinsatzliste();
   prueferLog('good', `ALARM: ${einsatz.rnkr} – ${einsatz.stichwort} – AAO: ${einsatz.aao.join(', ')}`);
   STATE.simulation.letzteAktion = Date.now();
+  if (window.syncEinsaetze) syncEinsaetze();
 
-  // Funk-Bestätigung von erstem EM
+  // Funk-Bestätigung vom ersten EM
   const erstesEm = einsatz.aao[0];
   const em = STATE.einsatzmittel.find(e => e.kennung === erstesEm);
   if (em) {
     setTimeout(() => {
-      addFunkMsg('incoming', erstesEm, `${erstesEm} an Leitstelle – Auftrag für ${einsatz.stichwort} empfangen, Adresse ${einsatz.adresse || '?'}, wir rücken aus.`);
+      addFunkMsg('incoming', erstesEm, `${erstesEm} an Leitstelle – Auftrag für ${einsatz.stichwort || 'Einsatz'} empfangen, ${einsatz.adresse || 'Adresse folgt'}, wir rücken aus.`);
     }, zufallZahl(15, 45) * 1000);
   }
 }
@@ -599,6 +668,12 @@ function alarmieren() {
 function starteFahrtZyklus(kennung, einsatz) {
   const em = STATE.einsatzmittel.find(e => e.kennung === kennung);
   if (!em) return;
+  if (em.einsatzId && em.einsatzId !== einsatz.id) {
+    einsatzDokuInterneintrag(einsatz, `${kennung} nicht verfügbar (bereits disponiert)`);
+    return;
+  }
+
+  em.einsatzId = einsatz.id;
 
   const fahrtzeit = getFahrtzeit(em.typ); // Minuten
   const einsatzdauer = zufallZahl(15, 35); // Minuten
@@ -610,22 +685,22 @@ function starteFahrtZyklus(kennung, einsatz) {
 
   // Status 02 nach 30-90 Sek
   setTimeout(() => {
-    setEmStatus(kennung, '02', einsatzAdresse);
     em.zeitAus = zeitStempel();
+    setEmStatus(kennung, '02', einsatzAdresse);
   }, zufallZahl(30, 90) * 1000);
 
   // Status 03 nach Fahrtzeit
   setTimeout(() => {
-    setEmStatus(kennung, '03', einsatzAdresse);
     em.zeitEEO = zeitStempel();
+    setEmStatus(kennung, '03', einsatzAdresse);
     einsatzDokuInterneintrag(einsatz, `${kennung} am Einsatzort (${em.zeitEEO})`);
     renderDoku(einsatz.doku);
   }, (fahrtzeit * 60) * 1000);
 
   // Status 04 nach Einsatzdauer
   setTimeout(() => {
-    setEmStatus(kennung, '04', einsatz.zielort || 'Ziel');
     em.zeitAEO = zeitStempel();
+    setEmStatus(kennung, '04', einsatz.zielort || 'Ziel');
     einsatzDokuInterneintrag(einsatz, `${kennung} Abfahrt Einsatzort → ${einsatz.zielort || 'Ziel'} (${em.zeitAEO})`);
     renderDoku(einsatz.doku);
   }, ((fahrtzeit + einsatzdauer) * 60) * 1000);
@@ -633,20 +708,19 @@ function starteFahrtZyklus(kennung, einsatz) {
   // Status 05/07 nach Fahrt zum Ziel
   setTimeout(() => {
     if (einsatz.zielort) {
-      setEmStatus(kennung, '05', einsatz.zielort);
       em.zeitEZO = zeitStempel();
+      setEmStatus(kennung, '05', einsatz.zielort);
     } else {
       setEmStatus(kennung, '07', '');
     }
   }, ((fahrtzeit + einsatzdauer + rueckfahrt) * 60) * 1000);
 
-  // Status 00 zurück
+  // Status 00 zurück – Fahrzeug wieder frei
   setTimeout(() => {
-    setEmStatus(kennung, '00', '');
     em.zeitAus = em.zeitEEO = em.zeitAEO = em.zeitEZO = null;
-    em.aktuelleAdresse = '';
+    em.einsatzId = null;
     einsatz.einsatzmittelZurueck = (einsatz.einsatzmittelZurueck || 0) + 1;
-    renderStatusScreen();
+    setEmStatus(kennung, '00', '');
   }, ((fahrtzeit + einsatzdauer + rueckfahrt + 10) * 60) * 1000);
 }
 
@@ -657,15 +731,20 @@ function setEmStatus(kennung, status, adresse) {
   if (adresse !== undefined) em.aktuelleAdresse = adresse;
   em.zeitStatus = zeitStempel();
   renderStatusScreen();
+  if (window.broadcastEmDiff) broadcastEmDiff(em);
 }
 
 // ---- EINSATZLISTE ----
 function renderEinsatzliste() {
   const tbody = document.getElementById('einsatzliste-tbody');
+  if (!tbody) return;
   const aktive = STATE.einsaetze.filter(e => e.status !== 'abgeschlossen');
 
-  // Sortiere nach ID (neueste zuerst)
-  aktive.sort((a, b) => b.id - a.id);
+  // Noch nicht disponierte Einsätze zuerst, danach die neuesten oben
+  aktive.sort((a, b) => {
+    if (a.alarmiert !== b.alarmiert) return a.alarmiert ? 1 : -1;
+    return b.id - a.id;
+  });
 
   if (aktive.length === 0) {
     tbody.innerHTML = '<tr class="einsatz-empty-row"><td colspan="8">Keine aktiven Einsätze</td></tr>';
@@ -675,11 +754,11 @@ function renderEinsatzliste() {
   tbody.innerHTML = aktive.map(e => `
     <tr class="einsatz-row${STATE.aktiverEinsatz === e.id ? ' active' : ''}" data-einsatz-id="${e.id}" onclick="einsatzOeffnen(${e.id})">
       <td>${e.zeitErstellt}</td>
-      <td style="font-family:var(--font-mono);font-size:10px;color:var(--cyan)">${e.rnkr}</td>
+      <td style="font-family:var(--font-mono);font-size:11px;color:var(--blue)">${e.rnkr}</td>
       <td>${e.stichwort || '–'}</td>
-      <td><span style="font-size:10px;color:var(--text-secondary)">${e.status}</span></td>
-      <td style="font-size:10px;max-width:140px;overflow:hidden;text-overflow:ellipsis">${e.adresse || '–'}</td>
-      <td style="font-size:10px;color:var(--text-dim)">${(e.aao||[]).slice(0,3).join(', ')}${e.aao?.length > 3 ? '…' : ''}</td>
+      <td><span style="font-size:11px;color:var(--text-secondary)">${e.status}</span></td>
+      <td style="font-size:11px;max-width:160px;overflow:hidden;text-overflow:ellipsis">${e.adresse || '–'}</td>
+      <td style="font-size:11px;color:var(--text-dim)">${(e.aao||[]).slice(0,3).join(', ')}${e.aao?.length > 3 ? '…' : ''}</td>
       <td><span class="prio-badge prio-${e.prioritaet}">${e.prioritaet}</span></td>
       <td><button class="btn-small" onclick="event.stopPropagation();einsatzOeffnen(${e.id})">Öffnen</button></td>
     </tr>
@@ -711,101 +790,56 @@ function sendFunk() {
   }
 }
 
-function addFunkMsg(typ, sender, text) {
+function addFunkMsg(typ, sender, text, opts = {}) {
   const container = document.getElementById('funk-messages');
-  const div = document.createElement('div');
-  div.className = `funk-msg ${typ}`;
-  div.innerHTML = `
-    <span class="funk-msg-time">${zeitStempel()}</span>
-    <span class="funk-msg-sender">${sender}:</span>
-    <span class="funk-msg-text">${text}</span>
-  `;
-  container.appendChild(div);
-  container.scrollTop = container.scrollHeight;
+  if (container) {
+    const div = document.createElement('div');
+    div.className = `funk-msg ${typ}`;
+    div.innerHTML = `
+      <span class="funk-msg-time">${zeitStempel()}</span>
+      <span class="funk-msg-sender">${sender}:</span>
+      <span class="funk-msg-text">${text}</span>
+    `;
+    container.appendChild(div);
+    container.scrollTop = container.scrollHeight;
+  }
+
+  // An andere Tabs weiterreichen (außer die Meldung kam selbst von dort)
+  if (!opts.relayed && window.broadcastFunk) {
+    broadcastFunk(typ, sender, text);
+  }
 
   // Funk-Input aktivieren sobald Simulation läuft
   if (STATE.simulation.aktiv) {
-    document.getElementById('funk-input').disabled = false;
-    document.getElementById('btn-funk-send').disabled = false;
+    const input = document.getElementById('funk-input');
+    const btn = document.getElementById('btn-funk-send');
+    if (input) input.disabled = false;
+    if (btn) btn.disabled = false;
   }
 }
 
-// ---- ALARM TOAST ----
-function zeigeAlarmToast(szenario) {
-  // Alte Toasts entfernen
-  document.querySelectorAll('.alarm-toast').forEach(t => t.remove());
-
-  // Automatisch anlegen (ohne Toast-Bestätigung)
-  const sz = STATE.szenarien.find(s => s.id === szenario.id);
-  if (sz) {
-    console.log('⚡ Auto-Einsatz:', sz.stichwort);
-    const einsatz = neuerEinsatz(sz);
-    prueferLog('good', `Auto-Einsatz erstellt: ${einsatz.rnkr} – ${sz.stichwort}`);
-  }
-
-  // Toast nicht mehr anzeigen
-  return;
-
-  // Alte Toast-Logik (deaktiviert):
-  /*
-  const toast = document.createElement('div');
-  toast.className = 'alarm-toast';
-  ...
-  */
-}
-
-function toastAnnehmen(szenarioId) {
-  console.log('📞 toastAnnehmen aufgerufen mit ID:', szenarioId);
-  document.querySelectorAll('.alarm-toast').forEach(t => t.remove());
-  const sz = STATE.szenarien.find(s => s.id === szenarioId);
-  if (!sz) {
-    console.warn('❌ Szenario nicht gefunden:', szenarioId);
-    return;
-  }
-
-  console.log('✅ Szenario gefunden:', sz.titel);
-  const einsatz = neuerEinsatz(sz);
-  prueferLog('good', `Einsatz ${einsatz.rnkr} erstellt: ${sz.stichwort}`);
-}
-
-// ---- KI FUNK-ANTWORT (Anthropic API) ----
-async function ladeApiKey() {
-  // Versuche zuerst den Key vom Server zu laden (Render env var)
-  try {
-    const response = await fetch('/api/config');
-    const config = await response.json();
-    if (config.apiKey) {
-      return config.apiKey;
-    }
-  } catch(e) {
-    console.warn('Server config nicht erreichbar, verwende localStorage');
-  }
-
-  // Fallback: localStorage
-  return localStorage.getItem('els_api_key');
+// ---- KI FUNK-ANTWORT ----
+// Primär: Server-Proxy /api/funk (Key liegt als ANTHROPIC_API_KEY auf Render und verlässt den Server nie).
+// Fallback 1: direkter Browser-Aufruf mit lokal gespeichertem Key.
+// Fallback 2: einfache Standard-Antworten.
+function fallbackFunkAntwort(sender) {
+  const antworten = [
+    'Verstanden, führen aus.',
+    'Kopiert, wir sind unterwegs.',
+    'Bestätigt. Melden uns bei Eintreffen.',
+    'Roger, Leitstelle. Auf dem Weg.',
+    'Ja, erledigt. Danke.'
+  ];
+  setTimeout(() => {
+    addFunkMsg('incoming', sender, antworten[Math.floor(Math.random() * antworten.length)]);
+  }, zufallZahl(2, 5) * 1000);
 }
 
 async function generiereKIFunkAntwort(disponenText) {
-  const apiKey = await ladeApiKey();
-
-  if (!apiKey) {
-    // Fallback ohne API
-    const sender = ermittleFunkSender();
-    setTimeout(() => {
-      const antworten = [
-        'Verstanden, führen aus.',
-        'Kopiert, wir sind unterwegs.',
-        'Bestätigt. Melden uns bei Eintreffen.',
-        'Roger, Leitstelle. Auf dem Weg.',
-        'Ja, erledigt. Danke.'
-      ];
-      addFunkMsg('incoming', sender, antworten[Math.floor(Math.random()*antworten.length)]);
-    }, zufallZahl(2, 5) * 1000);
-    return;
-  }
+  const sender = ermittleFunkSender();
 
   const aktiveEinsaetze = STATE.einsaetze.filter(e => e.status !== 'abgeschlossen');
-  const emStatus = STATE.einsatzmittel.slice(0,10).map(em =>
+  const emStatus = STATE.einsatzmittel.slice(0, 10).map(em =>
     `${em.kennung}(${em.status})`
   ).join(', ');
 
@@ -814,49 +848,63 @@ Du simulierst Funkgespräche von Einsatzmitteln (RTW, NEF, KTW, Bergrettung etc.
 Aktuelle Lage: ${aktiveEinsaetze.length} aktive Einsätze. Einsatzmittel-Status: ${emStatus}.
 Drucklevel: ${STATE.simulation.drucklevel}/5.
 Antworte KURZ und REALISTISCH wie ein echter Sanitäter/Rettungsfahrer im Funk.
-Österreichischer Funkkjargon. Max 2 Sätze. Kein "Guten Tag" etc.
+Österreichischer Funkjargon. Max 2 Sätze. Kein "Guten Tag" etc.
 Wenn der Disponent etwas anweist: bestätige oder melde ein Problem.`;
 
-  try {
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': apiKey
-      },
-      body: JSON.stringify({
-        model: 'claude-3-5-sonnet-20241022',
-        max_tokens: 100,
-        messages: [{ role: 'user', content: `${systemPrompt}\n\nDisponent sagt: "${disponenText}"` }]
-      })
-    });
+  const prompt = `Der Disponent funkt: "${disponenText}"\nAntworte als Einsatzmittel ${sender}.`;
 
-    if (response.ok) {
-      const data = await response.json();
-      const antwort = data.content?.[0]?.text?.trim();
-      if (antwort) {
-        const sender = ermittleFunkSender();
-        setTimeout(() => {
-          addFunkMsg('incoming', sender, antwort);
-        }, zufallZahl(2, 6) * 1000);
+  // 1) Server-Proxy (empfohlen)
+  try {
+    const resp = await fetch('/api/funk', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ system: systemPrompt, prompt })
+    });
+    if (resp.ok) {
+      const data = await resp.json();
+      if (data.text) {
+        setTimeout(() => addFunkMsg('incoming', sender, data.text), zufallZahl(2, 6) * 1000);
+        return;
       }
-    } else {
-      throw new Error(`API Error: ${response.status}`);
     }
-  } catch(e) {
-    console.warn('KI-Funk fehlgeschlagen:', e);
-    const sender = ermittleFunkSender();
-    setTimeout(() => {
-      const antworten = [
-        'Verstanden, führen aus.',
-        'Kopiert, wir sind unterwegs.',
-        'Bestätigt. Melden uns bei Eintreffen.',
-        'Roger, Leitstelle. Auf dem Weg.',
-        'Ja, erledigt. Danke.'
-      ];
-      addFunkMsg('incoming', sender, antworten[Math.floor(Math.random()*antworten.length)]);
-    }, zufallZahl(2, 5) * 1000);
+  } catch (e) {
+    console.warn('KI über Server nicht erreichbar:', e.message);
   }
+
+  // 2) Direkt aus dem Browser (lokal gespeicherter Key)
+  const apiKey = localStorage.getItem('els_api_key');
+  if (apiKey) {
+    try {
+      const response = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': apiKey,
+          'anthropic-version': '2023-06-01',
+          'anthropic-dangerous-direct-browser-access': 'true'
+        },
+        body: JSON.stringify({
+          model: 'claude-opus-4-8',
+          max_tokens: 300,
+          system: systemPrompt,
+          messages: [{ role: 'user', content: prompt }]
+        })
+      });
+      if (response.ok) {
+        const data = await response.json();
+        const antwort = data.content?.filter(b => b.type === 'text').map(b => b.text).join(' ').trim();
+        if (antwort) {
+          setTimeout(() => addFunkMsg('incoming', sender, antwort), zufallZahl(2, 6) * 1000);
+          return;
+        }
+      }
+    } catch (e) {
+      console.warn('KI-Funk (direkt) fehlgeschlagen:', e);
+    }
+  }
+
+  // 3) Standard-Antworten
+  fallbackFunkAntwort(sender);
 }
 
 function ermittleFunkSender() {
@@ -877,12 +925,9 @@ function startSimulation() {
   STATE.simulation.drucklevel = 1;
   STATE.simulation.letzteAktion = Date.now();
 
-  document.getElementById('sim-status-ind').querySelector('.status-dot').className = 'status-dot running';
-  document.getElementById('sim-status-text').textContent = 'Läuft';
-  document.getElementById('funk-input').disabled = false;
-  document.getElementById('btn-funk-send').disabled = false;
-
-  addFunkMsg('alert', '⚡ SIMULATOR', 'Übung gestartet. Erste Einsätze werden eingespielt...');
+  if (window.applySimState) applySimState(true);
+  if (window.broadcastSim) broadcastSim(true);
+  if (window.zeigeKurzToast) zeigeKurzToast('Übung gestartet', 'green');
   prueferLog('good', 'Simulation gestartet');
 
   // Erstes Szenario nach 5-10 Sek
@@ -892,8 +937,10 @@ function startSimulation() {
   STATE.simulation.druckLoop = setInterval(aktualisiereDrucklevel, 20000);
 
   if (STATE.rolle === 'pruefer') {
-    document.getElementById('btn-uebung-start').disabled = true;
-    document.getElementById('btn-uebung-stop').disabled = false;
+    const s = document.getElementById('btn-uebung-start');
+    const p = document.getElementById('btn-uebung-stop');
+    if (s) s.disabled = true;
+    if (p) p.disabled = false;
   }
 }
 
@@ -904,15 +951,16 @@ function stoppSimulation() {
   STATE.simulation.eskalationsTimer.forEach(t => clearTimeout(t));
   STATE.simulation.eskalationsTimer = [];
 
-  document.getElementById('sim-status-ind').querySelector('.status-dot').className = 'status-dot idle';
-  document.getElementById('sim-status-text').textContent = 'Gestoppt';
-
-  addFunkMsg('system', 'SIMULATOR', 'Übung beendet.');
+  if (window.applySimState) applySimState(false);
+  if (window.broadcastSim) broadcastSim(false);
+  if (window.zeigeKurzToast) zeigeKurzToast('Übung beendet', 'red');
   prueferLog('info', 'Simulation gestoppt');
 
   if (STATE.rolle === 'pruefer') {
-    document.getElementById('btn-uebung-start').disabled = false;
-    document.getElementById('btn-uebung-stop').disabled = true;
+    const s = document.getElementById('btn-uebung-start');
+    const p = document.getElementById('btn-uebung-stop');
+    if (s) s.disabled = false;
+    if (p) p.disabled = true;
   }
 }
 
@@ -976,11 +1024,9 @@ function spieleSzenarioEin() {
   const sz = kandidaten[Math.floor(Math.random() * Math.min(kandidaten.length, 10))];
   STATE.simulation.szenarioGespielt.push(sz.id);
 
-  // Alarm-Toast zeigen
-  zeigeAlarmToast(sz);
-
-  // Funk-Notruf
-  addFunkMsg('alert', '⚡ NOTRUF', `Eingehend: ${sz.stichwort} – ${sz.einsatzort}`);
+  // Einsatz direkt anlegen – erscheint in der Einsatzliste (nicht im Funk).
+  // Auf den anderen Tabs zeigt der Sync ein Notruf-Banner.
+  const einsatz = neuerEinsatz(sz, false);
 
   prueferLog('info', `Szenario eingespielt: ${sz.id} – ${sz.titel}`);
 
@@ -996,10 +1042,10 @@ function spieleSzenarioEin() {
   }
 
   // Eskalationen planen
-  planEskalationen(sz);
+  planEskalationen(sz, einsatz);
 }
 
-function planEskalationen(sz) {
+function planEskalationen(sz, einsatz) {
   if (!sz.eskalationen || sz.eskalationen.length === 0) return;
 
   sz.eskalationen.forEach(esk => {
@@ -1010,23 +1056,24 @@ function planEskalationen(sz) {
     const timer = setTimeout(() => {
       if (!STATE.simulation.aktiv) return;
 
-      // Funk-Meldung
-      const aktiveEm = STATE.einsatzmittel.find(em => ['02','03'].includes(em.status));
-      const sender = aktiveEm ? aktiveEm.kennung : 'EINHEIT';
+      // Funkt vorzugsweise ein dem Einsatz zugeteiltes Fahrzeug
+      const zugeteilt = einsatz && einsatz.aao && einsatz.aao.length > 0
+        ? STATE.einsatzmittel.find(em => einsatz.aao.includes(em.kennung))
+        : null;
+      const aktivesEm = zugeteilt || STATE.einsatzmittel.find(em => ['02','03'].includes(em.status));
+      const sender = aktivesEm ? aktivesEm.kennung : 'EINHEIT';
       addFunkMsg('incoming', sender, esk.ereignis);
 
       // Prüfer-Log
       prueferLog('warn', `Eskalation: ${esk.ereignis.slice(0,60)}`);
 
-      // Doku-Eintrag im aktiven Einsatz
-      if (STATE.aktiverEinsatz) {
-        const einsatz = STATE.einsaetze.find(e => e.id === STATE.aktiverEinsatz);
-        if (einsatz) {
-          einsatz.doku.push({
-            ts: zeitStempel(), wer: sender, text: esk.ereignis, ki: true
-          });
-          renderDoku(einsatz.doku);
-        }
+      // Doku-Eintrag im zugehörigen Einsatz (nicht im gerade offenen)
+      const ziel = einsatz ? STATE.einsaetze.find(e => e.id === einsatz.id) : null;
+      if (ziel) {
+        ziel.doku.push({
+          ts: zeitStempel(), wer: sender, text: esk.ereignis, ki: true
+        });
+        if (STATE.aktiverEinsatz === ziel.id) renderDoku(ziel.doku);
       }
     }, minuten * 60 * 1000);
 
@@ -1096,15 +1143,20 @@ function manuellSzenario() {
 function manuellSzenarioEinspielen(id) {
   const sz = STATE.szenarien.find(s => s.id === id);
   if (!sz) return;
-  zeigeAlarmToast(sz);
+  const einsatz = neuerEinsatz(sz, false);
+  planEskalationen(sz, einsatz);
   prueferLog('info', `Szenario eingespielt: ${sz.id} – ${sz.stichwort}`);
-  document.getElementById('pruefer-overlay').style.display = 'none';
+  const overlay = document.getElementById('pruefer-overlay');
+  if (overlay) overlay.style.display = 'none';
 }
 
 // ---- PRÜFER LOG ----
-function prueferLog(typ, text) {
+function prueferLog(typ, text, relayed = false) {
   const eintrag = { ts: zeitStempel(), typ, text };
   STATE.prueferLog.push(eintrag);
+
+  // Disponenten-Aktionen auch im Prüfer-Tab protokollieren (und umgekehrt)
+  if (!relayed && window.broadcastLog) broadcastLog(eintrag);
 
   const container = document.getElementById('pruefer-log');
   if (!container) return;
@@ -1132,12 +1184,25 @@ function zeigeAuswertung() {
   const alarmiert       = STATE.einsaetze.filter(e => e.alarmiert).length;
   const offen           = STATE.einsaetze.filter(e => e.status === 'offen' || e.status === 'laufend').length;
 
-  // Detaillierte Einsatz-Analyse
+  if (gesamtEinsaetze === 0) {
+    overlay.innerHTML = `
+      <div class="auswertung-panel">
+        <h2 style="margin:0 0 12px 0">📊 Übungsauswertung</h2>
+        <p style="padding:12px 0">Noch keine Einsätze vorhanden.</p>
+        <div style="text-align:center">
+          <button class="btn-action" onclick="this.closest('.auswertung-overlay').remove()">Schließen</button>
+        </div>
+      </div>`;
+    document.body.appendChild(overlay);
+    overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
+    return;
+  }
+
+  // Detaillierte Einsatz-Analyse (Reaktionszeit = Erstellung → Alarmierung)
   const einsatzAnalysen = STATE.einsaetze.map(e => {
-    const erstellt = new Date(e.zeitErstellt);
-    const alarmZeiten = e.doku.filter(d => d.text.includes('ALARM'));
-    const alarmZeit = alarmZeiten.length > 0 ? new Date(alarmZeiten[0].ts) : null;
-    const reactionTime = alarmZeit ? Math.floor((alarmZeit - erstellt) / 1000) : null;
+    const reactionTime = (e.alarmiertTs && e.erstelltTs)
+      ? Math.max(0, Math.floor((e.alarmiertTs - e.erstelltTs) / 1000))
+      : null;
 
     return {
       rnkr: e.rnkr,
@@ -1151,19 +1216,27 @@ function zeigeAuswertung() {
   });
 
   // Statistiken
-  const durmschnittReactionTime = einsatzAnalysen
-    .filter(ea => ea.reactionTime)
-    .reduce((sum, ea) => sum + ea.reactionTime, 0) / Math.max(1, einsatzAnalysen.filter(ea => ea.reactionTime).length);
+  const mitReaktion = einsatzAnalysen.filter(ea => ea.reactionTime !== null);
+  const durmschnittReactionTime = mitReaktion.length > 0
+    ? mitReaktion.reduce((sum, ea) => sum + ea.reactionTime, 0) / mitReaktion.length
+    : null;
 
   const fehlerAnzahl = einsatzAnalysen.filter(ea => ea.prioVerfehlt || ea.aao.length === 0).length;
+
+  const reaktionPunkte = durmschnittReactionTime === null ? 10
+    : durmschnittReactionTime < 120 ? 20
+    : durmschnittReactionTime < 180 ? 10 : 0;
+  const gesamtPunkte = Math.round(
+    (alarmiert / gesamtEinsaetze * 30) +
+    (abgeschlossen / gesamtEinsaetze * 30) +
+    reaktionPunkte +
+    (fehlerAnzahl === 0 ? 20 : 10)
+  );
+
   const bewertung = () => {
-    const punkte = (alarmiert / gesamtEinsaetze * 30) +
-                   (abgeschlossen / gesamtEinsaetze * 30) +
-                   (durmschnittReactionTime < 120 ? 20 : durmschnittReactionTime < 180 ? 10 : 0) +
-                   (fehlerAnzahl === 0 ? 20 : 10);
-    if (punkte >= 80) return { text: '⭐ Sehr gut', color: 'var(--green)' };
-    if (punkte >= 60) return { text: '👍 Gut', color: 'var(--cyan)' };
-    if (punkte >= 40) return { text: '🤔 Befriedigend', color: 'var(--yellow)' };
+    if (gesamtPunkte >= 80) return { text: '⭐ Sehr gut', color: 'var(--green)' };
+    if (gesamtPunkte >= 60) return { text: '👍 Gut', color: 'var(--blue)' };
+    if (gesamtPunkte >= 40) return { text: '🤔 Befriedigend', color: 'var(--yellow)' };
     return { text: '⚠️ Fehlerberatung nötig', color: 'var(--red)' };
   };
   const notes = bewertung();
@@ -1180,7 +1253,7 @@ function zeigeAuswertung() {
         <div style="text-align:center;font-size:24px;margin-bottom:8px">${notes.text}</div>
         <div class="auswertung-kriterium" style="justify-content:space-between">
           <span style="font-size:12px">Gesamtpunkte</span>
-          <span style="font-weight:bold;color:${notes.color};font-size:16px">${Math.round((alarmiert / gesamtEinsaetze * 30) + (abgeschlossen / gesamtEinsaetze * 30) + (durmschnittReactionTime < 120 ? 20 : 10) + (fehlerAnzahl === 0 ? 20 : 10))}/100</span>
+          <span style="font-weight:bold;color:${notes.color};font-size:16px">${gesamtPunkte}/100</span>
         </div>
       </div>
 
@@ -1193,9 +1266,9 @@ function zeigeAuswertung() {
           <span class="krit-zeit">${laufzeitMin}:${String(laufzeitSek).padStart(2,'0')} Min</span>
         </div>
         <div class="auswertung-kriterium">
-          <span class="krit-icon">${durmschnittReactionTime < 120 ? '✅' : '⚠️'}</span>
-          <span class="krit-text">Ø Reaktionszeit</span>
-          <span class="krit-zeit">${Math.round(durmschnittReactionTime)}s</span>
+          <span class="krit-icon">${durmschnittReactionTime !== null && durmschnittReactionTime < 120 ? '✅' : '⚠️'}</span>
+          <span class="krit-text">Ø Reaktionszeit (Erstellung → Alarm)</span>
+          <span class="krit-zeit">${durmschnittReactionTime !== null ? Math.round(durmschnittReactionTime) + 's' : '–'}</span>
         </div>
         <div class="auswertung-kriterium">
           <span class="krit-icon">📈</span>
@@ -1301,7 +1374,7 @@ LEITSTELLEN-SIMULATOR AUSWERTUNG
 ================================
 Disponent: ${STATE.user?.name || 'Unbekannt'}
 Datum/Zeit: ${timestamp}
-Dauer: ${Math.floor((Date.now() - STATE.simulation.startzeit) / 60000)} Minuten
+Dauer: ${STATE.simulation.startzeit ? Math.floor((Date.now() - STATE.simulation.startzeit) / 60000) + ' Minuten' : '–'}
 
 ERGEBNISSE:
 -----------
@@ -1324,35 +1397,5 @@ ${STATE.prueferLog.map(e => `${e.ts} [${e.typ}] ${e.text}`).join('\n')}
   link.click();
 }
 
-// ---- HILFSFUNKTIONEN ----
-function zeitStempel() {
-  const now = new Date();
-  return now.toTimeString().slice(0, 8);
-}
-
-function neueRNKR() {
-  const now = new Date();
-  const dd = String(now.getDate()).padStart(2, '0');
-  const mm = String(now.getMonth() + 1).padStart(2, '0');
-  const hh = String(now.getHours()).padStart(2, '0');
-  const min = String(now.getMinutes()).padStart(2, '0');
-  const seq = String(STATE.einsatzCounter).padStart(4, '0');
-  return `${dd}${mm}${hh}${min}-${seq}`;
-}
-
-function zufallZahl(min, max) {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-}
-
-function getFahrtzeit(typ) {
-  const zeiten = {
-    'RTW': [5, 12],
-    'KTW': [8, 15],
-    'NEF': [4, 10],
-    'Hubschrauber': [3, 8],
-    'Bergrettung': [10, 30],
-    'Wasserrettung': [5, 15]
-  };
-  const [min, max] = zeiten[typ] || [5, 10];
-  return zufallZahl(min, max);
-}
+// Hilfsfunktionen (zeitStempel, zufallZahl, getFahrtzeit) kommen aus data.js –
+// dort sind die korrekten Fahrtzeiten je Einsatzmittel-Typ hinterlegt.

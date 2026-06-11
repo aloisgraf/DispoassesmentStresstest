@@ -1,11 +1,16 @@
 // ============================================================
-// extensions.js – Sprachausgabe, BroadcastChannel, API-Setup
+// extensions.js – Sprachausgabe, Tab-Synchronisation, API-Setup
 // Wird nach app.js geladen
 // ============================================================
 
-// ---- BROADCAST CHANNEL (Statusschirm Sync) ----
+// ---- BROADCAST CHANNELS ----
+// els_status: Einweg-Feed für das Statusschirm-Popup (statusschirm.html)
+// els_sync:   Zustand zwischen Haupt-Tabs (Prüfer ↔ Disponent)
 const statusBC = new BroadcastChannel('els_status');
-const einsatzBC = new BroadcastChannel('els_einsatz');
+const syncBC   = new BroadcastChannel('els_sync');
+
+// Verhindert Broadcast-Schleifen beim Anwenden von Remote-Updates
+let syncApplying = false;
 
 function broadcastStatus() {
   if (!STATE?.einsatzmittel) return;
@@ -15,38 +20,142 @@ function broadcastStatus() {
   });
 }
 
-function broadcastEinsatz(einsatz) {
-  if (!STATE?.einsaetze) return;
-  console.log('📤 Broadcasting einsatz_update für:', einsatz.rnkr);
-  einsatzBC.postMessage({
-    type: 'einsatz_update',
+// ---- SENDEN (von app.js aufgerufen) ----
+window.syncEinsaetze = function(initial = false) {
+  if (syncApplying) return;
+  syncBC.postMessage({
+    type: 'einsaetze',
     einsaetze: STATE.einsaetze,
-    neuerEinsatz: einsatz
+    counter: STATE.einsatzCounter,
+    initial
   });
-}
+};
 
-// Empfange Einsatz-Updates von anderen Tabs
-einsatzBC.onmessage = (event) => {
-  console.log('📥 Empfangen BroadcastChannel Nachricht:', event.data.type);
-  if (event.data.type === 'einsatz_update' && event.data.einsaetze) {
-    console.log('✅ Einsatz-Update empfangen, Anzahl Einsätze:', event.data.einsaetze.length);
-    // Update STATE mit neuesten Einsätzen von anderem Tab
-    const neueIds = event.data.einsaetze.map(e => e.id);
-    const altIds = STATE.einsaetze.map(e => e.id);
+window.broadcastFunk = function(typ, sender, text) {
+  if (syncApplying) return;
+  syncBC.postMessage({ type: 'funk', typ, sender, text });
+};
 
-    // Nur hinzufügen wenn es neue sind
-    const neuEinsaetze = event.data.einsaetze.filter(e => !altIds.includes(e.id));
-    console.log('Neue Einsätze:', neuEinsaetze.length);
-    if (neuEinsaetze.length > 0) {
-      STATE.einsaetze.push(...neuEinsaetze);
-      console.log('📋 Einsatzliste aktualisiert, renderEinsatzliste() aufgerufen');
-      renderEinsatzliste();
+window.broadcastEmDiff = function(em) {
+  if (syncApplying) return;
+  syncBC.postMessage({
+    type: 'em',
+    em: {
+      kennung: em.kennung, status: em.status, aktuelleAdresse: em.aktuelleAdresse,
+      zeitAus: em.zeitAus, zeitEEO: em.zeitEEO, zeitAEO: em.zeitAEO, zeitEZO: em.zeitEZO,
+      zeitStatus: em.zeitStatus, einsatzId: em.einsatzId
     }
+  });
+};
+
+window.broadcastSim = function(aktiv) {
+  if (syncApplying) return;
+  syncBC.postMessage({ type: 'sim', aktiv });
+};
+
+window.broadcastLog = function(eintrag) {
+  if (syncApplying) return;
+  syncBC.postMessage({ type: 'log', eintrag });
+};
+
+// Beim Login: vorhandenen Zustand von anderen Tabs anfordern
+window.syncHello = function() {
+  syncBC.postMessage({ type: 'hello' });
+};
+
+// ---- EMPFANGEN ----
+syncBC.onmessage = (event) => {
+  const d = event.data;
+  if (!d || !d.type) return;
+  syncApplying = true;
+  try {
+    switch (d.type) {
+      case 'einsaetze': {
+        const altIds = new Set(STATE.einsaetze.map(e => e.id));
+        STATE.einsaetze = d.einsaetze || [];
+        STATE.einsatzCounter = Math.max(STATE.einsatzCounter, d.counter || 0);
+        renderEinsatzliste();
+        if (!d.initial) {
+          STATE.einsaetze
+            .filter(e => !altIds.has(e.id))
+            .forEach(e => zeigeNotrufBanner(e));
+        }
+        break;
+      }
+      case 'funk':
+        addFunkMsg(d.typ, d.sender, d.text, { relayed: true });
+        break;
+      case 'em': {
+        const em = STATE.einsatzmittel.find(x => x.kennung === d.em.kennung);
+        if (em) {
+          Object.assign(em, d.em);
+          renderStatusScreen();
+        }
+        break;
+      }
+      case 'sim':
+        applySimState(d.aktiv);
+        break;
+      case 'log':
+        if (d.eintrag) prueferLog(d.eintrag.typ, d.eintrag.text, true);
+        break;
+      case 'hello':
+        // Anderer Tab ist beigetreten – aktuellen Zustand teilen
+        if (STATE.user && (STATE.einsaetze.length > 0 || STATE.simulation.aktiv)) {
+          syncApplying = false;
+          window.syncEinsaetze(true);
+          if (STATE.simulation.aktiv) window.broadcastSim(true);
+        }
+        break;
+    }
+  } finally {
+    syncApplying = false;
   }
 };
 
-// Status-Updates broadcasten sobald sich was ändert
-// Überschreibe renderStatusScreen um Broadcast einzuhängen
+// Simulation-Status anwenden (ohne eigene Loops zu starten – die laufen nur am Prüfer-Tab)
+function applySimState(aktiv) {
+  STATE.simulation.aktiv = aktiv;
+  if (aktiv && !STATE.simulation.startzeit) STATE.simulation.startzeit = Date.now();
+  const dot = document.querySelector('#sim-status-ind .status-dot');
+  if (dot) dot.className = 'status-dot ' + (aktiv ? 'running' : 'idle');
+  const txt = document.getElementById('sim-status-text');
+  if (txt) txt.textContent = aktiv ? 'Läuft' : 'Gestoppt';
+  const input = document.getElementById('funk-input');
+  const btn = document.getElementById('btn-funk-send');
+  if (input) input.disabled = !aktiv;
+  if (btn) btn.disabled = !aktiv;
+}
+window.applySimState = applySimState;
+
+// ---- NOTRUF-BANNER (am empfangenden Tab) ----
+function zeigeNotrufBanner(einsatz) {
+  const banner = document.createElement('div');
+  banner.className = 'notruf-banner';
+  banner.innerHTML = `<strong>🚨 Neuer Einsatz</strong> ${einsatz.stichwort || 'ohne Stichwort'} – ${einsatz.adresse || 'Adresse unbekannt'}`;
+  document.body.appendChild(banner);
+  spieleNotrufTon();
+  setTimeout(() => banner.remove(), 6000);
+}
+
+function spieleNotrufTon() {
+  try {
+    if (!audioCtx) initAudio();
+    if (!audioCtx) return;
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = 'sine';
+    osc.frequency.value = 880;
+    gain.gain.value = 0.15;
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start();
+    osc.frequency.setValueAtTime(660, audioCtx.currentTime + 0.15);
+    osc.stop(audioCtx.currentTime + 0.3);
+  } catch(e) {}
+}
+
+// Status-Updates fürs Popup broadcasten sobald sich was ändert
 const _origRenderStatus = window.renderStatusScreen;
 window.renderStatusScreen = function() {
   if (_origRenderStatus) _origRenderStatus();
@@ -173,11 +282,12 @@ async function sprichFunkText(text, sender) {
 
 // Original addFunkMsg überschreiben um TTS einzuhängen
 const _origAddFunkMsg = window.addFunkMsg;
-window.addFunkMsg = function(typ, sender, text) {
-  if (_origAddFunkMsg) _origAddFunkMsg(typ, sender, text);
+window.addFunkMsg = function(typ, sender, text, opts) {
+  if (_origAddFunkMsg) _origAddFunkMsg(typ, sender, text, opts);
 
-  // Nur eingehende Meldungen vorlesen (nicht System/Ausgehende)
-  if (typ === 'incoming' && SPRACH_CONFIG.aktiv) {
+  // Nur eingehende Meldungen vorlesen, und nur am Disponenten-Platz
+  // (sonst spricht es doppelt, wenn Prüfer + Disponent am selben Gerät laufen)
+  if (typ === 'incoming' && SPRACH_CONFIG.aktiv && STATE.rolle === 'disponent') {
     sprichFunkText(`${sender}: ${text}`);
   }
 };
@@ -250,8 +360,9 @@ function zeigeEinstellungen() {
         </button>
       </div>
       <p style="font-size:10px;color:#484f58;margin-top:6px">
-        Der Key wird lokal im Browser gespeichert und nicht übertragen.<br>
-        Ohne Key läuft der Simulator mit einfachen Fallback-Antworten.
+        Empfohlen: Key als Environment-Variable <b>ANTHROPIC_API_KEY</b> auf Render setzen –
+        dann läuft die KI über den Server und dieser Eintrag ist unnötig.<br>
+        Dieser lokale Key dient nur als Fallback. Ohne Key: einfache Standard-Antworten.
       </p>
     </div>
 

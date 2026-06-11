@@ -1,19 +1,21 @@
 #!/usr/bin/env node
 /**
- * Simple HTTP Server für ELS Simulator
- * Serves static files from ./rettungsleitstelle
- * Compatible with Render.com
+ * HTTP Server für ELS Simulator
+ * - Statische Dateien aus ./rettungsleitstelle
+ * - GET  /api/config → meldet nur, OB ein Server-API-Key existiert (der Key selbst verlässt den Server nie)
+ * - POST /api/funk   → Proxy zur Anthropic API; der Key bleibt serverseitig (Render env var ANTHROPIC_API_KEY)
  */
 
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
-const url = require('url');
+const Anthropic = require('@anthropic-ai/sdk').default;
 
 const PORT = process.env.PORT || 3000;
 const BASE_DIR = path.join(__dirname, 'rettungsleitstelle');
 
-// MIME types
+const anthropic = process.env.ANTHROPIC_API_KEY ? new Anthropic() : null;
+
 const MIME_TYPES = {
   '.html': 'text/html; charset=utf-8',
   '.js': 'application/javascript',
@@ -35,32 +37,79 @@ function getMimeType(filename) {
   return MIME_TYPES[ext] || 'application/octet-stream';
 }
 
-const server = http.createServer((req, res) => {
-  const parsedUrl = url.parse(req.url, true);
-  let pathname = decodeURI(parsedUrl.pathname);
+function sendJson(res, status, obj) {
+  res.writeHead(status, {
+    'Content-Type': 'application/json; charset=utf-8',
+    'Cache-Control': 'no-store'
+  });
+  res.end(JSON.stringify(obj));
+}
 
-  // Remove leading slash
+function handleFunkProxy(req, res) {
+  let body = '';
+  req.on('data', chunk => {
+    body += chunk;
+    if (body.length > 100000) req.destroy();
+  });
+  req.on('end', async () => {
+    if (!anthropic) {
+      sendJson(res, 503, { error: 'Kein ANTHROPIC_API_KEY am Server konfiguriert' });
+      return;
+    }
+    try {
+      const { system, prompt } = JSON.parse(body || '{}');
+      if (!prompt) {
+        sendJson(res, 400, { error: 'prompt fehlt' });
+        return;
+      }
+      const msg = await anthropic.messages.create({
+        model: 'claude-opus-4-8',
+        max_tokens: 300,
+        system: typeof system === 'string' ? system.slice(0, 8000) : undefined,
+        messages: [{ role: 'user', content: String(prompt).slice(0, 4000) }]
+      });
+      const text = msg.content
+        .filter(b => b.type === 'text')
+        .map(b => b.text)
+        .join(' ')
+        .trim();
+      sendJson(res, 200, { text });
+    } catch (e) {
+      console.error('[api/funk] Fehler:', e.message);
+      sendJson(res, 502, { error: 'KI-Anfrage fehlgeschlagen' });
+    }
+  });
+}
+
+const server = http.createServer((req, res) => {
+  let pathname;
+  try {
+    pathname = decodeURI(new URL(req.url, 'http://localhost').pathname);
+  } catch (e) {
+    res.writeHead(400, { 'Content-Type': 'text/plain' });
+    res.end('Bad Request');
+    return;
+  }
+
   if (pathname.startsWith('/')) {
     pathname = pathname.slice(1);
   }
 
-  // API Endpoints
+  // ---- API-Endpunkte ----
   if (pathname === 'api/config') {
-    const apiKey = process.env.ANTHROPIC_API_KEY;
-    res.writeHead(200, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({
-      hasApiKey: !!apiKey,
-      apiKey: apiKey || null
-    }));
+    sendJson(res, 200, { hasApiKey: !!anthropic });
+    return;
+  }
+  if (pathname === 'api/funk' && req.method === 'POST') {
+    handleFunkProxy(req, res);
     return;
   }
 
-  // Default to index.html for root
+  // ---- Statische Dateien ----
   if (pathname === '' || pathname === '/') {
     pathname = 'index.html';
   }
 
-  // Build file path
   let filePath = path.join(BASE_DIR, pathname);
 
   // Security: prevent directory traversal
@@ -70,69 +119,46 @@ const server = http.createServer((req, res) => {
     return;
   }
 
-  // Try to read the file
   fs.readFile(filePath, (err, data) => {
     if (err) {
-      // If file not found and it's not index.html, try index.html
       if (err.code === 'ENOENT' && pathname !== 'index.html') {
         fs.readFile(path.join(BASE_DIR, 'index.html'), (fallbackErr, fallbackData) => {
           if (fallbackErr) {
             res.writeHead(404, { 'Content-Type': 'text/plain' });
             res.end('404 Not Found\n');
-            console.error(`[404] ${req.method} ${req.url}`);
             return;
           }
-
           res.writeHead(200, {
             'Content-Type': getMimeType('index.html'),
             'Cache-Control': 'public, max-age=0, must-revalidate'
           });
           res.end(fallbackData);
-          console.log(`[200] ${req.method} ${req.url} (served as index.html)`);
         });
         return;
       }
-
-      // Other errors
       res.writeHead(500, { 'Content-Type': 'text/plain' });
       res.end('500 Internal Server Error\n');
       console.error(`[500] ${req.method} ${req.url}:`, err.message);
       return;
     }
 
-    // File found
     const mimeType = getMimeType(filePath);
-    // Never cache HTML, CSS, or JS in development mode
     const cacheControl = (pathname.endsWith('.html') || pathname.endsWith('.css') || pathname.endsWith('.js'))
-      ? 'public, max-age=0, must-revalidate'  // Don't cache HTML/CSS/JS
-      : 'public, max-age=86400';               // Cache static assets (images, fonts) for 24h
+      ? 'public, max-age=0, must-revalidate'
+      : 'public, max-age=86400';
 
     res.writeHead(200, {
       'Content-Type': mimeType,
       'Cache-Control': cacheControl,
-      'Access-Control-Allow-Origin': '*',
       'X-Content-Type-Options': 'nosniff'
     });
     res.end(data);
-    console.log(`[200] ${req.method} ${req.url}`);
   });
 });
 
 server.listen(PORT, () => {
-  console.log(`
-╔═══════════════════════════════════════════════════════════╗
-║  🚨 RK Salzburg – Leitstellen Simulator                   ║
-║                                                           ║
-║  🌐 Server läuft auf http://localhost:${PORT}
-║  📍 Dateien: ./rettungsleitstelle/                       ║
-║                                                           ║
-║  Login:                                                   ║
-║  • Disponent: PIN 1234                                   ║
-║  • Prüfer: PIN 9999                                      ║
-║                                                           ║
-║  Strg+C zum Beenden                                      ║
-╚═══════════════════════════════════════════════════════════╝
-  `);
+  console.log(`ELS Simulator läuft auf Port ${PORT}`);
+  console.log(`KI-Funk (Anthropic): ${anthropic ? 'aktiv (Server-Key gesetzt)' : 'INAKTIV – ANTHROPIC_API_KEY fehlt'}`);
 });
 
 server.on('error', (err) => {
@@ -141,9 +167,5 @@ server.on('error', (err) => {
 });
 
 process.on('SIGTERM', () => {
-  console.log('\n🛑 Server wird beendet...');
-  server.close(() => {
-    console.log('Server gestoppt.');
-    process.exit(0);
-  });
+  server.close(() => process.exit(0));
 });

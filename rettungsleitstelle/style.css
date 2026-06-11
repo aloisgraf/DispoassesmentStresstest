@@ -31,6 +31,9 @@
   --s10: #283593;   --s19: #9e9e9e;   --s80: #616161;   --s82: #424242;   --s83: #212121;
   --s88: #f57f17;
 
+  --cyan:          #0e7490;
+  --bg-dark:       #eef1f4;
+
   --font-mono:  'Courier New', monospace;
   --font-ui:    'Segoe UI', 'Arial', sans-serif;
 
@@ -1092,4 +1095,134 @@ input, select, textarea, button {
   font-weight: 600;
   color: var(--blue);
   font-size: 11px;
+}
+
+/* ---- FUNK-MELDUNGEN (Zeit/Sender/Text) ---- */
+.funk-msg-time {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-dim);
+  margin-right: 6px;
+}
+
+.funk-msg-sender {
+  font-weight: 700;
+  font-size: 11px;
+  color: var(--blue);
+  margin-right: 4px;
+}
+
+.funk-msg.incoming .funk-msg-sender { color: var(--green); }
+.funk-msg.alert .funk-msg-sender    { color: var(--red); }
+
+.funk-msg-text {
+  font-size: 12px;
+  color: var(--text-primary);
+}
+
+/* ---- PRIO-BADGE (Basis) ---- */
+.prio-badge {
+  display: inline-block;
+  padding: 1px 6px;
+  border-radius: 2px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+}
+
+/* ---- PRÜFER-LOG ---- */
+.log-entry {
+  display: flex;
+  gap: 6px;
+  padding: 2px 4px;
+  border-bottom: 1px solid var(--border);
+  align-items: baseline;
+}
+
+.log-ts {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--text-dim);
+  flex-shrink: 0;
+}
+
+.log-info { color: var(--blue); }
+.log-good { color: var(--green); }
+.log-warn { color: var(--orange); }
+.log-bad  { color: var(--red); }
+
+/* ---- PRÜFER SZENARIO-LISTE ---- */
+.pruefer-sz-item {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding: 5px 8px;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  font-size: 11px;
+}
+
+.pruefer-sz-item:hover {
+  background: var(--bg-hover);
+}
+
+.sz-id {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--blue);
+  min-width: 56px;
+  flex-shrink: 0;
+}
+
+.sz-title {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ---- AAO-CHIP: vorgeschlagen, aber nicht verfügbar ---- */
+.aao-chip.disabled {
+  opacity: 0.5;
+  background: var(--grey-light);
+  color: var(--text-secondary);
+  cursor: not-allowed;
+}
+
+/* ---- DOKU-EINTRÄGE (intern) ---- */
+.doku-entry {
+  display: flex;
+  gap: 6px;
+  padding: 3px 4px;
+  font-size: 11px;
+  border-bottom: 1px solid var(--border);
+}
+
+.doku-ts  { font-family: var(--font-mono); font-size: 10px; color: var(--text-dim); }
+.doku-who { font-weight: 600; color: var(--text-secondary); }
+.doku-ki .doku-text { color: var(--orange); }
+
+/* ---- NOTRUF-BANNER (neuer Einsatz von anderem Tab) ---- */
+.notruf-banner {
+  position: fixed;
+  top: 44px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--red);
+  color: #fff;
+  padding: 10px 22px;
+  border-radius: 4px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.35);
+  font-size: 13px;
+  z-index: 10000;
+  animation: notrufIn 0.25s ease-out;
+}
+
+.notruf-banner strong {
+  margin-right: 8px;
+}
+
+@keyframes notrufIn {
+  from { transform: translate(-50%, -16px); opacity: 0; }
+  to   { transform: translate(-50%, 0);     opacity: 1; }
 }
