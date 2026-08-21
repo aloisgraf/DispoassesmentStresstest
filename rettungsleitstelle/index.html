@@ -3,22 +3,33 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>RK Salzburg – Leitstellen Simulator</title>
+  <title>LeitTrain – RK Salzburg Leitstellen-Simulator</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <!-- ============ LOGIN ============ -->
   <div id="login-screen" class="login-screen">
     <div class="login-box">
       <div class="login-logo">
         <div class="login-cross">✚</div>
-        <div class="login-title">Rotes Kreuz Salzburg</div>
-        <div class="login-subtitle">Leitstellen Simulator</div>
+        <div class="login-title">LeitTrain</div>
+        <div class="login-subtitle">Rotes Kreuz Salzburg – Leitstellen-Training</div>
       </div>
       <div class="login-form">
         <div class="login-role-select">
           <button class="role-btn active" data-role="disponent">Disponenten-Login</button>
           <button class="role-btn" data-role="pruefer">Prüfer-Login</button>
         </div>
+
+        <label class="login-label">Sitzungsart</label>
+        <div class="login-role-select">
+          <button class="sitzung-btn active" data-sitzung="uebung">Übungsmodus</button>
+          <button class="sitzung-btn" data-sitzung="pruefung">Prüfungsmodus</button>
+        </div>
+        <div class="login-hinweis" id="sitzung-hinweis">
+          Übungsmodus: Hilfestellungen sichtbar, Rückmeldung formativ.
+        </div>
+
         <input type="text" id="login-name" placeholder="Name / Kürzel" />
         <input type="password" id="login-pin" placeholder="PIN" />
         <button id="login-btn" class="login-submit">Anmelden</button>
@@ -27,10 +38,11 @@
     </div>
   </div>
 
+  <!-- ============ APP ============ -->
   <div id="app" class="app" style="display:none">
     <div class="menubar">
       <div class="menubar-left">
-        <div class="menubar-logo">✚ RK Salzburg – Leitstelle</div>
+        <div class="menubar-logo">✚ LeitTrain</div>
         <div class="menubar-tabs">
           <button class="menu-tab active" data-window="both">Beide Fenster</button>
           <button class="menu-tab" data-window="status">Statusschirm</button>
@@ -43,32 +55,86 @@
         <div class="menubar-status-ind" id="sim-status-ind">
           <span class="status-dot idle"></span><span id="sim-status-text">Bereit</span>
         </div>
-        <button id="btn-popout-status" class="menu-icon-btn">⧉</button>
-        <button id="btn-logout" class="menu-icon-btn">⏻</button>
+        <button id="btn-popout-status" class="menu-icon-btn" title="Statusschirm auslagern">⧉</button>
+        <button id="btn-logout" class="menu-icon-btn" title="Abmelden">⏻</button>
       </div>
     </div>
 
+    <!-- Statuszeile LeitTrain -->
+    <div class="leittrain-statuszeile" id="leittrain-statuszeile"></div>
+
     <div class="main-layout" id="main-layout">
+      <!-- ============ LINKS: EINSATZMASKE ============ -->
       <div class="panel panel-einsatz" id="panel-einsatz">
-        <div class="einsatzmaske-header">
-          <div class="panel-header">
-            <span class="panel-title">Einsatzmaske</span>
-            <div class="panel-header-right">
-              <span id="em-rnkr">–</span>
-              <button class="btn-small btn-new-einsatz" id="btn-new-einsatz">+ Neuer</button>
-            </div>
+        <div class="panel-header">
+          <span class="panel-title">Einsatzmaske</span>
+          <div class="panel-header-right">
+            <span id="em-rnkr">–</span>
+            <button class="btn-small" id="btn-new-einsatz">+ Neuer</button>
           </div>
         </div>
 
-        <div class="einsatzmaske-scroll">
-          <!-- ROW 1: ADRESSE (LEFT) + AAO (RIGHT) -->
-          <div class="em-row-2col">
-            <div class="em-col">
-              <div class="em-field"><label>Einsatzadresse</label><input type="text" id="f-adresse" placeholder="Straße, Hausnummer, Ort" /></div>
-              <div class="em-field"><label>Etage / Objekt</label><input type="text" id="f-etage" placeholder="z.B. 2. OG, Büro" /></div>
+        <div class="einsatzmaske-body">
+          <div class="em-oben">
+            <!-- Felder -->
+            <div class="em-felder">
+              <div class="em-zeile z-2">
+                <div class="em-field"><label>Einsatzadresse</label>
+                  <input type="text" id="f-adresse" placeholder="Straße, Hausnummer, Ort" /></div>
+                <div class="em-field"><label>Etage / Objekt</label>
+                  <input type="text" id="f-etage" placeholder="z.B. 2. OG, Büro" /></div>
+              </div>
+
+              <div class="em-zeile z-3">
+                <div class="em-field"><label>Priorität</label>
+                  <select id="f-prioritaet">
+                    <option value="A1">A1 – Notarzteinsatz</option>
+                    <option value="A3">A3 – NA (Arzt fordert an)</option>
+                    <option value="B1">B1 – RD mit Blaulicht</option>
+                    <option value="B3">B3 – RD ohne Blaulicht</option>
+                    <option value="D1">D1 – KT liegend</option>
+                    <option value="D2">D2 – KT sitzend</option>
+                  </select>
+                </div>
+                <div class="em-field"><label>Einsatzgrund</label>
+                  <input type="text" id="f-stichwort" placeholder="z.B. INT – Kardial" /></div>
+                <div class="em-field"><label>Einsatzart</label>
+                  <select id="f-einsatzart">
+                    <option value="RD">Rettungsdienst</option>
+                    <option value="KT">Krankentransport</option>
+                    <option value="BRG">Bergeinsatz</option>
+                    <option value="WS">Wassereinsatz</option>
+                    <option value="SL">Sonderlage</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="em-zeile z-3">
+                <div class="em-field"><label>Patientenname</label>
+                  <input type="text" id="f-patient" placeholder="Name oder Unbekannt" /></div>
+                <div class="em-field"><label>Alter</label>
+                  <input type="number" id="f-alter" placeholder="Jahre" min="0" max="120" /></div>
+                <div class="em-field"><label>Geschlecht</label>
+                  <select id="f-geschlecht">
+                    <option value="-">–</option>
+                    <option value="m">Männlich</option>
+                    <option value="w">Weiblich</option>
+                    <option value="d">Divers</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="em-zeile z-2">
+                <div class="em-field"><label>Zielort</label>
+                  <input type="text" id="f-zielort" placeholder="z.B. UKH, LKH, CDK" /></div>
+                <div class="em-field"><label>Station / Etage</label>
+                  <input type="text" id="f-ziel-station" placeholder="z.B. Kath-Labor" /></div>
+              </div>
             </div>
-            <div class="em-col aao-col">
-              <div class="aao-header">AAO</div>
+
+            <!-- AAO rechts daneben -->
+            <div class="aao-col">
+              <div class="aao-header">AAO – Einsatzmittel</div>
               <div class="aao-chips" id="aao-chips"></div>
               <div class="aao-controls">
                 <select id="aao-select-em">
@@ -88,126 +154,142 @@
                     <option value="FR-Bergheim">FR Bergheim</option><option value="FR-Taxham">FR Taxham</option>
                   </optgroup>
                   <optgroup label="Partner">
-                    <option value="BRG-Grödig">Bergrettung Grödig</option><option value="WR-Wolfgangsee">Wasserrettung Wolfgangsee</option>
-                    <option value="KIT-SBG">KIT</option>
+                    <option value="BRG-Grödig">Bergrettung Grödig</option>
+                    <option value="BRG-Gaisberg">Bergrettung Gaisberg</option>
+                    <option value="WR-Wolfgangsee">Wasserrettung Wolfgangsee</option>
+                    <option value="WR-Mondsee">Wasserrettung Mondsee</option>
+                    <option value="KIT-SBG">KIT Salzburg</option>
                   </optgroup>
                 </select>
-                <button class="btn-small" id="btn-aao-add">+</button>
+                <button class="btn-small" id="btn-aao-add" title="Hinzufügen">+</button>
                 <button class="btn-small" id="btn-aao-vorschlag">Vorschlag</button>
               </div>
               <div class="aao-hint" id="aao-hint"></div>
             </div>
           </div>
 
-          <!-- ROW 2: EINSATZGRUND + EINSATZART -->
-          <div class="em-row-2col">
-            <div class="em-col">
-              <div class="em-field"><label>Einsatzgrund</label><input type="text" id="f-stichwort" placeholder="z.B. INT – Kardial" /></div>
-            </div>
-            <div class="em-col">
-              <div class="em-field"><label>Einsatzart</label>
-                <select id="f-einsatzart">
-                  <option value="RD">Rettungsdienst</option><option value="KT">Krankentransport</option>
-                  <option value="BRG">Bergeinsatz</option><option value="WS">Wassereinsatz</option>
-                  <option value="SL">Sonderlage</option>
-                </select>
-              </div>
-            </div>
-          </div>
-
-          <!-- ROW 3: PRIORITÄT -->
-          <div class="em-row-1col">
-            <div class="em-field"><label>Priorität</label>
-              <select id="f-prioritaet">
-                <option value="E1">E1 – Notfall</option>
-                <option value="E2">E2 – Dringend</option>
-                <option value="E3">E3 – Normal</option>
-                <option value="KT">KT – Transport</option>
-              </select>
-            </div>
-          </div>
-
-          <!-- ROW 4: PATIENTENDATEN (LEFT) + ZIELORT (RIGHT) -->
-          <div class="em-row-2col">
-            <div class="em-col">
-              <div class="em-field"><label>Patientenname</label><input type="text" id="f-patient" placeholder="Name oder Unbekannt" /></div>
-              <div class="em-field"><label>Alter</label><input type="number" id="f-alter" placeholder="Jahre" min="0" max="120" /></div>
-              <div class="em-field"><label>Geschlecht</label>
-                <select id="f-geschlecht">
-                  <option value="-">–</option><option value="m">Männlich</option>
-                  <option value="w">Weiblich</option><option value="d">Divers</option>
-                </select>
-              </div>
-            </div>
-            <div class="em-col">
-              <div class="em-field"><label>Zielort</label><input type="text" id="f-zielort" placeholder="z.B. UKH, LKH, CDK" /></div>
-              <div class="em-field"><label>Station / Bereich</label><input type="text" id="f-ziel-station" placeholder="z.B. Kath-Labor" /></div>
-              <div class="em-field"><label>Status</label>
-                <select id="f-einsatz-status">
-                  <option value="offen">Offen</option><option value="laufend">Laufend</option>
-                  <option value="abgeschlossen">Abgeschlossen</option>
-                </select>
-              </div>
-            </div>
-          </div>
-
-          <!-- BUTTONS -->
           <div class="em-buttons-row">
-            <button class="btn-action btn-alarm" id="btn-alarmieren">🚨 ALARMIEREN</button>
-            <button class="btn-action btn-save" id="btn-einsatz-save">💾 Speichern</button>
-            <button class="btn-action" id="btn-einsatz-abschliessen">✓ Abschließen</button>
+            <button class="btn-action btn-disponieren" id="btn-alarmieren">Disponieren</button>
+            <button class="btn-action btn-save" id="btn-einsatz-save">Speichern</button>
+            <button class="btn-action" id="btn-einsatz-abschliessen">Abschließen</button>
+            <button class="btn-action btn-storno" id="btn-einsatz-stornieren">Einsatz stornieren</button>
           </div>
         </div>
 
-        <!-- EINSATZLISTE -->
+        <!-- ============ EINSATZLISTE MIT TABS ============ -->
         <div class="einsatzliste-panel">
-          <div class="panel-header"><span class="panel-title">Einsatzliste</span></div>
+          <div class="panel-header">
+            <div class="einsatz-tabs">
+              <button class="einsatz-tab active" data-liste="offen">Offen <span class="tab-zahl" id="zahl-offen">0</span></button>
+              <button class="einsatz-tab" data-liste="disponiert">Disponiert <span class="tab-zahl" id="zahl-disponiert">0</span></button>
+              <button class="einsatz-tab" data-liste="abgeschlossen">Abgeschlossen <span class="tab-zahl" id="zahl-abgeschlossen">0</span></button>
+              <button class="einsatz-tab" data-liste="storniert">Storniert <span class="tab-zahl" id="zahl-storniert">0</span></button>
+            </div>
+          </div>
           <div class="einsatzliste-table-wrap">
-            <table class="einsatzliste-table" id="einsatzliste-table">
-              <thead><tr><th>Zeit</th><th>RNKR</th><th>Stichwort</th><th>Status</th><th>Ort</th><th>Mittel</th><th>Prio</th><th></th></tr></thead>
-              <tbody id="einsatzliste-tbody"><tr class="einsatz-empty-row"><td colspan="8">–</td></tr></tbody>
+            <table class="einsatzliste-table">
+              <thead><tr>
+                <th>Zeit</th><th>RNKR</th><th>Prio</th><th>Einsatzgrund</th>
+                <th>Ort</th><th>Mittel</th><th></th>
+              </tr></thead>
+              <tbody id="einsatzliste-tbody"></tbody>
             </table>
           </div>
         </div>
 
-        <!-- FUNK -->
-        <div class="funk-panel">
-          <div class="panel-header"><span class="panel-title">🎙 Funk</span></div>
-          <div class="funk-messages" id="funk-messages"></div>
-          <div class="funk-input-row">
-            <input type="text" id="funk-input" placeholder="Antwort..." disabled />
-            <button class="btn-funk-send" id="btn-funk-send" disabled>▶</button>
+        <!-- ============ KOMMUNIKATION: FUNK / NOTRUF ============ -->
+        <div class="komm-panel">
+          <div class="panel-header">
+            <div class="komm-tabs">
+              <button class="komm-tab active" data-komm="funk">Funk</button>
+              <button class="komm-tab" data-komm="notruf">Notruf</button>
+            </div>
+            <span class="panel-header-right" id="notruf-status">kein Anruf</span>
+          </div>
+
+          <!-- Funk -->
+          <div class="komm-pane active" data-komm="funk">
+            <div class="funk-messages" id="funk-messages"></div>
+            <div class="funk-input-row">
+              <input type="text" id="funk-input" placeholder="Funkspruch an Einsatzmittel …" disabled />
+              <button class="btn-funk-send" id="btn-funk-send" disabled>Senden</button>
+            </div>
+          </div>
+
+          <!-- Notruf -->
+          <div class="komm-pane" data-komm="notruf" id="notruf-panel">
+            <div class="notruf-oben">
+              <div class="notruf-verlauf" id="notruf-verlauf">
+                <div class="notruf-leer">Kein aktiver Notruf.</div>
+              </div>
+              <div class="abfrage-schema" id="abfrage-schema"></div>
+            </div>
+            <div class="notruf-tippt" id="notruf-tippt" style="display:none">Anrufer:in spricht …</div>
+            <div class="notruf-steuerung">
+              <button class="btn-action btn-annehmen" id="btn-notruf-annehmen" disabled>Annehmen</button>
+              <button class="btn-action" id="btn-notruf-einsatz" disabled>Einsatz anlegen</button>
+              <button class="btn-action btn-storno" id="btn-notruf-beenden" disabled>Gespräch beenden</button>
+            </div>
+            <div class="funk-input-row">
+              <input type="text" id="notruf-input" placeholder="Was sagen Sie der anrufenden Person?" disabled />
+              <button class="btn-funk-send" id="btn-notruf-send" disabled>Sprechen</button>
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- STATUSSCHIRM -->
+      <!-- ============ RECHTS: STATUSSCHIRM ============ -->
       <div class="panel panel-status" id="panel-status">
-        <div class="panel-header"><span class="panel-title">Statusschirm – Einsatzmittel</span></div>
+        <div class="panel-header">
+          <span class="panel-title">Statusschirm – Einsatzmittel</span>
+          <span class="panel-header-right" id="em-total"></span>
+        </div>
         <div class="status-screen" id="status-screen"></div>
       </div>
     </div>
   </div>
 
-  <!-- PRÜFER -->
+  <!-- ============ PRÜFER-PANEL ============ -->
   <div class="pruefer-overlay" id="pruefer-overlay" style="display:none">
     <div class="pruefer-panel">
-      <div class="pruefer-header"><span>🔐 Prüfer</span><button id="btn-pruefer-close">✕</button></div>
+      <div class="pruefer-header"><span>Prüfer / Instruktor:in</span><button id="btn-pruefer-close">✕</button></div>
       <div class="pruefer-body">
+
         <div class="pruefer-section">
           <h3>Übung</h3>
-          <button class="btn-pruefer-action" id="btn-uebung-start">▶ Start</button>
-          <button class="btn-pruefer-action btn-stop" id="btn-uebung-stop" disabled>⏹ Stop</button>
-          <button class="btn-pruefer-action" id="btn-uebung-auswertung">📊 Auswertung</button>
+          <div class="pruefer-zeile">
+            <label>Betriebsart</label>
+            <select id="pruefer-betriebsart">
+              <option value="notruf">Mit Notrufannahme (Modus 1+2)</option>
+              <option value="disposition">Nur Disposition (Modus 2)</option>
+            </select>
+          </div>
+          <div class="pruefer-zeile">
+            <label>Schwierigkeit</label>
+            <select id="pruefer-schwierigkeit">
+              <option value="1">1 – ruhig, kooperativ</option>
+              <option value="2">2 – leicht aufgeregt</option>
+              <option value="3" selected>3 – deutlich aufgeregt</option>
+              <option value="4">4 – stark belastet</option>
+              <option value="5">5 – Extremsituation</option>
+            </select>
+          </div>
+          <div class="pruefer-buttons">
+            <button class="btn-pruefer-action" id="btn-uebung-start">Start</button>
+            <button class="btn-pruefer-action btn-stop" id="btn-uebung-stop" disabled>Stop</button>
+            <button class="btn-pruefer-action" id="btn-debriefing">Debriefing</button>
+          </div>
         </div>
+
         <div class="pruefer-section">
-          <h3>Szenario</h3>
+          <h3>Aktuelles Szenario</h3>
           <div id="pruefer-szenario-info">–</div>
         </div>
+
         <div class="pruefer-section">
-          <h3>Katalog</h3>
+          <h3>Szenario einspielen</h3>
           <select id="pruefer-filter-kat">
-            <option value="">Alle</option>
+            <option value="">Alle Kategorien</option>
             <option value="Interne Notfälle">Interne Notfälle</option>
             <option value="Krankentransport">Krankentransport</option>
             <option value="Verkehrsunfall">Verkehrsunfall</option>
@@ -217,18 +299,27 @@
           </select>
           <div class="pruefer-szenario-liste" id="pruefer-szenario-liste"></div>
         </div>
+
         <div class="pruefer-section">
-          <h3>Log</h3>
+          <h3>Szenario-Generator</h3>
+          <input type="text" id="szenario-wunsch" placeholder="Lernziel, z.B. Telefonreanimation bei Panik" />
+          <button class="btn-pruefer-action" id="btn-szenario-generieren">Szenario erzeugen</button>
+          <div class="generator-status" id="szenario-generator-status"></div>
+        </div>
+
+        <div class="pruefer-section">
+          <h3>Protokoll</h3>
           <div class="pruefer-log" id="pruefer-log"></div>
         </div>
       </div>
     </div>
   </div>
 
-  <button class="pruefer-toggle-btn" id="pruefer-toggle-btn" style="display:none">🔐</button>
+  <button class="pruefer-toggle-btn" id="pruefer-toggle-btn" style="display:none" title="Prüfer-Panel">⚙</button>
 
   <script src="data.js"></script>
   <script src="app.js"></script>
   <script src="extensions.js"></script>
+  <script src="leittrain.js"></script>
 </body>
 </html>

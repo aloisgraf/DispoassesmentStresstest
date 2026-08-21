@@ -148,3 +148,86 @@ function getFahrtzeit(typ) {
   const ft = FAHRTZEITEN[typ] || FAHRTZEITEN.RTW;
   return zufallZahl(ft.min, ft.max);
 }
+
+// ============================================================
+// PRIORITÄTEN (Schema RK Salzburg)
+// ============================================================
+const PRIORITAETEN = {
+  "A1": "Notarzteinsatz",
+  "A3": "Notarzteinsatz (Arzt fordert an)",
+  "B1": "Rettungsdienst mit Blaulicht",
+  "B3": "Rettungsdienst ohne Blaulicht",
+  "D1": "Krankentransport liegend",
+  "D2": "Krankentransport sitzend"
+};
+
+// Einsatzfahrt = mit Sondersignal → in der Liste fett und rot
+function istEinsatzfahrt(prio) {
+  return ['A1', 'A3', 'B1'].includes(prio);
+}
+
+// Alte Szenario-Codes (E1/E2/E3/KT) auf das neue Schema heben
+function konvertierePrio(sz) {
+  if (!sz) return 'B1';
+  const p = sz.prioritaet;
+  if (PRIORITAETEN[p]) return p;
+
+  const primaer = (sz.aao && sz.aao.primaer) || [];
+  const brauchtNotarzt = primaer.includes('NEF') || primaer.includes('C6') || primaer.includes('HELI');
+
+  if (p === 'E1') return brauchtNotarzt ? 'A1' : 'B1';
+  if (p === 'E2') return brauchtNotarzt ? 'A3' : 'B1';
+  if (p === 'E3') return 'B3';
+  if (p === 'KT') {
+    const text = `${sz.beschreibung || ''} ${sz.titel || ''} ${sz.stichwort || ''}`.toLowerCase();
+    return /liegend|trage|bettl|immobil/.test(text) ? 'D1' : 'D2';
+  }
+  return brauchtNotarzt ? 'A1' : 'B1';
+}
+
+// ============================================================
+// FUNKSPRÜCHE – Anliegen der Fahrzeuge, nach Status gruppiert.
+// Reine Statuswechsel werden NICHT gefunkt, die stehen im Statusschirm.
+// ============================================================
+const FUNKSPRUECHE = {
+  // Status 00/06 – frei
+  frei: [
+    "wir müssen in die Werkstatt, das Fahrzeug zeigt eine Fehlermeldung.",
+    "ist eine Dienstfahrt zur Tankstelle möglich?",
+    "können wir auf Pause gehen?",
+    "wir bräuchten eine Materialergänzung, Freigabe zur Fahrt ins Lager?",
+    "bitte um Fahrzeugtausch, die Hecktür schließt nicht mehr richtig.",
+    "ist eine Dienstfahrt zur Wäscherei möglich?",
+    "wir würden zur Desinfektion einrücken, Freigabe?",
+    "können wir eine Einschulungsfahrt mit dem neuen Kollegen machen?",
+    "wir sind wieder verfügbar, melden uns einsatzbereit."
+  ],
+  // Status 02 – Anfahrt
+  anfahrt: [
+    "Anfahrt verzögert sich, Stau auf der Westautobahn.",
+    "bitte um genauere Objektangabe, wir finden die Zufahrt nicht.",
+    "Straße gesperrt, wir fahren Umleitung – Eintreffen verzögert sich.",
+    "bitte um Rückruf beim Anrufer, niemand öffnet die Tür.",
+    "ist am Einsatzort mit Polizei zu rechnen?"
+  ],
+  // Status 03 – am Einsatzort
+  einsatzort: [
+    "wir fordern einen Notarzt nach.",
+    "Patient verweigert den Transport, wie sollen wir vorgehen?",
+    "wir benötigen die Polizei an der Einsatzstelle.",
+    "wir brauchen ein zweites Fahrzeug, zweiter Patient vor Ort.",
+    "Türöffnung erforderlich, bitte Feuerwehr alarmieren.",
+    "bitte um Tragehilfe, Patient im vierten Stock ohne Lift.",
+    "Lage anders als gemeldet, kein Notfall – wir übernehmen als Transport.",
+    "Angehörige stark belastet, Kriseninterventionsteam wäre sinnvoll.",
+    "bitte um freies Transportziel, wohin sollen wir fahren?"
+  ],
+  // Status 04/05 – Transport / Zielort
+  transport: [
+    "Zielklinik hat keinen Platz, bitte um alternatives Transportziel.",
+    "Übergabe verzögert sich, Schockraum noch belegt.",
+    "Patient wird während der Fahrt instabil, wir fordern ein NEF zum Treffpunkt.",
+    "bitte Voranmeldung durchgeben: Verdacht auf Schlaganfall.",
+    "Übergabe erfolgt, wir melden uns gleich wieder verfügbar."
+  ]
+};
